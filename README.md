@@ -1,0 +1,118 @@
+# Project Jontay Porter: Prediction Market Arbitrage
+
+**Status:** Not started (kickoff soon). Part of [Overarching Goals and Roadmap](../../docs/overarching-goals-and-roadmap.md).
+
+## Goal
+Find and capture risk-free (or near risk-free) price discrepancies across prediction markets, e.g.
+the same event priced differently on two platforms, or outcomes in one market summing to less than 100%.
+
+## Principles
+- Paper-track every opportunity before risking money.
+- Count all costs: fees, spreads, withdrawal limits, settlement timing, resolution-rule differences.
+- Check platform terms and legal status (state and federal) before trading.
+- Start small; size by what we can afford to lose entirely.
+
+## Decisions so far (2026-10-22)
+- **Platforms:** Polymarket and Kalshi.
+- **Sport:** NBA first.
+- **Learning from others:** study creators who publicly discuss prediction market arbitrage (see below).
+- **NBA data stash:** every player in the league, every season from 2003-04 (LeBron James's rookie
+  year, our reference point) to today. Players who debuted before 2003 are covered from 2003-04 on.
+- **Accounts:** none yet on Kalshi or Polymarket. You're an eligible adult; we'll open them only when
+  the paper-tracking phase says it's worth it.
+- **Stash runs locally on your machine** (cloud sandbox can't reach the NBA/market sites).
+- **Goal for the bot:** an autonomous, read-only monitor that watches Polymarket and Kalshi odds
+  24/7 and logs/flags discrepancies. It places no trades unless you separately approve that later.
+
+## Platform notes (verify before relying on them)
+- Kalshi is a CFTC-regulated exchange with a public API.
+- Polymarket has a public API for market data, but its availability and rules for US users have
+  changed over time. **Check current eligibility for you before opening any account or trading.**
+- Cross-platform arbitrage requires the two markets to resolve on identical terms; compare rule text
+  for every pair.
+
+## Learning from TikTok creators
+I won't scrape TikTok: it violates their terms and is blocked by anti-bot measures. Instead:
+- You send me creator handles, video links, or screen-recorded/transcribed clips, and I'll extract
+  strategies, claimed edges and red flags into `research/creators.md`.
+- I'll search the public web for write-ups on the same topic.
+- Treat all creator claims as unverified until we reproduce them on paper-tracked data. Creator
+  content is often marketing.
+
+## NBA data stash plan
+- Source candidates: the `nba_api` package (official stats endpoints) and Basketball-Reference.
+  Check each source's terms and rate limits.
+- Script: `scripts/fetch_nba_stats.py` (written, **not yet run or tested**). Per season it saves
+  `data/nba/season_totals_<YYYY-YY>.csv.gz` (all players) and `data/nba/game_logs_<YYYY-YY>.csv.gz`
+  (every player-game). Resumable; skips files that already exist.
+- Run locally: `pip install -r projects/jontay-porter/requirements.txt`, then
+  `python projects/jontay-porter/scripts/fetch_nba_stats.py`. It takes a while (about 45 requests with
+  pauses). Then commit `data/nba/` and push so I can analyze it.
+- Scope: every player, 2003-04 onward, regular season (`--season-type Playoffs` for playoffs).
+- **Honest caveat:** historical player stats help us model player/game outcomes, but arbitrage
+  itself needs *price history from both platforms* for the same NBA markets. Stats alone don't
+  reveal arbitrage; we should start collecting Polymarket and Kalshi NBA prices alongside.
+- **Environment limit:** this cloud session can't reach stats.nba.com, basketball-reference.com,
+  Kalshi or Polymarket (network policy), hence the local run.
+
+## 24/7 odds monitor (design, not built yet)
+Options for running autonomously, read-only:
+1. **GitHub Actions on a schedule** (like the trading bot's `live-poll.yml`). Free, needs no machine of
+   yours, and GitHub's runners can reach both platforms. Minimum interval is about 5 minutes and runs
+   can be delayed, so it's good for logging odds and flagging gaps, not for sub-minute arbitrage.
+2. **Always-on small server (VPS) or a home machine** running a loop. True continuous monitoring and
+   seconds-level data, at a few dollars a month plus upkeep. Needed if we ever want to act fast.
+Recommendation: start with option 1 for analysis and paper tracking, move to option 2 only if the data
+shows edges that vanish faster than 5 minutes.
+Both platforms publish market data through public APIs; I'll confirm endpoints and rate limits
+when I can reach them.
+
+## Phases
+1. **Research:** list candidate platforms, their fees, APIs, access rules and legality for you.
+2. **Detection:** script that pulls prices and flags cross-market or within-market discrepancies.
+3. **Paper tracking:** log flagged opportunities and what would have been earned after costs.
+4. **Decision:** you review the results and decide whether to deploy real capital.
+
+## Key risks to study
+Resolution-wording mismatch between platforms, liquidity (can't fill both legs), platform/counterparty
+risk, capital tied up until settlement, and regulatory limits.
+
+## Next steps
+- [x] Platforms chosen: Polymarket and Kalshi
+- [ ] You run `fetch_nba_stats.py` locally and push `data/nba/`
+- [ ] Send creator handles/links for the research file
+- [ ] Review rules and legality for your location
+- [ ] Define "worth acting on" thresholds (minimum net edge after fees)
+
+## Open questions
+- Approve option 1 (GitHub Actions) for the monitor?
+- Starting budget, if any?
+
+
+## Price collection (built 2026-10-22)
+- `scripts/collect_prices.py` snapshots NBA moneyline, spread, total and player-prop markets (points, rebounds,
+  assists, threes, steals, blocks) from both platforms into `data/prices/prices_<date>.csv.gz`. Public endpoints only,
+  **no accounts or keys needed**. Tested locally: about 2,500 rows and 50 KB per snapshot.
+- `.github/workflows/collect-prices.yml` runs it every 15 min and commits to a `price-data` branch.
+  One-time setup: push this folder to a new GitHub repo, then `git checkout --orphan price-data`, commit, push.
+  (Kalshi `KXNBA*` series via `api.elections.kalshi.com/trade-api/v2`; Polymarket via `gamma-api.polymarket.com`, NBA tag 745.)
+- Legal, fee and rule-mismatch review: `research/legal-and-rules-review.md`.
+- Next: a matcher that pairs Kalshi and Polymarket markets (same game, player, stat, line) and a paper-arb calculator.
+
+## Matcher + paper calculator (built 2026-10-22)
+- `scripts/find_arbs.py` pairs identical propositions across venues (player props, game totals, moneylines; spreads not yet)
+  and prices both two-leg hedges per $1 contract: `edge = 1 - cost - fees`. Kalshi taker fee uses the official formula with
+  per-order cent rounding (`--size`); Polymarket fee defaults to 0 (`--poly-fee-rate`). Player props where you'd hold
+  Polymarket Yes are marked DNP-exposed and discounted by `--dnp-prob` (default 5%).
+- First live run: 1,394 matched pairs across 12 games; only 4 hedges cleared +1c, all De'Aaron Fox props with Kalshi volume 0 and
+  a Polymarket Yes leg, i.e. most likely injury/DNP pricing, not free money. Everything else was <= 0 after fees.
+- Hits append to `data/paper/opportunities.csv`. Next: settle them against box scores to measure real paper P&L.
+- Known gaps: no order-book depth (only best bid/ask), spreads unmatched, no volume filter yet.
+
+## Volume filter + settlement (built 2026-10-25)
+- `find_arbs.py` now skips pairs where Kalshi volume < 10 contracts or Polymarket liquidity < $500
+  (`--min-kalshi-volume`, `--min-poly-liquidity`). On the 10-23 snapshot that removed 1,225 of 1,394 pairs.
+- `scripts/settle.py` (run locally; needs nba_api) grades logged hedges against final box scores: props, totals, moneylines, with
+  the DNP rules (Kalshi refund / Polymarket No). Writes `data/paper/settled.csv` and prints realized vs predicted edge.
+- Validation on all 2,764 priced hedges from the 10-23 snapshot: realized P&L matched predicted net edge exactly for every non-DNP hedge.
+  No DNPs appeared among 2,544 props, so the DNP branch is untested on real data.
