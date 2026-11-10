@@ -38,7 +38,7 @@ PAPER = ROOT / "data" / "paper"
 PLANS, FILLS, RUNS = PAPER / "maker_plans.csv", PAPER / "maker_fills.csv", PAPER / "maker_runs.csv"
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
 UA = {"User-Agent": "project-jontay-porter/0.2 (read-only research)"}
-PLAN_FIELDS = ["placed_ts", "game_date", "teams", "market_type", "player", "event_time",
+PLAN_FIELDS = ["placed_ts", "sport", "game_date", "teams", "market_type", "player", "event_time",
                "rest_id", "rest_norm_side", "rest_raw_side", "rest_line", "rest_px", "rest_bid", "rest_ask",
                "hedge_id", "hedge_norm_side", "hedge_line", "hedge_px_at_plan", "hedge_fee_coef",
                "contracts", "edge_at_plan", "middle"]
@@ -60,7 +60,7 @@ def get(url, params):
         return None
 
 
-def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=80):
+def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150):
     """Resting-Kalshi / taking-Polymarket-US plans from one snapshot. Wider books are allowed than for pure taking,
     because resting inside a wide book is the whole point."""
     best = {}
@@ -89,7 +89,7 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=80):
                     if edge < min_edge:
                         continue
                     raw = rest_side if not int(k.get("flipped") or 0) else ("no" if rest_side == "yes" else "yes")
-                    o = dict(placed_ts=ts, game_date=key[0], teams=key[1], market_type=key[2], player=k["player"] or p["player"],
+                    o = dict(placed_ts=ts, sport=key[0], game_date=key[1], teams=key[2], market_type=key[3], player=k["player"] or p["player"],
                              event_time=min(k["event_time"], p["event_time"]),
                              rest_id=k["market_id"], rest_norm_side=rest_side, rest_raw_side=raw, rest_line=f(k["line"]),
                              rest_px=px, rest_bid=bid, rest_ask=ask,
@@ -99,7 +99,13 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=80):
                     slot = (k["market_id"], rest_side)
                     if slot not in best or o["edge_at_plan"] > best[slot]["edge_at_plan"]:
                         best[slot] = o
-    return sorted(best.values(), key=lambda o: -o["edge_at_plan"])[:max_plans]
+    # best plans first, but no sport may take more than 60 slots, so football and college get tested too
+    out, per = [], {}
+    for o in sorted(best.values(), key=lambda o: -o["edge_at_plan"]):
+        if per.get(o["sport"], 0) < 60 and len(out) < max_plans:
+            per[o["sport"]] = per.get(o["sport"], 0) + 1
+            out.append(o)
+    return out
 
 
 def fills_since(ticker, raw_side, px, since_ts, until_ts):

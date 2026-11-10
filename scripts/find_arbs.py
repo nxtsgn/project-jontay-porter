@@ -33,7 +33,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "data" / "paper" / "opportunities.csv"
-LOG_FIELDS = ["ts_utc", "game_date", "teams", "market_type", "player", "event_time",
+LOG_FIELDS = ["ts_utc", "sport", "game_date", "teams", "market_type", "player", "event_time",
               "a_venue", "a_id", "a_line", "a_flipped", "a_price",
               "b_venue", "b_id", "b_line", "b_flipped", "b_price",
               "contracts", "cost", "fees", "net_per_contract", "net_total", "middle", "a_depth", "b_depth"]
@@ -74,7 +74,7 @@ def groups(rows, ts, max_spread):
     for r in rows:
         if (r.get("event_time") or "9999") <= ts or not usable(r, max_spread) or f(r["line"]) is None:
             continue  # game already started, or unusable quote
-        key = (r["game_date"], r["teams"], r["market_type"], norm_name(r["player"]))
+        key = (r.get("sport") or "nba", r["game_date"], r["teams"], r["market_type"], norm_name(r["player"]))
         g.setdefault(key, []).append(r)
     return g
 
@@ -95,7 +95,7 @@ def hedges(rows, ts, contracts=50, max_spread=0.10, min_net=0.0):
                 net = 1 - pa - pb - fees / contracts
                 if net < min_net:
                     continue
-                out.append(dict(ts_utc=ts, game_date=key[0], teams=key[1], market_type=key[2], player=a["player"] or b["player"],
+                out.append(dict(ts_utc=ts, sport=key[0], game_date=key[1], teams=key[2], market_type=key[3], player=a["player"] or b["player"],
                                 event_time=min(a["event_time"], b["event_time"]),
                                 a_venue=a["venue"], a_id=a["market_id"], a_line=la, a_flipped=a.get("flipped", 0), a_price=pa, a_fee_coef=f(a["fee_coef"]),
                                 b_venue=b["venue"], b_id=b["market_id"], b_line=lb, b_flipped=b.get("flipped", 0), b_price=pb, b_fee_coef=f(b["fee_coef"]),

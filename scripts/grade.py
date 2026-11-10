@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OPP = ROOT / "data" / "paper" / "opportunities.csv"
 OUT = ROOT / "data" / "paper" / "graded.csv"
 UA = {"User-Agent": "project-jontay-porter/0.2 (read-only research)"}
-FIELDS = ["first_seen", "game_date", "teams", "market_type", "player", "a_venue", "a_id", "a_line", "a_price", "a_settle",
+FIELDS = ["first_seen", "sport", "game_date", "teams", "market_type", "player", "a_venue", "a_id", "a_line", "a_price", "a_settle",
           "b_venue", "b_id", "b_line", "b_price", "b_settle", "contracts", "cost", "fees", "net_total_expected", "payout", "pnl"]
 
 
@@ -79,7 +79,7 @@ def main():
         yb = 1 - sb if o["b_flipped"] in ("1", 1) else sb
         c, cost, fees = float(o["contracts"]), float(o["cost"]), float(o["fees"])
         payout = ya + (1 - yb)
-        rows.append({"first_seen": o["ts_utc"], **{k: o[k] for k in ("game_date", "teams", "market_type", "player", "a_venue", "a_id",
+        rows.append({"first_seen": o["ts_utc"], "sport": o.get("sport", "nba"), **{k: o[k] for k in ("game_date", "teams", "market_type", "player", "a_venue", "a_id",
                      "a_line", "a_price", "b_venue", "b_id", "b_line", "b_price", "contracts", "cost", "fees")},
                      "a_settle": sa, "b_settle": sb, "net_total_expected": o["net_total"],
                      "payout": round(payout, 4), "pnl": round((payout - cost) * c - fees, 2)})

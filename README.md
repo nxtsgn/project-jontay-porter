@@ -161,3 +161,11 @@ Key facts learned from Polymarket US (verify before trading):
   ask. Logs `data/paper/maker_fills.csv` (locked P&L per fill) and `maker_runs.csv` (fill rate). Summary:
   `python scripts/maker_sim.py --summary` (on the price-data branch data). Polymarket US publishes no trade tape, so only
   Kalshi can be tested as the resting leg; Kalshi NBA series charge no maker fee.
+
+## v3: more sports (2026-11-10)
+NBA, NFL (with player props), college football (Power 4), men's and women's college basketball (Power 4 + Big East + WCC;
+conference lists in `scripts/teams.py`, verify yearly). A college game is kept if at least one team is in those conferences,
+and it is identified by that team (opponent names differ between venues). Polymarket US has no college player props, so
+college is game lines only (moneyline, spreads, totals). First all-sport snapshot: NBA 33 / NFL 13 / CFB 34 / CBB 72 / WCBB 48
+games matched on both venues; 3 tiny profitable taker hedges (NFL 2+ TD props, < 1 contract of depth); 150 resting-order plans
+(max 60 per sport). Polymarket US markets are listed by end date (next 3 weeks) so games listed early aren't missed.
