@@ -1,0 +1,46 @@
+name: data-check
+# Daily: opens a GitHub issue (GitHub then notifies you) if the price collector has stopped,
+# or once there's enough live data to judge the strategy. Read-only on the data.
+on:
+  schedule:
+    - cron: "0 16 * * *"   # 9:00 Arizona time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bring in the collected data
+        run: git checkout origin/price-data -- data/prices
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check
+        id: check
+        run: |
+          out=$(python scripts/check_data.py)
+          echo "$out"
+          for kv in $out; do echo "$kv" >> "$GITHUB_OUTPUT"; done
+      - name: Ping if the collector stopped
+        if: steps.check.outputs.status == 'stale'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Price collector stopped"
+          gh issue list --state open --search "in:title \"$title\"" --json number -q '.[0].number' | grep -q . && exit 0
+          gh issue create --title "$title" --body "Newest snapshot: ${{ steps.check.outputs.newest }}. Check the collect-prices runs in the Actions tab. Close this issue once it's fixed."
+      - name: Ping when there's enough data
+        if: steps.check.outputs.status == 'ready'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Enough live data to review the strategy"
+          gh issue list --state all --search "in:title \"$title\"" --json number -q '.[0].number' | grep -q . && exit 0
+          gh issue create --title "$title" --body "${{ steps.check.outputs.snapshots }} snapshots over ${{ steps.check.outputs.days }} days (newest ${{ steps.check.outputs.newest }}). Open Claude Code in project-jontay-porter and ask it to run the live-data analysis (find_arbs.py over every snapshot, then settle.py) and write the report."
