@@ -116,3 +116,13 @@ risk, capital tied up until settlement, and regulatory limits.
   the DNP rules (Kalshi refund / Polymarket No). Writes `data/paper/settled.csv` and prints realized vs predicted edge.
 - Validation on all 2,764 priced hedges from the 10-23 snapshot: realized P&L matched predicted net edge exactly for every non-DNP hedge.
   No DNPs appeared among 2,544 props, so the DNP branch is untested on real data.
+
+## Backfill + backtest (built 2026-11-05)
+- `scripts/backfill.py --since 2026-10-22` rebuilds a pre-game snapshot (default 1 hour before tip) for every finished game from both
+  platforms' public price history, with real outcomes. Kalshi uses hourly candlestick bid/ask; Polymarket history is a single
+  price per hour, so bid/ask is assumed as price -/+ 1c (`--poly-half-spread`). Output: `data/backfill/pregame_*.csv.gz`.
+- `scripts/backtest.py` runs the same matcher and fee math over that file and grades each hedge with Kalshi's settled result.
+  Filters out stale/illiquid quotes (Kalshi volume and spread, Polymarket total volume).
+- Lesson from the first test: a Polymarket prop with $221 total volume showed Luka threes at 0.36 while Kalshi (8,000+ contracts)
+  said 0.66. That is a stale quote, not an edge. Without volume filters the backtest reports fantasy profits.
+- Limits: Polymarket volume is whole-market (not pre-game), hourly granularity, one snapshot per game, no order-book depth.
