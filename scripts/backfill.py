@@ -5,6 +5,7 @@ same schema as collect_prices.py plus the final result, so backtest.py can grade
 
     python scripts/backfill.py --since 2026-10-22
     python scripts/backfill.py --since 2026-11-03 --max-games 3     # quick test
+    python scripts/backfill.py --since 2026-10-22 --repair          # refetch only Kalshi markets missing from the file
 
 Honest limits (this is coarser than the live collector):
   * Kalshi: hourly candlesticks give real bid/ask closes, so Kalshi prices are good.
@@ -31,7 +32,7 @@ CLOB = "https://clob.polymarket.com"
 OUT_DIR = Path(__file__).resolve().parent.parent / "data" / "backfill"
 
 
-def get(url, params=None, retries=3):
+def get(url, params=None, retries=5):
     if params:
         url += "?" + urllib.parse.urlencode(params)
     for i in range(retries):
@@ -42,7 +43,7 @@ def get(url, params=None, retries=3):
             if i == retries - 1:
                 print(f"WARN {url[:120]}: {e}", file=sys.stderr)
                 return None
-            time.sleep(2 * (i + 1))
+            time.sleep(min(30, 3 * 2 ** i))  # back off through brief DNS/network outages
 
 
 def epoch(s):
@@ -109,6 +110,8 @@ def kalshi_book_at(m, series, snap):
         return None  # market didn't exist yet at the snapshot time
     d = get(f"{KALSHI}/series/{series}/markets/{m['ticker']}/candlesticks",
             {"start_ts": epoch(m["created_time"]) - 3600, "end_ts": snap, "period_interval": 60})
+    if d is None:
+        return "failed"
     cs = [c for c in (d or {}).get("candlesticks", []) if c["end_period_ts"] <= snap]
     if not cs:
         return None
@@ -125,7 +128,11 @@ def main():
     ap.add_argument("--poly-half-spread", type=float, default=0.01)
     ap.add_argument("--min-poly-volume", type=float, default=200, help="skip Polymarket markets with less total volume ($)")
     ap.add_argument("--max-games", type=int, default=0)
+    ap.add_argument("--repair", action="store_true", help="keep the existing file; fetch only Kalshi markets missing from it")
     a = ap.parse_args()
+    path = OUT_DIR / f"pregame_{a.hours_before:g}h_since_{a.since}.csv.gz"
+    if a.repair:
+        return repair(a, path)
 
     events = poly_games(a.since, a.max_games)
     print(f"{len(events)} finished Polymarket games since {a.since}")
@@ -169,40 +176,63 @@ def main():
         if k:
             snaps[k[:2]] = v["snap"]
 
-    krows, since_ts = [], epoch(a.since + "T00:00:00Z")
+    krows, failed = kalshi_rows(a.since, games, snaps, skip=set())
+    write(path, [{**v["row"], "result": v["result"]} for v in pm.values()] + krows)
+    print(f"wrote {len(pm)} Polymarket + {len(krows)} Kalshi rows to {path}; {failed} Kalshi lookups failed (rerun with --repair)")
+
+
+def kalshi_rows(since, games, snaps, skip):
+    """Settled Kalshi markets in `games`, priced at each game's snapshot. Returns (rows, failed_lookups)."""
+    rows, failed, since_ts = [], 0, epoch(since + "T00:00:00Z")
     for series, t in KALSHI_SERIES.items():
         mk = kalshi_settled(since_ts, series)
-        mk = [m for m in mk if (kalshi_key({"market_id": m["ticker"]}) or (0, 0))[:2] in games]
-        print(f"  {series}: {len(mk)} settled Kalshi markets in those games")
+        mk = [m for m in mk if (kalshi_key({"market_id": m["ticker"]}) or (0, 0))[:2] in games and m["ticker"] not in skip]
+        print(f"  {series}: {len(mk)} settled Kalshi markets to price")
         for m in mk:
             k = kalshi_key({"market_id": m["ticker"]})
             snap = snaps[k[:2]]
             b = kalshi_book_at(m, series, snap)
             time.sleep(0.05)
+            if b == "failed":
+                failed += 1
+                continue
             if b is None:
                 continue
             yb, ya, vol = b
             title = m.get("yes_sub_title") or m.get("title") or ""
-            krows.append({
-                "result": m.get("result"), "row": {
-                    "ts_utc": datetime.fromtimestamp(snap, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "venue": "kalshi",
-                    "market_id": m["ticker"], "event_id": m["event_ticker"], "market_type": t, "title": title,
-                    "player": title.split(":")[0].strip() if t in STATS else "", "line": m.get("floor_strike"),
-                    "yes_bid": yb, "yes_ask": ya, "no_bid": round(1 - ya, 4), "no_ask": round(1 - yb, 4),
-                    "volume": round(vol, 2), "open_interest": "", "liquidity": "", "close_time": m.get("close_time"),
-                    "event_time": m.get("occurrence_datetime"), "outcome1": "",
-                }})
+            rows.append({
+                "ts_utc": datetime.fromtimestamp(snap, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "venue": "kalshi",
+                "market_id": m["ticker"], "event_id": m["event_ticker"], "market_type": t, "title": title,
+                "player": title.split(":")[0].strip() if t in STATS else "", "line": m.get("floor_strike"),
+                "yes_bid": yb, "yes_ask": ya, "no_bid": round(1 - ya, 4), "no_ask": round(1 - yb, 4),
+                "volume": round(vol, 2), "open_interest": "", "liquidity": "", "close_time": m.get("close_time"),
+                "event_time": m.get("occurrence_datetime"), "outcome1": "", "result": m.get("result"),
+            })
+    return rows, failed
+
+
+def write(path, rows):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    path = OUT_DIR / f"pregame_{a.hours_before:g}h_since_{a.since}.csv.gz"
-    fields = FIELDS + ["result"]
     with gzip.open(path, "wt", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=fields)
+        w = csv.DictWriter(fh, fieldnames=FIELDS + ["result"])
         w.writeheader()
-        for v in pm.values():
-            w.writerow({**v["row"], "result": v["result"]})
-        for v in krows:
-            w.writerow({**v["row"], "result": v["result"]})
-    print(f"wrote {len(pm)} Polymarket + {len(krows)} Kalshi rows to {path}")
+        w.writerows(rows)
+
+
+def repair(a, path):
+    rows = list(csv.DictReader(gzip.open(path, "rt")))
+    pm_rows = [r for r in rows if r["venue"] == "polymarket"]
+    have = {r["market_id"] for r in rows if r["venue"] == "kalshi"}
+    games, snaps = set(), {}
+    for r in pm_rows:
+        k = poly_key(r)
+        if k:
+            games.add(k[:2])
+            snaps[k[:2]] = epoch(r["ts_utc"])
+    print(f"repair: {len(games)} games, {len(have)} Kalshi markets already priced")
+    new, failed = kalshi_rows(a.since, games, snaps, skip=have)
+    write(path, rows + new)
+    print(f"added {len(new)} Kalshi rows to {path}; {failed} lookups still failing")
 
 
 if __name__ == "__main__":

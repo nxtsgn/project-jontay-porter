@@ -126,3 +126,12 @@ risk, capital tied up until settlement, and regulatory limits.
 - Lesson from the first test: a Polymarket prop with $221 total volume showed Luka threes at 0.36 while Kalshi (8,000+ contracts)
   said 0.66. That is a stale quote, not an edge. Without volume filters the backtest reports fantasy profits.
 - Limits: Polymarket volume is whole-market (not pre-game), hourly granularity, one snapshot per game, no order-book depth.
+
+## Injury filter, retries, cleanup (2026-11-10)
+- Injury filter (`--max-exposed-gap`, `--min-exposed-yes` in find_arbs.py and backtest.py). Default drops every hedge that needs
+  Polymarket "Yes" on a player prop, because if the player sits Kalshi refunds and Polymarket pays "No", so that leg is lost.
+  Backtest since Oct 22 with this default: 10 hedges, all won, avg +0.8c per $1 contract (pure arbitrage, but small).
+  Looser settings, e.g. `--max-exposed-gap 0.05` (keep exposed hedges with gaps <= 5c), gave 14 winners / 0 losers, but that's a small sample.
+- find_arbs.py skips games that have already tipped off (`--include-started` to keep them) and drops pairs whose quotes are crossed.
+- backtest.py counts a moneyline hedge once (it appears twice, once per team's Kalshi market).
+- backfill.py retries up to 5 times with backoff and has `--repair` to refetch only missing Kalshi markets.

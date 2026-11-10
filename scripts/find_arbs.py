@@ -137,7 +137,23 @@ def evaluate(k, p, flip, size, poly_fee_rate, dnp_prob, is_prop):
         expected = (1 - dnp_prob) * net + dnp_prob * (-pp - pf) if exposed else net
         out.append(dict(combo=combo, k_leg=kleg, k_price=kp, p_leg=pleg, p_price=pp, gross_edge=gross, kalshi_fee=kf,
                         poly_fee=pf, net_edge=net, dnp_exposed=exposed, expected_edge=expected))
+    if len(out) == 2 and all(o["gross_edge"] > 0 for o in out):
+        return []  # both directions "profitable" means the quotes are crossed or stale, not an opportunity
     return out
+
+
+def injury_suspect(o, max_gap, min_yes):
+    """A DNP-exposed hedge (we'd hold Polymarket Yes) whose Polymarket Yes is far cheaper than Kalshi implies is most often
+    the market pricing in that the player will sit, not free money. Backtest since Oct 22: every such loser looked like this."""
+    return o["dnp_exposed"] and (o["gross_edge"] > max_gap or o["p_price"] < min_yes)
+
+
+def started(p, ts):
+    """True once the game has tipped off (live prices move too fast for 15-minute snapshots)."""
+    try:
+        return (p.get("event_time") or "9999") <= ts
+    except TypeError:
+        return False
 
 
 def main():
@@ -149,6 +165,11 @@ def main():
     ap.add_argument("--dnp-prob", type=float, default=0.05, help="chance a player prop's player doesn't play")
     ap.add_argument("--min-kalshi-volume", type=float, default=10, help="min contracts traded on the Kalshi market")
     ap.add_argument("--min-poly-liquidity", type=float, default=500, help="min $ liquidity on the Polymarket market")
+    ap.add_argument("--max-exposed-gap", type=float, default=-1,
+                    help="injury filter: drop DNP-exposed hedges with a gross gap above this. Default -1 drops every DNP-exposed hedge (pure arbitrage only); e.g. 0.05 keeps small gaps; 1 disables")
+    ap.add_argument("--min-exposed-yes", type=float, default=0.12,
+                    help="injury filter: drop DNP-exposed hedges where Polymarket Yes costs less than this")
+    ap.add_argument("--include-started", action="store_true", help="keep games that have already tipped off")
     ap.add_argument("--top", type=int, default=10)
     ap.add_argument("--no-log", action="store_true")
     ap.add_argument("--log", default=str(LOG), help="where to append logged opportunities")
@@ -158,17 +179,24 @@ def main():
     pairs, nk, npol = build_pairs(rows)
     print(f"snapshot {ts}: {nk} Kalshi / {npol} Polymarket candidate keys, {len(pairs)} matched pairs")
     results = []
-    thin = 0
+    thin = live = injured = 0
     for (k, _), (p, flip) in pairs:
+        if not a.include_started and started(p, ts):
+            live += 1
+            continue
         if not liquid(k, p, a.min_kalshi_volume, a.min_poly_liquidity):
             thin += 1
             continue
         is_prop = k["market_type"] in STATS
         for o in evaluate(k, p, flip, a.size, a.poly_fee_rate, a.dnp_prob, is_prop):
+            if injury_suspect(o, a.max_exposed_gap, a.min_exposed_yes):
+                injured += 1
+                continue
             o.update(ts_utc=ts, market_type=k["market_type"], game=k["event_id"], player=k["player"],
                      line=k["line"], kalshi_id=k["market_id"], poly_id=p["market_id"])
             results.append(o)
-    print(f"skipped {thin} thinly traded pairs (Kalshi volume < {a.min_kalshi_volume:g} or Polymarket liquidity < ${a.min_poly_liquidity:g})")
+    print(f"skipped {live} pairs in games already started, {thin} thinly traded pairs (Kalshi volume < {a.min_kalshi_volume:g} "
+          f"or Polymarket liquidity < ${a.min_poly_liquidity:g}), {injured} hedges flagged as likely injury/DNP")
     results.sort(key=lambda o: o["expected_edge"], reverse=True)
     hits = [o for o in results if o["expected_edge"] >= a.min_edge]
     print(f"{len(results)} hedges priced; {len(hits)} with expected net edge >= {a.min_edge:.3f}")

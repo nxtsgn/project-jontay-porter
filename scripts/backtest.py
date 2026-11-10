@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from find_arbs import ROOT, STATS, build_pairs, evaluate, f  # noqa: E402
+from find_arbs import ROOT, STATS, build_pairs, evaluate, f, injury_suspect  # noqa: E402
 from settle import pnl  # noqa: E402
 
 
@@ -29,6 +29,8 @@ def main():
     ap.add_argument("--size", type=int, default=100)
     ap.add_argument("--poly-fee-rate", type=float, default=0.0)
     ap.add_argument("--dnp-prob", type=float, default=0.05)
+    ap.add_argument("--max-exposed-gap", type=float, default=-1, help="injury filter (see find_arbs.py); -1 = drop all DNP-exposed, 1 disables")
+    ap.add_argument("--min-exposed-yes", type=float, default=0.12, help="injury filter (see find_arbs.py); 0 disables")
     ap.add_argument("--top", type=int, default=15)
     a = ap.parse_args()
     path = a.file or sorted(glob.glob(str(ROOT / "data" / "backfill" / "pregame_*.csv.gz")))[-1]
@@ -37,7 +39,7 @@ def main():
     pairs, nk, npol = build_pairs(rows)
     print(f"{path}\n{nk} Kalshi / {npol} Polymarket keys, {len(pairs)} matched pairs")
 
-    graded, thin = [], 0
+    graded, thin, injured, seen = [], 0, 0, set()
     for (k, _), (p, flip) in pairs:
         kspread = (f(k["yes_ask"]) or 1) - (f(k["yes_bid"]) or 0)
         if (f(k["volume"]) or 0) < a.min_kalshi_volume or (f(p["volume"]) or 0) < a.min_poly_volume or kspread > a.max_kalshi_spread:
@@ -47,13 +49,20 @@ def main():
         for o in evaluate(k, p, flip, a.size, a.poly_fee_rate, a.dnp_prob, k["market_type"] in STATS):
             if o["expected_edge"] < a.min_edge:
                 continue
+            if injury_suspect(o, a.max_exposed_gap, a.min_exposed_yes):
+                injured += 1
+                continue
             dnp = res not in ("yes", "no")
             if dnp and k["market_type"] not in STATS:
                 continue  # voided game-level market: no clean grade
+            dup = (k["event_id"], k["market_type"], k["line"], round(o["k_price"] + o["p_price"], 4)) if k["market_type"] == "moneyline" else None
+            if dup and dup in seen:
+                continue  # the same moneyline hedge seen from the other team's Kalshi market
+            seen.add(dup)
             o.update(market_type=k["market_type"], game=k["event_id"], player=k["player"], line=k["line"],
                      result=res, pnl=pnl(o, res == "yes", dnp), dnp=dnp)
             graded.append(o)
-    print(f"skipped {thin} thin/stale pairs (Kalshi volume/spread or Polymarket volume); {len(graded)} hedges with expected edge >= {a.min_edge:g}")
+    print(f"skipped {thin} thin/stale pairs (Kalshi volume/spread or Polymarket volume); {injured} flagged as likely injury/DNP; {len(graded)} hedges with expected edge >= {a.min_edge:g}")
     if not graded:
         return
     tot = sum(g["pnl"] for g in graded)
