@@ -12,7 +12,7 @@ Every market is normalized to one question with a YES side, so the two venues ca
 
 Appends one row per market per run to data/prices/prices_us_<YYYY-MM-DD>.csv.gz (UTC date). Then runs the gap detector
 (find_arbs.py) on the snapshot, fetches order-book depth for any gap it finds, and appends those to
-data/paper/opportunities.csv for automatic grading (grade.py).
+data/paper/opportunities.csv for automatic grading (grade.py), and runs the resting-order paper test (maker_sim.py).
 
     python scripts/collect_prices.py              # snapshot + detect + log
     python scripts/collect_prices.py --dry-run    # print a summary, write nothing
@@ -263,7 +263,9 @@ def main():
     print(f"appended to {path}")
     if not a.no_detect:
         import find_arbs
+        import maker_sim
         find_arbs.detect_and_log(rows, ts, fetch_depth=True)
+        maker_sim.step(rows, ts)  # paper test of resting Kalshi orders hedged on Polymarket US
 
 
 if __name__ == "__main__":

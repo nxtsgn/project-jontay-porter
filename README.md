@@ -156,3 +156,8 @@ Key facts learned from Polymarket US (verify before trading):
 - Player props settle to the "last fair market price" if the player doesn't take the court (Kalshi: "fair price"), so the
   one-sided DNP loss from the international site doesn't apply.
 - First live snapshot (6 games): 483 near-miss hedges, 1 profitable after fees (+0.1c), with < 1 contract of depth.
+- `scripts/maker_sim.py` (runs every collection): paper test of resting a Kalshi limit order 1c above the best bid and,
+  if Kalshi's public trade tape shows it would have filled, buying the other leg on Polymarket US at the next snapshot's
+  ask. Logs `data/paper/maker_fills.csv` (locked P&L per fill) and `maker_runs.csv` (fill rate). Summary:
+  `python scripts/maker_sim.py --summary` (on the price-data branch data). Polymarket US publishes no trade tape, so only
+  Kalshi can be tested as the resting leg; Kalshi NBA series charge no maker fee.
