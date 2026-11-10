@@ -169,3 +169,17 @@ and it is identified by that team (opponent names differ between venues). Polyma
 college is game lines only (moneyline, spreads, totals). First all-sport snapshot: NBA 33 / NFL 13 / CFB 34 / CBB 72 / WCBB 48
 games matched on both venues; 3 tiny profitable taker hedges (NFL 2+ TD props, < 1 contract of depth); 150 resting-order plans
 (max 60 per sport). Polymarket US markets are listed by end date (next 3 weeks) so games listed early aren't missed.
+
+## Liquidity / "stuck holding the bag" (2026-11-10)
+- Added Notre Dame (football + both basketballs), Gonzaga (men's basketball) and Grand Canyon (both basketballs; no football).
+- Polymarket US top-of-book quotes are often dust (e.g. 0.07 contracts at 2c with the next offer at 95c). Both strategies now
+  price against the real book:
+  - taker arbitrage (`find_arbs.size_up`): size = min(depth on both books at the quoted prices, $50/venue budget).
+  - resting orders (`maker_sim.plan`): the hedge is priced as the average over the book for the planned size; plans whose
+    edge disappears, or with < 5 contracts available, are dropped (150 top-of-book plans -> 30 real ones on the first test).
+  - when a resting order fills (`maker_sim.hedge`), the hedge walks the live book, accepting up to a 3c/contract loss to get
+    flat; anything that can't be hedged is an open one-sided "bag" (`unhedged_qty`), graded at settlement into
+    `data/paper/maker_bags.csv`. `--summary` reports hedged / partial / unhedged and bag P&L separately.
+- Still not modeled: the book moving between our two orders in a real taker trade (legging), queue position for resting
+  orders, and capital locked until settlement (both legs are held to settlement, so no exit liquidity is needed).
+- The legacy (international Polymarket) backtest did NOT account for depth at all.

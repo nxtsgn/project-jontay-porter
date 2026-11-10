@@ -36,14 +36,16 @@ from find_arbs import f, fee, groups  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
 PLANS, FILLS, RUNS = PAPER / "maker_plans.csv", PAPER / "maker_fills.csv", PAPER / "maker_runs.csv"
+BAGS = PAPER / "maker_bags.csv"  # unhedged leftovers, graded at settlement
+BAG_FIELDS = ["placed_ts", "sport", "rest_id", "player", "unhedged_qty", "rest_px", "payout", "bag_pnl"]
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
 UA = {"User-Agent": "project-jontay-porter/0.2 (read-only research)"}
 PLAN_FIELDS = ["placed_ts", "sport", "game_date", "teams", "market_type", "player", "event_time",
                "rest_id", "rest_norm_side", "rest_raw_side", "rest_line", "rest_px", "rest_bid", "rest_ask",
-               "hedge_id", "hedge_norm_side", "hedge_line", "hedge_px_at_plan", "hedge_fee_coef",
+               "hedge_id", "hedge_norm_side", "hedge_flipped", "hedge_line", "hedge_px_at_plan", "hedge_fee_coef",
                "contracts", "edge_at_plan", "middle"]
 FILL_FIELDS = PLAN_FIELDS + ["resolved_ts", "filled", "first_fill_ts", "hedge_px_at_fill", "hedge_status",
-                             "cost", "hedge_fee", "locked_pnl", "locked_per_contract"]
+                             "hedged_qty", "unhedged_qty", "cost", "hedge_fee", "locked_pnl", "locked_per_contract"]
 RUN_FIELDS = ["ts_utc", "plans_resolved", "plans_filled", "contracts_filled", "locked_pnl", "new_plans"]
 
 
@@ -60,7 +62,7 @@ def get(url, params):
         return None
 
 
-def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150):
+def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, max_book_checks=250, min_contracts=5):
     """Resting-Kalshi / taking-Polymarket-US plans from one snapshot. Wider books are allowed than for pure taking,
     because resting inside a wide book is the whole point."""
     best = {}
@@ -93,15 +95,32 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150):
                              event_time=min(k["event_time"], p["event_time"]),
                              rest_id=k["market_id"], rest_norm_side=rest_side, rest_raw_side=raw, rest_line=f(k["line"]),
                              rest_px=px, rest_bid=bid, rest_ask=ask,
-                             hedge_id=p["market_id"], hedge_norm_side=hedge_side, hedge_line=f(p["line"]),
+                             hedge_id=p["market_id"], hedge_norm_side=hedge_side, hedge_flipped=int(p.get("flipped") or 0), hedge_line=f(p["line"]),
                              hedge_px_at_plan=hp, hedge_fee_coef=f(p["fee_coef"]),
                              contracts=c, edge_at_plan=round(edge, 4), middle=f(a["line"]) < f(b["line"]))
                     slot = (k["market_id"], rest_side)
                     if slot not in best or o["edge_at_plan"] > best[slot]["edge_at_plan"]:
                         best[slot] = o
+    # Top-of-book quotes on Polymarket US are often dust (e.g. 0.07 contracts), so re-price the hedge against the real
+    # book for the planned size before keeping a plan: average price for `contracts`, shrinking size to what's there.
+    checked = []
+    for o in sorted(best.values(), key=lambda o: -o["edge_at_plan"])[:max_book_checks]:
+        lv, need, got, spend = hedge_levels(o), o["contracts"], 0.0, 0.0
+        for px, qty in lv:
+            if 1 - o["rest_px"] - px - o["hedge_fee_coef"] * px * (1 - px) < min_edge or got >= need:
+                break
+            take = min(need - got, qty)
+            got, spend = got + take, spend + take * px
+        c = math.floor(got)
+        if c < min_contracts:
+            continue
+        hp = spend / got
+        edge = 1 - o["rest_px"] - hp - fee("polymarket_us", o["hedge_fee_coef"], hp, c) / c
+        if edge >= min_edge:
+            checked.append(dict(o, contracts=c, hedge_px_at_plan=round(hp, 4), edge_at_plan=round(edge, 4)))
     # best plans first, but no sport may take more than 60 slots, so football and college get tested too
     out, per = [], {}
-    for o in sorted(best.values(), key=lambda o: -o["edge_at_plan"]):
+    for o in sorted(checked, key=lambda o: -o["edge_at_plan"]):
         if per.get(o["sport"], 0) < 60 and len(out) < max_plans:
             per[o["sport"]] = per.get(o["sport"], 0) + 1
             out.append(o)
@@ -141,21 +160,66 @@ def resolve(prev, rows, ts):
         filled = min(qty, float(o["contracts"]))
         r = dict(o, resolved_ts=ts, filled=round(filled, 2), first_fill_ts=first or "")
         if filled <= 0:
-            r.update(hedge_px_at_fill="", hedge_status="not filled", cost="", hedge_fee=0, locked_pnl=0, locked_per_contract="")
+            r.update(hedge_px_at_fill="", hedge_status="not filled", hedged_qty=0, unhedged_qty=0, cost="", hedge_fee=0,
+                     locked_pnl=0, locked_per_contract="")
         else:
-            h = now.get(o["hedge_id"])
-            hp = f(h[f"{o['hedge_norm_side']}_ask"]) if h else None
-            if hp is None or not (0 < hp < 1):
-                # couldn't hedge (market gone / game started): one-sided exposure, count the Kalshi leg as at risk
-                r.update(hedge_px_at_fill="", hedge_status="UNHEDGED", cost=o["rest_px"], hedge_fee=0,
-                         locked_pnl=round(-float(o["rest_px"]) * filled, 2), locked_per_contract=-float(o["rest_px"]))
-            else:
-                c = max(1, math.ceil(filled))
-                hfee = fee("polymarket_us", float(o["hedge_fee_coef"]), hp, c)
-                cost = float(o["rest_px"]) + hp
-                pnl = (1 - cost) * filled - hfee
-                r.update(hedge_px_at_fill=hp, hedge_status="hedged", cost=round(cost, 4), hedge_fee=hfee,
-                         locked_pnl=round(pnl, 2), locked_per_contract=round(pnl / filled, 4))
+            r.update(hedge(o, filled))
+        out.append(r)
+    return out
+
+
+def hedge_levels(o):
+    """Polymarket US book for the hedge side as [(our price, qty)], cheapest first. Uses the live book at resolve time."""
+    h = get(f"https://gateway.polymarket.us/v1/markets/{o['hedge_id']}/book", {})
+    md = (h or {}).get("marketData") or {}
+    raw_yes = (o["hedge_norm_side"] == "yes") != bool(int(o.get("hedge_flipped") or 0))
+    if raw_yes:  # buy YES: lift offers
+        lv = [(float(x["px"]["value"]), float(x["qty"])) for x in md.get("offers") or []]
+    else:  # buy NO = sell YES: hit bids, our price is 1 - bid
+        lv = [(round(1 - float(x["px"]["value"]), 4), float(x["qty"])) for x in md.get("bids") or []]
+    return sorted(lv)
+
+
+def hedge(o, filled, max_loss=0.03):
+    """Buy the other leg against the real book: walk price levels while each contract locks in no worse than -max_loss
+    (cutting a small loss beats holding a one-sided bet). Whatever can't be hedged stays as an open 'bag' until settlement."""
+    rest = float(o["rest_px"])
+    left, got, spend = filled, 0.0, 0.0
+    for px, qty in hedge_levels(o):
+        if left <= 0 or 1 - rest - px - float(o["hedge_fee_coef"]) * px * (1 - px) < -max_loss:
+            break
+        take = min(left, qty)
+        got, spend, left = got + take, spend + take * px, left - take
+    if got <= 0:
+        return dict(hedge_px_at_fill="", hedge_status="UNHEDGED", hedged_qty=0, unhedged_qty=round(filled, 2), cost=rest,
+                    hedge_fee=0, locked_pnl=0, locked_per_contract="")
+    avg = spend / got
+    hfee = fee("polymarket_us", float(o["hedge_fee_coef"]), avg, max(1, math.ceil(got)))
+    pnl = (1 - rest - avg) * got - hfee
+    return dict(hedge_px_at_fill=round(avg, 4), hedge_status="hedged" if left <= 1e-9 else "PARTIAL",
+                hedged_qty=round(got, 2), unhedged_qty=round(max(left, 0), 2), cost=round(rest + avg, 4), hedge_fee=hfee,
+                locked_pnl=round(pnl, 2), locked_per_contract=round(pnl / got, 4))
+
+
+def settle_bags():
+    """Unhedged leftovers are one-sided Kalshi positions held to settlement. Grade them once the market settles."""
+    if not FILLS.exists():
+        return
+    from grade import venue_yes_settlement
+    done = {(r["placed_ts"], r["rest_id"]) for r in csv.DictReader(BAGS.open())} if BAGS.exists() else set()
+    out = []
+    for r in csv.DictReader(FILLS.open()):
+        q = float(r.get("unhedged_qty") or 0)
+        if q <= 0 or (r["placed_ts"], r["rest_id"]) in done:
+            continue
+        y = venue_yes_settlement("kalshi", r["rest_id"])
+        if y is None:
+            continue
+        pay = y if r["rest_raw_side"] == "yes" else 1 - y
+        out.append(dict(placed_ts=r["placed_ts"], sport=r.get("sport", ""), rest_id=r["rest_id"], player=r["player"],
+                        unhedged_qty=q, rest_px=r["rest_px"], payout=pay, bag_pnl=round((pay - float(r["rest_px"])) * q, 2)))
+    if out:
+        _write(BAGS, BAG_FIELDS, out, "a")
         out.append(r)
     return out
 
@@ -177,6 +241,7 @@ def step(rows, ts):
     filled = [r for r in res if float(r["filled"]) > 0]
     if filled:
         _write(FILLS, FILL_FIELDS, filled, "a")
+    settle_bags()
     new = plan(rows, ts)
     _write(PLANS, PLAN_FIELDS, new, "w")
     locked = sum(float(r["locked_pnl"]) for r in filled)
@@ -192,15 +257,16 @@ def summary():
         return
     fl = list(csv.DictReader(FILLS.open()))
     runs = list(csv.DictReader(RUNS.open())) if RUNS.exists() else []
+    bags = list(csv.DictReader(BAGS.open())) if BAGS.exists() else []
     plans = sum(int(r["plans_resolved"]) for r in runs)
-    hedged = [r for r in fl if r["hedge_status"] == "hedged"]
-    pnl = sum(float(r["locked_pnl"]) for r in fl)
-    print(f"{len(fl)} fills from {plans} plans ({len(fl) / max(plans, 1):.0%} fill rate); "
-          f"{len(hedged)} hedged, {len(fl) - len(hedged)} unhedged; locked P&L ${pnl:+.2f}")
-    if hedged:
-        slip = [float(r["hedge_px_at_fill"]) - float(r["hedge_px_at_plan"]) for r in hedged]
-        print(f"avg hedge price move between plan and fill: {sum(slip) / len(slip):+.3f}; "
-              f"profitable after fill: {sum(float(r['locked_pnl']) > 0 for r in hedged)}/{len(hedged)}")
+    locked = sum(float(r["locked_pnl"]) for r in fl)
+    bag_pnl = sum(float(b["bag_pnl"]) for b in bags)
+    open_bags = sum(float(r.get("unhedged_qty") or 0) for r in fl) - sum(float(b["unhedged_qty"]) for b in bags)
+    print(f"{len(fl)} fills from {plans} plans ({len(fl) / max(plans, 1):.0%} fill rate)")
+    for st in ("hedged", "PARTIAL", "UNHEDGED"):
+        print(f"  {st:<9} {sum(r['hedge_status'] == st for r in fl)}")
+    print(f"locked P&L on hedged contracts ${locked:+.2f}; settled bags ${bag_pnl:+.2f} ({len(bags)}); "
+          f"still-open unhedged contracts {open_bags:.0f}; total ${locked + bag_pnl:+.2f}")
 
 
 def main():

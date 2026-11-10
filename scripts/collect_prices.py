@@ -1,6 +1,6 @@
 """Read-only snapshot of prices on the two venues the user can trade from Arizona: Kalshi and Polymarket US.
 
-Sports: NBA, NFL, college football (Power 4), men's and women's college basketball (Power 4 + Big East + WCC); see teams.py.
+Sports: NBA, NFL, college football (Power 4 + Notre Dame), men's college basketball (Power 4 + Notre Dame + Big East + WCC + Gonzaga),\nwomen's college basketball (same minus Gonzaga); see teams.py.
 A college game is kept when at least one team is in those conferences.
 No accounts, API keys or trading: only public market-data endpoints are called.
   Kalshi:         https://api.elections.kalshi.com/trade-api/v2
@@ -59,7 +59,7 @@ SPORTS = {
                           "td": "touchdowns", "ptd": "pass_tds", "patt": "pass_att"}),
     "cfb": dict(college=True, conf=T.FOOTBALL_SET, pm="cfb", game="KXNCAAFGAME", spread="KXNCAAFSPREAD",
                 total="KXNCAAFTOTAL", props={}, pm_props={}),
-    "cbb": dict(college=True, conf=T.BASKETBALL_SET, pm="cbb", game="KXNCAAMBGAME", spread="KXNCAAMBSPREAD",
+    "cbb": dict(college=True, conf=T.MENS_BASKETBALL_SET, pm="cbb", game="KXNCAAMBGAME", spread="KXNCAAMBSPREAD",
                 total="KXNCAAMBTOTAL", props={}, pm_props={}),
     "wcbb": dict(college=True, conf=T.BASKETBALL_SET, pm="wcbb", game="KXNCAAWBGAME", spread="KXNCAAWBSPREAD",
                  total="KXNCAAWBTOTAL", props={}, pm_props={}),

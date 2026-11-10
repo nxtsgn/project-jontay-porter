@@ -2,7 +2,8 @@
 
 Conference membership is for the 2026-27 season as best known (realignment through mid-2026). VERIFY each season:
 Gonzaga moved from the WCC to the Pac-12 for 2026-27; Oregon State and Washington State's WCC affiliation ended; Notre Dame
-is ACC in basketball but independent in football (so it is NOT included for football, per "Power 4 only").
+is ACC in basketball and independent in football; the user asked to include it in both. Gonzaga (now Pac-12) is included
+for men's basketball only, and Grand Canyon for both basketballs, at the user's request.
 A college game is collected when at least one team is in the user's conferences.
 """
 import re
@@ -21,8 +22,10 @@ BIG_EAST = ["Butler", "UConn", "Creighton", "DePaul", "Georgetown", "Marquette",
 WCC = ["Loyola Marymount", "Pacific", "Pepperdine", "Portland", "Saint Mary's", "San Diego", "San Francisco", "Santa Clara",
        "Seattle"]
 
-FOOTBALL = SEC + BIG_TEN + BIG_12 + ACC
-BASKETBALL = SEC + BIG_TEN + BIG_12 + ACC + ["Notre Dame"] + BIG_EAST + WCC
+FOOTBALL = SEC + BIG_TEN + BIG_12 + ACC + ["Notre Dame"]
+# Grand Canyon (Mountain West) added at the user's request; GCU has no football team, so basketball only.
+BASKETBALL = SEC + BIG_TEN + BIG_12 + ACC + ["Notre Dame"] + BIG_EAST + WCC + ["Grand Canyon"]  # women's
+MENS_BASKETBALL = BASKETBALL + ["Gonzaga"]
 
 # venue spellings -> canonical (after norm())
 ALIASES = {
@@ -35,7 +38,8 @@ ALIASES = {
     "loyola marymount lions": "loyola marymount", "seattle u": "seattle", "seattle university": "seattle",
     "boston col": "boston college", "bc": "boston college", "penn st": "penn state", "va tech": "virginia tech",
     "ga tech": "georgia tech", "west va": "west virginia", "wvu": "west virginia", "fla state": "florida state",
-    "fsu": "florida state", "osu": "ohio state", "unc": "north carolina", "uva": "virginia", "ucf knights": "ucf",
+    "fsu": "florida state", "gcu": "grand canyon", "grand canyon university": "grand canyon",
+    "grand canyon antelopes": "grand canyon", "osu": "ohio state", "unc": "north carolina", "uva": "virginia", "ucf knights": "ucf",
 }
 
 
@@ -54,3 +58,4 @@ def norm(name):
 
 FOOTBALL_SET = {norm(t) for t in FOOTBALL}
 BASKETBALL_SET = {norm(t) for t in BASKETBALL}
+MENS_BASKETBALL_SET = {norm(t) for t in MENS_BASKETBALL}
