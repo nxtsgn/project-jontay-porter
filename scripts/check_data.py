@@ -1,6 +1,6 @@
 """Daily health + sufficiency check for the live price data (used by .github/workflows/data-check.yml).
 
-Reads data/prices/prices_*.csv.gz and prints one line of key=value pairs for the workflow:
+Reads data/prices/prices_us_*.csv.gz and prints one line of key=value pairs for the workflow:
     status=stale|ready|collecting  newest=<ts>  snapshots=<n>  days=<n>
 "stale": newest snapshot is older than --stale-hours (collector likely broken).
 "ready": at least --min-days distinct days and --min-snapshots snapshots since --since.
@@ -23,7 +23,7 @@ def main():
     ap.add_argument("--stale-hours", type=float, default=6)
     a = ap.parse_args()
     stamps = set()
-    for path in glob.glob(str(ROOT / "data" / "prices" / "prices_*.csv.gz")):
+    for path in glob.glob(str(ROOT / "data" / "prices" / "prices_us_*.csv.gz")):
         with gzip.open(path, "rt") as fh:
             stamps |= {r["ts_utc"] for r in csv.DictReader(fh) if r["ts_utc"][:10] >= a.since}
     if not stamps:

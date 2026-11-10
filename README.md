@@ -135,3 +135,24 @@ risk, capital tied up until settlement, and regulatory limits.
 - find_arbs.py skips games that have already tipped off (`--include-started` to keep them) and drops pairs whose quotes are crossed.
 - backtest.py counts a moneyline hedge once (it appears twice, once per team's Kalshi market).
 - backfill.py retries up to 5 times with backoff and has `--repair` to refetch only missing Kalshi markets.
+
+## v2: Kalshi + Polymarket US only (2026-11-10)
+The user can only trade Kalshi and **Polymarket US** from Arizona, so the international polymarket.com feed is dropped.
+Everything before this section that mentions "Polymarket" used the international site; that code now lives in
+`scripts/legacy/` and its results (backfill/backtest) are **not** valid for executable trading.
+
+- `scripts/collect_prices.py`: Kalshi + Polymarket US (`gateway.polymarket.us`, public, no key). Every market becomes one
+  "is X > line?" question: player props (points, rebounds, assists, threes, steals, blocks, PRA), totals, and a single
+  **margin** axis that holds moneylines and all spreads. Writes `data/prices/prices_us_<date>.csv.gz`.
+- `scripts/find_arbs.py`: finds guaranteed-payout pairs, YES on "X > L1" + NO on "X > L2" with L1 <= L2, within and across
+  venues (same-line arbitrage and ladder gaps), after each venue's real taker fee, then sizes the top ones with live
+  order-book depth and a $50-per-venue budget. Logged to `data/paper/opportunities.csv`.
+- `scripts/grade.py`: grades logged hedges with each venue's own settlement (no box scores), into `data/paper/graded.csv`.
+- The collect-prices workflow runs collect -> detect -> grade every 15 min and always uses the code from `main`.
+
+Key facts learned from Polymarket US (verify before trading):
+- Taker fee = coef x C x p x (1-p), coef 0.095 at the base volume tier since 2026-11-06 (higher than Kalshi's 0.07); makers pay no fee
+  and higher tiers get rebates. So "Polymarket has no fees" was true only of the international site.
+- Player props settle to the "last fair market price" if the player doesn't take the court (Kalshi: "fair price"), so the
+  one-sided DNP loss from the international site doesn't apply.
+- First live snapshot (6 games): 483 near-miss hedges, 1 profitable after fees (+0.1c), with < 1 contract of depth.

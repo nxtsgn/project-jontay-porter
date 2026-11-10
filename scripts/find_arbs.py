@@ -1,65 +1,43 @@
-"""Match Kalshi and Polymarket NBA markets and compute paper arbitrage after costs.
+"""Find guaranteed-payout gaps between Kalshi and Polymarket US NBA markets (and within each venue).
 
-Reads snapshots written by collect_prices.py (data/prices/*.csv.gz), pairs identical propositions
-(same game, same player + stat + line, same total line, same moneyline team) and, for each pair, prices the two
-possible two-leg hedges. Nothing is traded. Opportunities above the threshold are appended to
-data/paper/opportunities.csv for later settlement tracking.
+Every row from collect_prices.py is a YES/NO question "is X > line?" (player stat, combined total, or the canonical
+team's margin; see collect_prices.py). For any two contracts on the same quantity with lines L1 <= L2:
 
-    python scripts/find_arbs.py                      # latest snapshot in the newest file
-    python scripts/find_arbs.py --min-edge 0.005 --size 100 --top 15
-    python scripts/find_arbs.py --no-log             # print only
+    buy YES on "X > L1"  +  buy NO on "X > L2"   pays at least $1 in every outcome
+                                                  (and $2 if L1 < X <= L2, the "middle").
 
-Edge is per $1 payout contract: edge = 1 - cost_of_both_legs - fees.
+So the hedge is a sure profit when  yes_ask(L1) + no_ask(L2) + fees < 1.  With L1 == L2 on two venues this is the classic
+cross-venue arbitrage; with L1 < L2 it is a "ladder" gap (e.g. 25+ priced above 20+). Both venues and same-venue pairs count.
+
+Fees are each venue's taker formula, coef x C x p x (1-p) per order: Kalshi 0.07, rounded up to the cent; Polymarket US uses
+the market's feeCoefficient (0.095 base tier), banker's-rounded to the cent. Resting (maker) orders would be cheaper; not modeled.
+
+Player didn't play: Kalshi settles to "fair price" and Polymarket US to "last fair market price", so neither leg is a forced
+loss; the hedge is no longer guaranteed exactly $1 but there is no one-sided wipeout like the international site had.
+
+    python scripts/find_arbs.py                        # newest snapshot in the newest prices file
+    python scripts/find_arbs.py --file data/prices/prices_us_2026-11-10.csv.gz --top 20
 """
 import argparse
 import csv
 import glob
 import gzip
+import json
 import math
 import re
+import sys
 import unicodedata
+import urllib.request
+from decimal import ROUND_HALF_EVEN, Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "data" / "paper" / "opportunities.csv"
-LOG_FIELDS = ["ts_utc", "market_type", "game", "player", "line", "combo", "kalshi_id", "poly_id", "k_leg", "k_price",
-              "p_leg", "p_price", "gross_edge", "kalshi_fee", "poly_fee", "net_edge", "dnp_exposed", "expected_edge"]
-
-MONTHS = {m: i + 1 for i, m in enumerate("JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split())}
-# Polymarket slug codes -> Kalshi codes where they differ (extend if the matcher reports unmatched games)
-TEAM_ALIAS = {"no": "nop", "ny": "nyk", "sa": "sas", "gs": "gsw", "uta": "uta", "utah": "uta", "phx": "phx", "bkn": "bkn"}
-STATS = {"points", "rebounds", "assists", "threes", "steals", "blocks"}
-
-
-def norm_team(c):
-    c = c.lower()
-    return TEAM_ALIAS.get(c, c)
-
-
-def norm_name(n):
-    n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode().lower()
-    n = re.sub(r"\b(jr|sr|ii|iii|iv)\b\.?", "", n)
-    return re.sub(r"[^a-z]", "", n)
-
-
-def kalshi_key(r):
-    """('2026-10-23', frozenset({'min','orl'}), suffix) from tickers like KXNBAPTS-26OCT23MINORL-MINADOSUNMU13-20."""
-    parts = r["market_id"].split("-")
-    m = re.match(r"(\d\d)([A-Z]{3})(\d\d)([A-Z]+)$", parts[1])
-    if not m:
-        return None
-    date = f"20{m[1]}-{MONTHS[m[2]]:02d}-{m[3]}"
-    codes = m[4]
-    teams = frozenset({norm_team(codes[:3]), norm_team(codes[3:])})
-    return date, teams, parts[-1]
-
-
-def poly_key(r):
-    """Polymarket slug: nba-<away>-<home>-YYYY-MM-DD[-...]."""
-    m = re.match(r"nba-([a-z]+)-([a-z]+)-(\d{4}-\d{2}-\d{2})", r["market_id"])
-    if not m:
-        return None
-    return m[3], frozenset({norm_team(m[1]), norm_team(m[2])}), norm_team(m[1])  # last = outcome1 team for moneyline
+LOG_FIELDS = ["ts_utc", "game_date", "teams", "market_type", "player", "event_time",
+              "a_venue", "a_id", "a_line", "a_flipped", "a_price",
+              "b_venue", "b_id", "b_line", "b_flipped", "b_price",
+              "contracts", "cost", "fees", "net_per_contract", "net_total", "middle", "a_depth", "b_depth"]
+UA = {"User-Agent": "project-jontay-porter/0.2 (read-only research)"}
 
 
 def f(x):
@@ -69,152 +47,155 @@ def f(x):
         return None
 
 
-def kalshi_fee(price, size):
-    """Per-contract taker fee: roundup(0.07*C*P*(1-P)) to the cent, spread over C contracts."""
-    return math.ceil(round(0.07 * size * price * (1 - price) * 100, 6)) / 100 / size
+def norm_name(n):
+    n = unicodedata.normalize("NFKD", n or "").encode("ascii", "ignore").decode().lower()
+    n = re.sub(r"\b(jr|sr|ii|iii|iv)\b\.?", "", n)
+    return re.sub(r"[^a-z]", "", n)
 
 
-def load_latest(path=None):
-    path = path or sorted(glob.glob(str(ROOT / "data" / "prices" / "prices_*.csv.gz")))[-1]
-    rows = list(csv.DictReader(gzip.open(path, "rt")))
-    ts = max(r["ts_utc"] for r in rows)
-    return ts, [r for r in rows if r["ts_utc"] == ts]
+def fee(venue, coef, price, contracts):
+    """Total taker fee in dollars for one order."""
+    raw = coef * contracts * price * (1 - price)
+    if venue == "kalshi":
+        return math.ceil(round(raw * 100, 6)) / 100
+    return float(Decimal(str(raw)).quantize(Decimal("0.01"), rounding=ROUND_HALF_EVEN))
 
 
-def build_pairs(rows):
-    kal, pol = {}, {}
+def usable(r, max_spread):
+    """Both sides quoted, and the book isn't so wide that the quote is probably stale."""
+    yb, ya, nb, na = (f(r[k]) for k in ("yes_bid", "yes_ask", "no_bid", "no_ask"))
+    if None in (ya, na) or not (0 < ya < 1) or not (0 < na < 1):
+        return False
+    return (ya - (yb or 0)) <= max_spread and (na - (nb or 0)) <= max_spread
+
+
+def groups(rows, ts, max_spread):
+    g = {}
     for r in rows:
-        t = r["market_type"]
-        if r["venue"] == "kalshi":
-            k = kalshi_key(r)
-            if not k:
-                continue
-            date, teams, suffix = k
-            if t in STATS:
-                key = (t, date, teams, norm_name(r["player"]), f(r["line"]))
-                kal[key] = (r, 1)
-            elif t == "totals":
-                kal[(t, date, teams, f(r["line"]))] = (r, 1)
-            elif t == "moneyline":
-                kal[(t, date, teams, norm_team(suffix))] = (r, 1)
-        else:
-            k = poly_key(r)
-            if not k:
-                continue
-            date, teams, first = k
-            if t in STATS:
-                pol[(t, date, teams, norm_name(r["player"]), f(r["line"]))] = (r, 1)
-            elif t == "totals" and r["outcome1"].lower() == "over":
-                pol[(t, date, teams, f(r["line"]))] = (r, 1)
-            elif t == "moneyline":
-                other = next(iter(teams - {first}), None)
-                pol[(t, date, teams, first)] = (r, 1)
-                pol[(t, date, teams, other)] = (r, -1)  # same market seen from the other team: yes/no swap
-    pairs = [(kal[k], pol[k]) for k in kal if k in pol]
-    return pairs, len(kal), len(pol)
+        if (r.get("event_time") or "9999") <= ts or not usable(r, max_spread) or f(r["line"]) is None:
+            continue  # game already started, or unusable quote
+        key = (r["game_date"], r["teams"], r["market_type"], norm_name(r["player"]))
+        g.setdefault(key, []).append(r)
+    return g
 
 
-def liquid(k, p, min_k_vol, min_p_liq):
-    """Skip pairs where either quote sits in a market nobody trades (the 'sign in a shop window' problem)."""
-    return (f(k["volume"]) or 0) >= min_k_vol and (f(p["liquidity"]) or 0) >= min_p_liq
-
-
-def evaluate(k, p, flip, size, poly_fee_rate, dnp_prob, is_prop):
-    ky, kn = f(k["yes_ask"]), f(k["no_ask"])
-    py, pn = f(p["yes_ask"]), f(p["no_ask"])
-    if flip < 0:
-        py, pn = pn, py
+def hedges(rows, ts, contracts=50, max_spread=0.10, min_net=0.0):
+    """All YES(L1)+NO(L2) hedges with guaranteed net >= min_net per contract (fees at `contracts` per leg)."""
     out = []
-    for combo, kleg, kp, pleg, pp in (("K-yes/P-no", "yes", ky, "no", pn), ("K-no/P-yes", "no", kn, "yes", py)):
-        if kp is None or pp is None or not (0 < kp < 1) or not (0 < pp < 1):
-            continue
-        kf, pf = kalshi_fee(kp, size), poly_fee_rate * pp * (1 - pp)
-        gross = 1 - kp - pp
-        net = gross - kf - pf
-        # Kalshi refunds a DNP prop; Polymarket resolves it "No". Holding Polymarket Yes leaves the Kalshi leg refunded
-        # and the Polymarket leg lost.
-        exposed = is_prop and pleg == "yes"
-        expected = (1 - dnp_prob) * net + dnp_prob * (-pp - pf) if exposed else net
-        out.append(dict(combo=combo, k_leg=kleg, k_price=kp, p_leg=pleg, p_price=pp, gross_edge=gross, kalshi_fee=kf,
-                        poly_fee=pf, net_edge=net, dnp_exposed=exposed, expected_edge=expected))
-    if len(out) == 2 and all(o["gross_edge"] > 0 for o in out):
-        return []  # both directions "profitable" means the quotes are crossed or stale, not an opportunity
+    for key, rs in groups(rows, ts, max_spread).items():
+        for a in rs:
+            for b in rs:
+                if a["market_id"] == b["market_id"]:
+                    continue
+                la, lb = f(a["line"]), f(b["line"])
+                if la > lb:
+                    continue
+                pa, pb = f(a["yes_ask"]), f(b["no_ask"])
+                fees = fee(a["venue"], f(a["fee_coef"]), pa, contracts) + fee(b["venue"], f(b["fee_coef"]), pb, contracts)
+                net = 1 - pa - pb - fees / contracts
+                if net < min_net:
+                    continue
+                out.append(dict(ts_utc=ts, game_date=key[0], teams=key[1], market_type=key[2], player=a["player"] or b["player"],
+                                event_time=min(a["event_time"], b["event_time"]),
+                                a_venue=a["venue"], a_id=a["market_id"], a_line=la, a_flipped=a.get("flipped", 0), a_price=pa, a_fee_coef=f(a["fee_coef"]),
+                                b_venue=b["venue"], b_id=b["market_id"], b_line=lb, b_flipped=b.get("flipped", 0), b_price=pb, b_fee_coef=f(b["fee_coef"]),
+                                contracts=contracts, cost=round(pa + pb, 4), fees=round(fees, 2),
+                                net_per_contract=round(net, 4), net_total=round(net * contracts, 2), middle=la < lb))
+    out.sort(key=lambda o: -o["net_per_contract"])
     return out
 
 
-def injury_suspect(o, max_gap, min_yes):
-    """A DNP-exposed hedge (we'd hold Polymarket Yes) whose Polymarket Yes is far cheaper than Kalshi implies is most often
-    the market pricing in that the player will sit, not free money. Backtest since Oct 22: every such loser looked like this."""
-    return o["dnp_exposed"] and (o["gross_edge"] > max_gap or o["p_price"] < min_yes)
-
-
-def started(p, ts):
-    """True once the game has tipped off (live prices move too fast for 15-minute snapshots)."""
+# ---------------------------------------------------------------- order-book depth (contracts available at the quoted ask)
+def _get(url):
     try:
-        return (p.get("event_time") or "9999") <= ts
-    except TypeError:
-        return False
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30) as r:
+            return json.load(r)
+    except Exception as e:  # noqa: BLE001
+        print(f"WARN depth {url[:120]}: {e}", file=sys.stderr)
+        return None
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--file", help="specific prices_*.csv.gz (default: newest)")
-    ap.add_argument("--min-edge", type=float, default=0.01, help="min expected net edge per $1 contract to log")
-    ap.add_argument("--size", type=int, default=100, help="contracts per leg, used for Kalshi fee rounding")
-    ap.add_argument("--poly-fee-rate", type=float, default=0.0, help="Polymarket fee as rate*p*(1-p); 0 = zero fees")
-    ap.add_argument("--dnp-prob", type=float, default=0.05, help="chance a player prop's player doesn't play")
-    ap.add_argument("--min-kalshi-volume", type=float, default=10, help="min contracts traded on the Kalshi market")
-    ap.add_argument("--min-poly-liquidity", type=float, default=500, help="min $ liquidity on the Polymarket market")
-    ap.add_argument("--max-exposed-gap", type=float, default=-1,
-                    help="injury filter: drop DNP-exposed hedges with a gross gap above this. Default -1 drops every DNP-exposed hedge (pure arbitrage only); e.g. 0.05 keeps small gaps; 1 disables")
-    ap.add_argument("--min-exposed-yes", type=float, default=0.12,
-                    help="injury filter: drop DNP-exposed hedges where Polymarket Yes costs less than this")
-    ap.add_argument("--include-started", action="store_true", help="keep games that have already tipped off")
-    ap.add_argument("--top", type=int, default=10)
-    ap.add_argument("--no-log", action="store_true")
-    ap.add_argument("--log", default=str(LOG), help="where to append logged opportunities")
-    a = ap.parse_args()
+def depth(venue, market_id, side_yes, flipped, price):
+    """Contracts offered at or below `price` for the row's YES (side_yes=True) or NO side."""
+    raw_yes = side_yes != bool(int(flipped or 0))  # which side on the venue's own book
+    if venue == "kalshi":
+        d = _get(f"https://api.elections.kalshi.com/trade-api/v2/markets/{market_id}/orderbook")
+        ob = (d or {}).get("orderbook_fp") or {}
+        # buying YES fills against NO bids (price 1 - bid); buying NO fills against YES bids
+        bids = ob.get("no_dollars" if raw_yes else "yes_dollars") or []
+        return round(sum(float(q) for p, q in bids if 1 - float(p) <= price + 1e-9), 2)
+    d = _get(f"https://gateway.polymarket.us/v1/markets/{market_id}/book")
+    md = (d or {}).get("marketData") or {}
+    # buying YES lifts offers; buying NO (= selling YES) hits YES bids at 1 - price
+    levels = md.get("offers" if raw_yes else "bids") or []
+    ok = (lambda px: px <= price + 1e-9) if raw_yes else (lambda px: 1 - px <= price + 1e-9)
+    return round(sum(float(l["qty"]) for l in levels if ok(float(l["px"]["value"]))), 2)
 
-    ts, rows = load_latest(a.file)
-    pairs, nk, npol = build_pairs(rows)
-    print(f"snapshot {ts}: {nk} Kalshi / {npol} Polymarket candidate keys, {len(pairs)} matched pairs")
-    results = []
-    thin = live = injured = 0
-    for (k, _), (p, flip) in pairs:
-        if not a.include_started and started(p, ts):
-            live += 1
-            continue
-        if not liquid(k, p, a.min_kalshi_volume, a.min_poly_liquidity):
-            thin += 1
-            continue
-        is_prop = k["market_type"] in STATS
-        for o in evaluate(k, p, flip, a.size, a.poly_fee_rate, a.dnp_prob, is_prop):
-            if injury_suspect(o, a.max_exposed_gap, a.min_exposed_yes):
-                injured += 1
-                continue
-            o.update(ts_utc=ts, market_type=k["market_type"], game=k["event_id"], player=k["player"],
-                     line=k["line"], kalshi_id=k["market_id"], poly_id=p["market_id"])
-            results.append(o)
-    print(f"skipped {live} pairs in games already started, {thin} thinly traded pairs (Kalshi volume < {a.min_kalshi_volume:g} "
-          f"or Polymarket liquidity < ${a.min_poly_liquidity:g}), {injured} hedges flagged as likely injury/DNP")
-    results.sort(key=lambda o: o["expected_edge"], reverse=True)
-    hits = [o for o in results if o["expected_edge"] >= a.min_edge]
-    print(f"{len(results)} hedges priced; {len(hits)} with expected net edge >= {a.min_edge:.3f}")
-    print(f"\nTop {a.top} by expected net edge (per $1 contract):")
-    for o in results[: a.top]:
-        tag = " DNP-exposed" if o["dnp_exposed"] else ""
-        print(f"  {o['expected_edge']:+.3f} (net {o['net_edge']:+.3f}, gross {o['gross_edge']:+.3f}) {o['market_type']:<9}"
-              f"{o['player'] or o['game']:<26} line {o['line'] or '-':<6} {o['combo']} K {o['k_price']:.2f} + P {o['p_price']:.2f}{tag}")
-    if hits and not a.no_log:
-        log = Path(a.log)
+
+def size_up(o, budget):
+    """Re-price a hedge at the size both books and the per-venue budget allow."""
+    o["a_depth"] = depth(o["a_venue"], o["a_id"], True, o["a_flipped"], o["a_price"])
+    o["b_depth"] = depth(o["b_venue"], o["b_id"], False, o["b_flipped"], o["b_price"])
+    cap_a = budget / o["a_price"] if o["a_venue"] != o["b_venue"] else budget / (o["a_price"] + o["b_price"])
+    cap_b = budget / o["b_price"] if o["a_venue"] != o["b_venue"] else cap_a
+    c = math.floor(min(o["a_depth"], o["b_depth"], cap_a, cap_b))
+    if c < 1:
+        o.update(contracts=0, fees=0, net_total=0)
+        return o
+    fees = fee(o["a_venue"], f(o.get("a_fee_coef")) or (0.07 if o["a_venue"] == "kalshi" else 0.095), o["a_price"], c) + \
+        fee(o["b_venue"], f(o.get("b_fee_coef")) or (0.07 if o["b_venue"] == "kalshi" else 0.095), o["b_price"], c)
+    net = 1 - o["cost"] - fees / c
+    o.update(contracts=c, fees=round(fees, 2), net_per_contract=round(net, 4), net_total=round(net * c, 2))
+    return o
+
+
+def detect_and_log(rows, ts, fetch_depth=True, budget=50.0, log=LOG, min_net=0.0):
+    hs = hedges(rows, ts, min_net=min_net)
+    print(f"gap detector: {len(hs)} hedges with guaranteed net >= {min_net:+.3f} per contract (before sizing)")
+    if fetch_depth:
+        hs = [size_up(o, budget) for o in hs[:40]]  # top 40 only, to keep the run fast
+        hs = [o for o in hs if o["contracts"] >= 1 and o["net_per_contract"] > 0]
+    for o in hs[:10]:
+        print(f"  {o['net_per_contract']:+.3f}/contract x {o['contracts']} = ${o['net_total']:+.2f}  {o['market_type']:<9}"
+              f"{o['player'] or o['teams']:<22} YES>{o['a_line']} {o['a_venue']}@{o['a_price']:.2f} + NO>{o['b_line']} "
+              f"{o['b_venue']}@{o['b_price']:.2f}{' (middle)' if o['middle'] else ''}")
+    if hs and log:
+        log = Path(log)
         log.parent.mkdir(parents=True, exist_ok=True)
         new = not log.exists()
         with log.open("a", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=LOG_FIELDS, extrasaction="ignore")
             if new:
                 w.writeheader()
-            w.writerows(hits)
-        print(f"\nlogged {len(hits)} paper opportunities to {log}")
+            w.writerows(hs)
+        print(f"logged {len(hs)} sized opportunities to {log}")
+    return hs
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--file", help="prices_us_*.csv.gz (default: newest)")
+    ap.add_argument("--min-net", type=float, default=-0.02, help="show hedges down to this net per contract")
+    ap.add_argument("--contracts", type=int, default=50)
+    ap.add_argument("--max-spread", type=float, default=0.10)
+    ap.add_argument("--top", type=int, default=15)
+    ap.add_argument("--depth", action="store_true", help="fetch live order-book depth and size the top hedges ($50/venue)")
+    a = ap.parse_args()
+    path = a.file or sorted(glob.glob(str(ROOT / "data" / "prices" / "prices_us_*.csv.gz")))[-1]
+    rows = [r for r in csv.DictReader(gzip.open(path, "rt")) if "teams" in r]
+    ts = max(r["ts_utc"] for r in rows)
+    rows = [r for r in rows if r["ts_utc"] == ts]
+    hs = hedges(rows, ts, a.contracts, a.max_spread, a.min_net)
+    same = [o for o in hs if o["a_line"] == o["b_line"]]
+    print(f"{path} @ {ts}: {len(rows)} markets, {len(hs)} hedges with net >= {a.min_net:+.3f} "
+          f"({len(same)} same-line, {len(hs) - len(same)} ladder); {sum(o['net_per_contract'] > 0 for o in hs)} profitable")
+    if a.depth:
+        hs = [size_up(o, 50.0) for o in hs[: a.top]]
+    for o in hs[: a.top]:
+        sz = f" depth {o.get('a_depth')}/{o.get('b_depth')} -> {o['contracts']} contracts ${o['net_total']:+.2f}" if a.depth else ""
+        print(f"  {o['net_per_contract']:+.3f} {o['market_type']:<9}{o['player'] or o['teams']:<22} "
+              f"YES>{o['a_line']} {o['a_venue']}@{o['a_price']:.2f} + NO>{o['b_line']} {o['b_venue']}@{o['b_price']:.2f}"
+              f"{' (middle)' if o['middle'] else ''}{sz}")
 
 
 if __name__ == "__main__":

@@ -64,3 +64,10 @@ Rule: a pair is only "arbitrage" if every edge case above leaves you >= 0. Other
 ## 7. Open items for you
 1. Which US state are you in? (decides Kalshi and Polymarket US availability)
 2. OK to keep Polymarket US access/eligibility as a "check later" item until paper results justify accounts?
+
+## 8. Update 2026-11-10: Polymarket US (the venue actually usable from Arizona)
+- Public market data: `https://gateway.polymarket.us` (no key). Trading: `https://api.polymarket.us` (API key from polymarket.us/developer after KYC).
+- Fees (docs.polymarket.us/fees): taker coef 0.095/0.085/0.075/0.0695 by 30-day volume tier (since Nov 6, 2026), banker's rounding to the cent; makers free, rebates at higher tiers.
+- Availability: secondary sources say every state except Nevada; confirm Arizona in the app before funding.
+- Prop DNP rule: settles to the last fair market price (comparable to Kalshi's fair-price rule).
+- Open question: the listing marks the "No" side `tradable: false`; buying NO may mean selling YES. Confirm how short/NO orders work before trading.

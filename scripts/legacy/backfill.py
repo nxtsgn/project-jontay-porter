@@ -25,11 +25,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from collect_prices import FIELDS, GAMMA, KALSHI, KALSHI_SERIES, PM_TYPES, UA  # noqa: E402
+from collect_prices_intl import FIELDS, GAMMA, KALSHI, KALSHI_SERIES, PM_TYPES, UA  # noqa: E402
 from find_arbs import STATS, kalshi_key, norm_name, poly_key  # noqa: E402
 
 CLOB = "https://clob.polymarket.com"
-OUT_DIR = Path(__file__).resolve().parent.parent / "data" / "backfill"
+OUT_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "backfill"
 
 
 def get(url, params=None, retries=5):
