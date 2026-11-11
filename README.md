@@ -205,3 +205,11 @@ games matched on both venues; 3 tiny profitable taker hedges (NFL 2+ TD props, <
 - Conservative: resting fills count only within 15 min of placement; the hedge is priced at the worse of the resolve-time
   book and the Polymarket US price-history point at the fill minute; open bags = total loss; unreadable tapes are excluded,
   not counted as "no fill". `python scripts/maker_sim.py --summary` prints the conservative total.
+
+## Weekly progress + 21-day report (2026-11-11)
+- `scripts/progress_report.py` writes a conservative markdown report: the result within your rules (only orders the practice
+  trader chose, at its sizes) as % of the $100 bankroll, plus a compounded monthly equivalent, which is held back until there
+  are 14+ days and 30+ fills. Also shows the full-size comparison, open unhedged risk, taker results, why the trader said no,
+  and the learner's suggestions.
+- `data-check.yml` posts it as a "Weekly progress YYYY-MM-DD" issue every Monday (Arizona time), and inside the 21-day
+  "Enough live data" issue. Run the workflow manually with "force_weekly" ticked to get one today.
