@@ -44,9 +44,19 @@
   .jp details summary { cursor: pointer; color: var(--color-fg-muted); }
   .jp details ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; line-height: 1.6; max-width: 75ch; }
   [data-dash-source-state=refreshing] { opacity: .5; }
-  /* bottom ticker: inverted bar so it reads as a broadcast crawl in either theme */
+  .jp .toprow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-sm); }
+  .jp .fsbtn { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: var(--color-panel);
+    border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 4px 10px; cursor: pointer; }
+  .jp .fsbtn:hover { border-color: var(--color-fg-muted); }
+  .jp .fsbtn:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  /* full screen: the dashboard fills the display, scrolls inside itself, ticker stays pinned to the bottom */
+  .jp:fullscreen { background: var(--color-bg); overflow-y: auto; padding: 24px max(24px, env(safe-area-inset-right, 0px)) 0 max(24px, env(safe-area-inset-left, 0px)); }
+  .jp:-webkit-full-screen { background: var(--color-bg); overflow-y: auto; padding: 24px 24px 0; width: 100%; height: 100%; }
+  .jp:fullscreen .jp-ticker, .jp:-webkit-full-screen .jp-ticker { margin-bottom: 16px; }
+  /* bottom ticker: same panel and border as the cards, so it sits in the dark theme like the rest of the page */
   .jp-ticker { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: stretch; min-height: 40px;
-    background: var(--color-fg); color: var(--color-bg); border-radius: var(--cds-radius); overflow: hidden;
+    background: var(--color-panel); color: var(--color-fg); border: 1px solid var(--color-border-line);
+    border-radius: var(--cds-radius); overflow: hidden;
     font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); letter-spacing: .03em;
     text-transform: uppercase; box-shadow: var(--cds-shadow-popover); }
   .jp-ticker .lab { flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--color-bad);
@@ -55,10 +65,11 @@
   .jp-ticker .win { flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center; }
   .jp-ticker .track { display: inline-flex; align-items: center; white-space: nowrap; will-change: transform; }
   .jp-ticker .seg { display: inline-flex; align-items: center; gap: 14px; padding-right: 28px; }
-  .jp-ticker .tag { padding: 2px 7px; border-radius: 3px; border: 1px solid currentColor; font-size: .9em; opacity: .85; }
+  .jp-ticker .tag { padding: 2px 7px; border-radius: 3px; border: 1px solid var(--color-border-line); font-size: .9em; color: var(--color-fg-muted); }
   .jp-ticker .it { display: inline-flex; gap: 6px; align-items: baseline; font-variant-numeric: tabular-nums; }
   .jp-ticker .it b { font-weight: 700; }
-  .jp-ticker .dot { opacity: .4; }
+  .jp-ticker .dot { color: var(--color-fg-muted); }
+  .jp-ticker .it span:not(.dot):not(.up):not(.down) { color: var(--color-fg-muted); }
   .jp-ticker .up { color: var(--color-ok); }
   .jp-ticker .down { color: var(--color-bad); }
   @media (prefers-reduced-motion: no-preference) {
@@ -71,7 +82,12 @@
 
 <div class="jp">
   <header class="head" id="overview">
-    <span class="pill warn">Practice mode: no real money, no real orders</span>
+    <div class="toprow">
+      <span class="pill warn">Practice mode: no real money, no real orders</span>
+      <button type="button" class="fsbtn" id="fullscreen" aria-label="Show the dashboard full screen">
+        <span class="fs-on">⤢ Full screen</span><span class="fs-off" hidden>⤡ Exit full screen</span></button>
+    </div>
+    <p class="cap" id="fs-blocked" hidden>Full screen isn't available in this view. Open the dashboard in its own browser tab and try again.</p>
     <p>Within your rules the bot is at <b class="num" data-draw="t-total" data-source="summary" data-field="conservative_total" data-where="view=within_rules">—</b>
       on the $100 bankroll, counted conservatively, over <span class="num" data-draw="t-days" data-source="summary" data-field="days" data-where="view=within_rules">—</span> days of data.
       The full-size paper test, which ignores your limits, is at <b class="num" data-draw="t-full" data-source="summary" data-field="conservative_total" data-where="view=full_size">—</b>,
@@ -531,5 +547,29 @@
         if (w > 0) { track.style.animationDuration = Math.max(20, w / 70) + 's'; track.classList.add('run'); }
       });
     });
+  })();
+</script>
+<script>
+  // full screen toggle: hides the claude.ai bar and the dashboard toolbar until Esc or the button
+  (function () {
+    const root = document.querySelector('.jp');
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const sync = () => {
+      const on = !!fsEl();
+      document.querySelectorAll('.fs-on').forEach((e) => { e.hidden = on; });
+      document.querySelectorAll('.fs-off').forEach((e) => { e.hidden = !on; });
+    };
+    const blocked = () => document.querySelectorAll('#fs-blocked').forEach((e) => { e.hidden = false; });
+    document.querySelectorAll('#fullscreen').forEach((btn) => btn.addEventListener('click', () => {
+      try {
+        if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+        const req = root && (root.requestFullscreen || root.webkitRequestFullscreen);
+        if (!req) return blocked();
+        const p = req.call(root);
+        if (p && p.catch) p.catch(blocked);
+      } catch (e) { blocked(); }
+    }));
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
   })();
 </script>
