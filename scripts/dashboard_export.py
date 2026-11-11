@@ -85,15 +85,15 @@ def main():
         unrealized = 0.0 if game_over else locked
         pos.append(dict(
             fill_time=o.get("first_fill_ts", "")[:19] + "Z" if o.get("first_fill_ts") else o.get("resolved_ts", ""),
-            sport=o["sport"], market=o["market_type"], who=o.get("player") or o.get("teams", ""),
-            game_start=o.get("event_time", ""), rest_price=_f(o["rest_px"]), filled=round(_f(o["filled"]), 2),
+            sport=o["sport"], market=o["market_type"], who=o.get("player") or o.get("teams", ""), teams=o.get("teams", ""),
+            line=o.get("rest_line", ""), side=o.get("rest_norm_side", ""), game_start=o.get("event_time", ""), rest_price=_f(o["rest_px"]), filled=round(_f(o["filled"]), 2),
             hedged=round(_f(o["hedged_qty"]), 2), unhedged=round(q, 2), status=o["hedge_status"],
             locked=round(locked, 2), open_risk=round(open_risk, 2), realized=round(realized, 2),
             unrealized=round(unrealized, 2), conservative=round(realized + unrealized - open_risk, 2),
             in_rules="yes" if share else "no", rules_conservative=round((realized + unrealized - open_risk) * share, 2),
             state="open" if (open_risk or unrealized) else "settled", era=o["era"]))
     _write(out, "positions.csv", pos, list(pos[0]) if pos else
-           ["fill_time", "sport", "market", "who", "game_start", "rest_price", "filled", "hedged", "unhedged", "status",
+           ["fill_time", "sport", "market", "who", "teams", "line", "side", "game_start", "rest_price", "filled", "hedged", "unhedged", "status",
             "locked", "open_risk", "realized", "unrealized", "conservative", "in_rules", "rules_conservative", "state", "era"])
 
     # cumulative conservative P&L by fill time
@@ -146,12 +146,12 @@ def main():
         c = _f(rb.get("count"))
         yes_px = _f(rb.get("price"))
         rest.append(dict(placed=latest, sport=p.get("sport", ""), market=p.get("market_type", ""),
-                         who=p.get("player") or p.get("teams", ""), game_start=p.get("event_time", ""),
-                         kalshi_market=rid, side=side, price=_f(p.get("rest_px")) or (yes_px if rb.get("side") == "bid" else round(1 - yes_px, 4)),
+                         who=p.get("player") or p.get("teams", ""), teams=p.get("teams", ""), line=p.get("rest_line", ""),
+                         game_start=p.get("event_time", ""), kalshi_market=rid, side=side, price=_f(p.get("rest_px")) or (yes_px if rb.get("side") == "bid" else round(1 - yes_px, 4)),
                          contracts=c, cost=round(c * _f(p.get("rest_px")), 2), hedge_market=hid,
                          hedge_limit=_f(hb.get("price", {}).get("value")), edge_cents=round(_f(p.get("edge_at_plan")) * 100, 2)))
     rest.sort(key=lambda r: -r["edge_cents"])
-    _write(out, "resting.csv", rest, ["placed", "sport", "market", "who", "game_start", "kalshi_market", "side", "price",
+    _write(out, "resting.csv", rest, ["placed", "sport", "market", "who", "teams", "line", "game_start", "kalshi_market", "side", "price",
                                       "contracts", "cost", "hedge_market", "hedge_limit", "edge_cents"])
 
     _write(out, "runs.csv", [dict(time=r["ts_utc"], status=r["status"], resting_checked=r["maker_candidates"],
