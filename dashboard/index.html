@@ -44,12 +44,34 @@
   .jp details summary { cursor: pointer; color: var(--color-fg-muted); }
   .jp details ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; line-height: 1.6; max-width: 75ch; }
   [data-dash-source-state=refreshing] { opacity: .5; }
+  /* bottom ticker: inverted bar so it reads as a broadcast crawl in either theme */
+  .jp-ticker { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: stretch; min-height: 40px;
+    background: var(--color-fg); color: var(--color-bg); border-radius: var(--cds-radius); overflow: hidden;
+    font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); letter-spacing: .03em;
+    text-transform: uppercase; box-shadow: var(--cds-shadow-popover); }
+  .jp-ticker .lab { flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--color-bad);
+    color: #fff; font-weight: 700; letter-spacing: .06em; }
+  .jp-ticker .lab i { width: 7px; height: 7px; border-radius: 50%; background: #fff; display: inline-block; }
+  .jp-ticker .win { flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center; }
+  .jp-ticker .track { display: inline-flex; align-items: center; white-space: nowrap; will-change: transform; }
+  .jp-ticker .seg { display: inline-flex; align-items: center; gap: 14px; padding-right: 28px; }
+  .jp-ticker .tag { padding: 2px 7px; border-radius: 3px; border: 1px solid currentColor; font-size: .9em; opacity: .85; }
+  .jp-ticker .it { display: inline-flex; gap: 6px; align-items: baseline; font-variant-numeric: tabular-nums; }
+  .jp-ticker .it b { font-weight: 700; }
+  .jp-ticker .dot { opacity: .4; }
+  .jp-ticker .up { color: var(--color-ok); }
+  .jp-ticker .down { color: var(--color-bad); }
+  @media (prefers-reduced-motion: no-preference) {
+    .jp-ticker .track.run { animation: jp-crawl linear infinite; }
+    .jp-ticker:hover .track.run { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) { .jp-ticker .win { overflow-x: auto; } }
+  @keyframes jp-crawl { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 </style>
 
 <div class="jp">
   <header class="head" id="overview">
     <span class="pill warn">Practice mode: no real money, no real orders</span>
-    <h1>Jontay Porter Arbitrage</h1>
     <p>Within your rules the bot is at <b class="num" data-draw="t-total" data-source="summary" data-field="conservative_total" data-where="view=within_rules">—</b>
       on the $100 bankroll, counted conservatively, over <span class="num" data-draw="t-days" data-source="summary" data-field="days" data-where="view=within_rules">—</span> days of data.
       The full-size paper test, which ignores your limits, is at <b class="num" data-draw="t-full" data-source="summary" data-field="conservative_total" data-where="view=full_size">—</b>,
@@ -192,6 +214,11 @@
       <li>Nothing here is real money. The bot builds the orders it would send but sends none.</li>
     </ul>
   </details>
+
+  <div class="jp-ticker" id="ticker" role="region" aria-label="Live ticker: bankroll, open positions, best resting orders and bot status">
+    <span class="lab"><i></i>Paper</span>
+    <div class="win" data-draw="ticker" data-source="summary positions resting"></div>
+  </div>
 </div>
 
 <script>
@@ -430,4 +457,79 @@
   const tot = (name, field) => dash.draw(name, (el) => { const g = dash.data('instant_totals'); el.textContent = g.status === 'ok' && g.data.length ? String(g.data[0][field]) : '—'; });
   tot('inst-checked', 'gaps_checked');
   tot('inst-real', 'tradable');
+</script>
+
+<script>
+  // bottom ticker: bankroll, open positions, best resting orders, bot status
+  (function () {
+    const STAT = { points: 'PTS', rebounds: 'REB', assists: 'AST', threes: '3PM', steals: 'STL', blocks: 'BLK', pra: 'PRA',
+      pass_yds: 'PASS YDS', rush_yds: 'RUSH YDS', rec_yds: 'REC YDS', receptions: 'REC', touchdowns: 'TD', pass_tds: 'PASS TD', pass_att: 'PASS ATT' };
+    const last = (name) => { const p = String(name || '').split(' ').filter((w) => !/^(jr\.?|sr\.?|ii|iii|iv)$/i.test(w)); return (p[p.length - 1] || '').toUpperCase(); };
+    const game = (teams) => String(teams || '').split('|').join('-').toUpperCase();
+    const label = (r, side) => {
+      const line = +r.line, yes = (side || r.side) !== 'no';
+      if (r.market === 'totals') return game(r.teams) + ' ' + (yes ? 'O' : 'U') + line + ' TOTAL';
+      if (r.market === 'margin') return game(r.teams) + (line === 0 ? ' MONEYLINE' : ' SPREAD ' + line);
+      const st = STAT[r.market] || String(r.market).toUpperCase();
+      if (!isFinite(line)) return last(r.who) + ' ' + st;
+      return last(r.who) + ' ' + (yes ? (Math.floor(line) + 1) + '+ ' : 'U' + line + ' ') + st;
+    };
+    const tip = (iso) => { const d = new Date(String(iso).replace(/(\.\d+)?Z?$/, 'Z')); return isNaN(d) ? '' :
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' }).format(d); };
+    const mk = (tag, kids) => { const e = document.createElement(tag); kids.forEach((k) => e.append(k)); return e; };
+    const item = (parts) => {
+      const e = document.createElement('span'); e.className = 'it';
+      parts.forEach(([text, cls], i) => { if (i) { const d = document.createElement('span'); d.className = 'dot'; d.textContent = '·'; e.append(d); }
+        const s = document.createElement(i === 0 ? 'b' : 'span'); s.textContent = text; if (cls) s.className = cls; e.append(s); });
+      return e;
+    };
+    const tone = (n) => (n > 0 ? 'up' : n < 0 ? 'down' : '');
+    const seg = (name, items) => {
+      const s = document.createElement('span'); s.className = 'seg';
+      const t = document.createElement('span'); t.className = 'tag'; t.textContent = name; s.append(t);
+      items.forEach((it) => s.append(it));
+      return s;
+    };
+    dash.draw('ticker', (el) => {
+      const sm = dash.data('summary'), ps = dash.data('positions'), rs = dash.data('resting');
+      el.replaceChildren();
+      if (sm.status !== 'ok') { el.textContent = '—'; return; }
+      const wr = sm.data.find((r) => r.view === 'within_rules') || {}, fs = sm.data.find((r) => r.view === 'full_size') || {};
+      const segs = [];
+      segs.push(seg('Bankroll', [
+        item([['Within rules'], [jp.signed(wr.conservative_total), tone(+wr.conservative_total)]]),
+        item([['Full size'], [jp.signed(fs.conservative_total), tone(+fs.conservative_total)]]),
+        item([['Open risk'], [jp.money(fs.open_risk), +fs.open_risk > 0 ? 'down' : '']]),
+        item([['Kalshi'], [jp.money(wr.kalshi_free) + ' free']]),
+        item([['Poly US'], [jp.money(wr.pmus_free) + ' free']]),
+      ]));
+      const open = ps.status === 'ok' ? ps.data.filter((r) => r.state === 'open') : [];
+      segs.push(seg('Open', open.length ? open.map((r) => {
+        const q = +r.unhedged;
+        return item([[label(r)],
+          [r.status === 'hedged' ? 'Hedged' : r.status === 'PARTIAL' ? 'Partly hedged' : 'Unhedged', r.status === 'hedged' ? 'up' : 'down'],
+          q > 0 ? [q.toFixed(1) + ' unhedged · ' + jp.money(r.open_risk) + ' at risk', 'down'] : ['Locked ' + jp.signed(r.locked), tone(+r.locked)],
+          ['Tip ' + tip(r.game_start)]]);
+      }) : [item([['No open positions']])]));
+      const best = rs.status === 'ok' ? rs.data.slice().sort((a, b) => +b.edge_cents - +a.edge_cents).slice(0, 12) : [];
+      segs.push(seg('Resting', best.length ? best.map((r) => item([[label(r, r.side)],
+        ['Bid ' + Math.round(+r.price * 100) + '¢ ×' + (+r.contracts)], ['Edge ' + (+r.edge_cents).toFixed(1) + '¢', 'up'], ['Tip ' + tip(r.game_start)]]))
+        : [item([['No resting orders']])]));
+      segs.push(seg('Bot', [
+        item([['Last run'], [tip(wr.last_run)]]),
+        item([['Resting'], [String(rs.status === 'ok' ? rs.data.length : 0) + ' orders']]),
+        item([['Practice mode'], ['No real money']]),
+      ]));
+      const track = document.createElement('div'); track.className = 'track';
+      const a = mk('span', segs), b = a.cloneNode(true);
+      b.setAttribute('aria-hidden', 'true');
+      track.append(a, b);
+      el.append(track);
+      // ~70 px per second, measured once the crawl is in the page
+      requestAnimationFrame(() => {
+        const w = a.getBoundingClientRect().width;
+        if (w > 0) { track.style.animationDuration = Math.max(20, w / 70) + 's'; track.classList.add('run'); }
+      });
+    });
+  })();
 </script>
