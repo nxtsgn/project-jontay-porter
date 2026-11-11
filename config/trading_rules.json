@@ -1,0 +1,60 @@
+{
+  "_readme": "Proposed limits for real-money trading. Plain-English version: docs/trading-rules.md. Nothing trades unless approved=true AND mode='live'. Dollar amounts are USD.",
+  "approved": false,
+  "approved_by": null,
+  "approved_on": null,
+  "mode": "dry_run",
+  "_mode_options": "paper = simulate only (today) | dry_run = build real orders, print them, send nothing | live = send orders",
+
+  "bankroll": {
+    "kalshi_start": 50.0,
+    "polymarket_us_start": 50.0,
+    "reserve_per_venue": 10.0,
+    "_reserve_note": "kept back on each venue so a hedge or fee can always be paid"
+  },
+
+  "per_hedge": {
+    "max_cost_per_leg": 10.0,
+    "max_contracts": 25,
+    "min_contracts": 3,
+    "min_net_edge_taker_cents": 1.0,
+    "min_net_edge_maker_cents": 2.0,
+    "max_hedge_slippage_cents": 3.0
+  },
+
+  "portfolio": {
+    "max_open_hedges": 6,
+    "max_open_per_game": 2,
+    "max_unhedged_exposure": 5.0,
+    "max_unhedged_minutes": 2,
+    "max_prop_hedges_open": 2,
+    "max_cost_per_prop_leg": 5.0
+  },
+
+  "loss_limits": {
+    "daily_loss_stop": 5.0,
+    "total_drawdown_kill": 15.0,
+    "_note": "daily stop = no new trades until tomorrow; drawdown kill = cancel everything and stop until a person resets it"
+  },
+
+  "allowed": {
+    "strategies": ["taker_arb", "kalshi_maker_pmus_hedge"],
+    "sports": ["nba", "nfl", "cfb", "cbb", "wcbb"],
+    "market_types": ["moneyline", "spread", "total", "prop"],
+    "enter_only_if_game_starts_within_hours": 48,
+    "stop_new_entries_minutes_before_start": 10,
+    "in_game_trading": false
+  },
+
+  "kill_switch": {
+    "repo_variable": "TRADING_ENABLED",
+    "auto_kill_on": [
+      "3 API errors in a row on either venue",
+      "venue balance differs from the bot's books by more than $1",
+      "an unhedged leg older than max_unhedged_minutes that cannot be hedged within max_hedge_slippage_cents",
+      "a game we hold is postponed or cancelled",
+      "total_drawdown_kill reached"
+    ],
+    "on_kill": "cancel all open orders on both venues, keep existing hedged positions, notify via GitHub issue"
+  }
+}

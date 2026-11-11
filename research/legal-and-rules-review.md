@@ -70,4 +70,44 @@ Rule: a pair is only "arbitrage" if every edge case above leaves you >= 0. Other
 - Fees (docs.polymarket.us/fees): taker coef 0.095/0.085/0.075/0.0695 by 30-day volume tier (since Nov 6, 2026), banker's rounding to the cent; makers free, rebates at higher tiers.
 - Availability: secondary sources say every state except Nevada; confirm Arizona in the app before funding.
 - Prop DNP rule: settles to the last fair market price (comparable to Kalshi's fair-price rule).
-- Open question: the listing marks the "No" side `tradable: false`; buying NO may mean selling YES. Confirm how short/NO orders work before trading.
+- ~~Open question: how NO orders work.~~ Resolved 2026-11-11, see section 9.
+
+## 9. Update 2026-11-11: how "No" works on Polymarket US, and settlement rules for the new sports
+
+### 9a. Buying No on Polymarket US (docs.polymarket.us/concepts/orders, /market-structure/collateral-and-margin)
+- Each market is **one instrument** (the YES side). Buying No = **selling YES short**. The app shows it as "buy No"; the API
+  intent is `ORDER_INTENT_BUY_SHORT` (or `outcomeSide`+`action`).
+- Cost is the same as buying a No share: selling YES at p brings in p but locks $1.00 margin, so buying power drops by **1 − p**;
+  max loss 1 − p, max gain p. Fully collateralized, no margin calls. Our code already prices "buy No" as 1 − (YES bid) and walks
+  the YES **bids** for depth, which matches.
+- Fees use p·(1−p), so they are the same whichever side you take.
+- Live check (11 Nov): the listing's No quote equals 1 − best YES bid (e.g. bid 0.41 → No 0.59), and No sides on game markets
+  show `tradable: true`. The earlier `tradable: false` was on other market types.
+- **Verify before going live:** whether a BUY_SHORT limit price is given as the YES price or the No price. The docs say "the
+  price always refers to the YES side". Use `POST /v1/orders/preview` with a tiny order first.
+- Useful extras found:
+  - `participateDontInitiate: true` makes an order post-only (it never takes liquidity by accident).
+  - During an account's **first 7 days** the taker fee coefficient is 0.0695, the cheapest tier, whatever the volume.
+  - Open orders are only checked against buying power **per instrument**, and orders that are no longer funded are
+    **auto-cancelled** after fills elsewhere. The bot must handle cancels it didn't send.
+  - Public price history (`gateway.polymarket.us`, get-price-history) exists. The live trade stream needs an API key.
+
+### 9b. Settlement rules: NFL and college (Kalshi rule text read from the API on 11 Nov; Polymarket US Sports FAQ)
+| Case | Kalshi | Polymarket US | Risk to a hedge |
+|---|---|---|---|
+| Overtime | Counted (official final) | Counted | None |
+| NFL tie (moneyline) | $0.50 each side | $0.50 each side | **None.** Every margin ladder pair still pays ≥ $1 at a 0 margin (checked). |
+| Spreads/totals | Half-point lines | Half-point lines | None |
+| **Postponed game** | Stays open if it **starts within 48 h**, else fair price | Stays open until expiry (**~2 weeks**), then result; else fair price | **Real.** A game played 2–14 days late settles at fair price on Kalshi but on the result at Polymarket US. One leg turns into a plain bet. Rare. |
+| Cancelled | Fair price | Last fair market price at announcement | Small (the two fair prices can differ) |
+| NFL prop, player inactive / no snap | "Fair market price before game start" | Player doesn't play → last fair market price (general rule) | **Medium.** Fair prices are taken at different moments. A player who is active but never plays a snap is not clearly covered by Polymarket US's rules. |
+| NFL prop, player plays one snap | Settles on stats | Settles on stats | None |
+| Stat source | League / NCAA via ESPN | Governing body, then wire services | Small (stat corrections) |
+
+**Rules for the bot that follow from this:**
+- Only enter hedges on games starting **within 48 h**; the collector's horizon already does this.
+- If a game is postponed after we're in, flag it and stop adding. Don't unwind automatically; a person decides.
+- Cap **player-prop** hedges lower than game-line hedges (DNP / no-snap risk).
+- Source of truth: Kalshi contract PDFs (FOOTBALLGAMEWIN, FOOTBALLSPREAD, FOOTBALLTOTALS, FOOTBALLENTITYSTAT,
+  BASKETBALLGAMEWIN, BASKETBALLTOTALS at assets.kalshi.com/regulatory/product-certifications/) and each Polymarket US market's
+  own description. Re-read them if a market's wording changes.
