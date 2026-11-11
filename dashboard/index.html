@@ -1,0 +1,433 @@
+<meta name="dash-one-writer">
+<style>
+  .jp { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .jp h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .jp h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .jp p { margin: 0; line-height: 1.5; max-width: 70ch; }
+  .jp .muted { color: var(--color-fg-muted); }
+  .jp .cap { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .jp .num { font-variant-numeric: tabular-nums; }
+  .jp .head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .jp .pill { display: inline-block; font-size: var(--cds-font-size-caption); padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--color-border-line); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .jp .pill.warn { color: var(--color-warn); border-color: var(--color-warn); }
+  .jp .pill.bad { color: var(--color-bad); border-color: var(--color-bad); }
+  .jp .pill.ok { color: var(--color-ok); border-color: var(--color-ok); }
+  .jp .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--cds-gap-md); }
+  .jp .card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius);
+    padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .jp .big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .jp .good { color: var(--color-ok); }
+  .jp .badc { color: var(--color-bad); }
+  .jp .section { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+  .jp .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--cds-gap-md); }
+  .jp .meter { height: 10px; border-radius: 999px; background: var(--cds-chart-grid); overflow: hidden; display: flex; }
+  .jp .meter span { display: block; height: 100%; }
+  .jp .legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .jp .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .jp .chart { position: relative; min-height: 220px; }
+  .jp .chart svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); }
+  .jp .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border);
+    box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 6px 8px; font-size: var(--cds-font-size-caption);
+    color: var(--color-fg); white-space: nowrap; }
+  .jp .scroll { overflow-x: auto; }
+  .jp table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .jp th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px;
+    border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .jp td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .jp td.r, .jp th.r { text-align: right; }
+  .jp .empty { color: var(--color-fg-muted); padding: var(--cds-pad-md) 0; }
+  .jp .bars { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .jp .barrow { display: grid; grid-template-columns: minmax(0, 1fr) 3fr auto; gap: var(--cds-gap-sm); align-items: center; font-size: var(--cds-font-size-caption); }
+  .jp .barrow .track { height: 8px; background: var(--cds-chart-grid); border-radius: 999px; overflow: hidden; }
+  .jp .barrow .fill { height: 100%; border-radius: 999px; }
+  .jp details summary { cursor: pointer; color: var(--color-fg-muted); }
+  .jp details ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; line-height: 1.6; max-width: 75ch; }
+  [data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="jp">
+  <header class="head" id="overview">
+    <span class="pill warn">Practice mode: no real money, no real orders</span>
+    <h1>Jontay Porter Arbitrage</h1>
+    <p>Within your rules the bot is at <b class="num" data-draw="t-total" data-source="summary" data-field="conservative_total" data-where="view=within_rules">—</b>
+      on the $100 bankroll, counted conservatively, over <span class="num" data-draw="t-days" data-source="summary" data-field="days" data-where="view=within_rules">—</span> days of data.
+      The full-size paper test, which ignores your limits, is at <b class="num" data-draw="t-full" data-source="summary" data-field="conservative_total" data-where="view=full_size">—</b>,
+      with <b class="num" data-draw="t-risk" data-source="summary" data-field="open_risk" data-where="view=full_size">—</b> unhedged and counted as a loss until it settles.</p>
+    <p class="cap">Data through <span data-draw="t-asof" data-source="summary" data-field="data_to" data-where="view=within_rules">—</span> (Arizona time).
+      Bot status: <span data-draw="t-status" data-source="summary" data-field="trader_status" data-where="view=within_rules">—</span>.</p>
+  </header>
+
+  <section class="section" id="money">
+    <h2>Within your rules</h2>
+    <div class="tiles">
+      <div class="card" id="tile-equity"><span class="cap">Equity, conservative</span>
+        <span class="big" data-draw="equity" data-source="summary" data-field="equity" data-where="view=within_rules">—</span>
+        <span class="cap">Started at $100.00</span></div>
+      <div class="card" id="tile-realized"><span class="cap">Realized (settled)</span>
+        <span class="big" data-draw="realized" data-source="summary" data-field="realized" data-where="view=within_rules">—</span>
+        <span class="cap">Games over, both sides paid</span></div>
+      <div class="card" id="tile-unrealized"><span class="cap">Unrealized (locked in)</span>
+        <span class="big" data-draw="unrealized" data-source="summary" data-field="unrealized" data-where="view=within_rules">—</span>
+        <span class="cap">Hedged, game not settled yet</span></div>
+      <div class="card" id="tile-risk"><span class="cap">Open risk (unhedged)</span>
+        <span class="big" data-draw="risk" data-source="summary" data-field="open_risk" data-where="view=within_rules">—</span>
+        <span class="cap">Counted as a total loss for now</span></div>
+      <div class="card" id="tile-return"><span class="cap">Return on $100</span>
+        <span class="big" data-draw="ret" data-source="summary" data-field="return_pct" data-where="view=within_rules">—</span>
+        <span class="cap">Monthly rate shown after 14 days and 30 fills</span></div>
+    </div>
+    <p class="cap">Full-size paper test for comparison: equity <span class="num" data-draw="f-equity" data-source="summary" data-field="equity" data-where="view=full_size">—</span>,
+      realized <span class="num" data-draw="f-realized" data-source="summary" data-field="realized" data-where="view=full_size">—</span>,
+      unrealized <span class="num" data-draw="f-unrealized" data-source="summary" data-field="unrealized" data-where="view=full_size">—</span>,
+      open risk <span class="num" data-draw="f-risk" data-source="summary" data-field="open_risk" data-where="view=full_size">—</span>,
+      from <span class="num" data-draw="f-fills" data-source="summary" data-field="fills" data-where="view=full_size">—</span> fills.</p>
+  </section>
+
+  <section class="section" id="platforms">
+    <h2>Platform balances</h2>
+    <p class="muted">Each platform starts with $50 and keeps $10 in reserve, so $40 can be in use at once. "In use" is money tied up in resting orders and open positions in the latest run.</p>
+    <div class="two">
+      <div class="card" id="kalshi">
+        <span class="cap">Kalshi</span>
+        <span class="big" data-draw="k-free" data-source="summary" data-field="kalshi_free" data-where="view=within_rules">—</span>
+        <span class="cap">free to trade</span>
+        <div class="meter" data-draw="k-meter" data-source="summary" role="img" aria-label="Kalshi money in use, free and reserve"></div>
+        <span class="cap">In use <b class="num" data-draw="k-use" data-source="summary" data-field="kalshi_in_use" data-where="view=within_rules">—</b> · reserve $10.00 · start $50.00</span>
+      </div>
+      <div class="card" id="pmus">
+        <span class="cap">Polymarket US</span>
+        <span class="big" data-draw="p-free" data-source="summary" data-field="pmus_free" data-where="view=within_rules">—</span>
+        <span class="cap">free to trade</span>
+        <div class="meter" data-draw="p-meter" data-source="summary" role="img" aria-label="Polymarket US money in use, free and reserve"></div>
+        <span class="cap">In use <b class="num" data-draw="p-use" data-source="summary" data-field="pmus_in_use" data-where="view=within_rules">—</b> · reserve $10.00 · start $50.00</span>
+      </div>
+    </div>
+    <div class="legend"><span><span class="sw" style="background: var(--cds-chart-status-critical)"></span>In use</span>
+      <span><span class="sw" style="background: var(--color-ok)"></span>Free</span>
+      <span><span class="sw" style="background: var(--cds-chart-muted)"></span>Reserve</span></div>
+  </section>
+
+  <section class="section" id="pnl">
+    <h2>Profit over time, conservative</h2>
+    <p class="muted">Running total by fill time. Unhedged contracts count as a loss until their game settles, so this line can jump up later.</p>
+    <div class="legend"><span><span class="sw" data-sw="0"></span>Within your rules</span>
+      <span><span class="sw" data-sw="1"></span>Full-size paper test</span></div>
+    <div class="chart" data-draw="equity-chart" data-source="equity"></div>
+  </section>
+
+  <section class="section" id="positions">
+    <h2>Fills and positions</h2>
+    <p class="muted">Every resting order that filled. "In rules" says whether the practice trader had picked it, at sizes your limits allow.</p>
+    <div class="scroll">
+      <table data-source="positions" data-row-key="fill_time,who">
+        <thead><tr>
+          <th data-field="fill_time">Filled (AZ)</th><th data-field="who">Player / game</th><th data-field="market">Market</th>
+          <th data-field="state">State</th><th data-field="status">Hedge</th><th class="r" data-field="filled">Filled</th>
+          <th class="r" data-field="unhedged">Unhedged</th><th class="r" data-field="locked">Locked</th>
+          <th class="r" data-field="open_risk">Open risk</th><th class="r" data-field="conservative">Counted as</th><th data-field="in_rules">In rules</th>
+        </tr></thead>
+        <tbody data-draw="positions"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" id="resting">
+    <h2>Resting orders right now</h2>
+    <p class="muted">What the practice trader would have on Kalshi's book after the latest run: a bid 1¢ above the best bid, with the Polymarket US hedge it would buy if it fills. Sorted by expected edge.</p>
+    <p class="cap"><span class="num" data-draw="rest-count" data-source="resting_count">—</span> orders placed <span data-draw="rest-when" data-source="resting" data-field="placed" data-row="0">—</span>.</p>
+    <div class="scroll">
+      <table data-source="resting" data-row-key="kalshi_market,side">
+        <thead><tr>
+          <th data-field="who">Player / game</th><th data-field="market">Market</th><th data-field="sport">Sport</th>
+          <th data-field="side">Side</th><th class="r" data-field="price">Bid</th><th class="r" data-field="contracts">Contracts</th>
+          <th class="r" data-field="cost">Cost</th><th class="r" data-field="hedge_limit">Hedge limit</th>
+          <th class="r" data-field="edge_cents">Edge / contract</th><th data-field="game_start">Game (AZ)</th>
+        </tr></thead>
+        <tbody data-draw="resting"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="two">
+    <section class="section" id="health">
+      <h2>Collector health</h2>
+      <p class="muted">Runs every 5 minutes. Last run <b data-draw="last-run" data-source="summary" data-field="last_run" data-where="view=within_rules">—</b>;
+        <span class="num" data-draw="snaps" data-source="summary" data-field="snapshots" data-where="view=within_rules">—</span> price snapshots so far.</p>
+      <div class="chart" data-draw="runs-chart" data-source="runs" style="min-height: 160px"></div>
+      <p class="cap">Bars: resting orders the trader placed each run.</p>
+    </section>
+    <section class="section" id="rejections">
+      <h2>Why the bot said no</h2>
+      <p class="muted">Opportunities the practice trader passed on, by the rule that stopped it, across all runs.</p>
+      <div class="bars" data-draw="rejections" data-source="rejections"></div>
+    </section>
+  </div>
+
+  <section class="section" id="learning">
+    <h2>What the bot has learned</h2>
+    <p class="muted">Value per contract offered, including orders that never filled. Small groups are pulled toward a slightly negative starting guess. The bot only skips a group with 30+ results that is confidently losing.</p>
+    <div class="scroll">
+      <table data-source="learning" data-row-key="group">
+        <thead><tr>
+          <th data-field="group">Group</th><th class="r" data-field="n">Results</th><th class="r" data-field="hit_rate">Filled / tradable</th>
+          <th class="r" data-field="learned_cents">Learned value</th><th class="r" data-field="low_cents">Low end</th>
+          <th class="r" data-field="high_cents">High end</th><th data-field="action">Action</th>
+        </tr></thead>
+        <tbody data-draw="learning"></tbody>
+      </table>
+    </div>
+    <p class="cap">Instant hedges: <span class="num" data-draw="inst-checked" data-source="instant_totals" data-field="gaps_checked" data-row="0">—</span> gaps checked against real order-book depth,
+      <span class="num" data-draw="inst-real" data-source="instant_totals" data-field="tradable" data-row="0">—</span> were actually tradable.</p>
+  </section>
+
+  <details id="definitions">
+    <summary>How these numbers are counted</summary>
+    <ul>
+      <li><b>Within your rules</b>: only the resting orders the practice trader chose, at the sizes your draft limits allow ($10 per side, $5 for player props, $40 in use per platform).</li>
+      <li><b>Full-size paper test</b>: every order the simulator planned, at full size. It shows how the strategy behaves, not what your $100 would do.</li>
+      <li><b>Realized</b>: positions whose game is over and whose markets have settled. <b>Unrealized</b>: hedged profit that's locked in but not settled yet.</li>
+      <li><b>Open risk</b>: contracts that filled but couldn't be hedged. They count as a total loss until their game settles.</li>
+      <li>A resting order counts as filled only within 15 minutes of being placed, and the hedge is priced at the worse of the order book and the price at the minute of the fill.</li>
+      <li>Nothing here is real money. The bot builds the orders it would send but sends none.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+  window.jp = (function () {
+    const tz = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const parse = (s) => (s ? new Date(String(s).replace(/(\.\d+)?Z?$/, 'Z')) : null);
+    const when = (s) => { const d = parse(s); return d && !isNaN(d) ? tz.format(d) : '—'; };
+    const money = (v) => { const n = +v; if (!isFinite(n)) return '—'; const s = '$' + Math.abs(n).toFixed(2); return n < 0 ? '−' + s : s; };
+    const signed = (v) => { const n = +v; if (!isFinite(n)) return '—'; return (n > 0 ? '+' : n < 0 ? '−' : '') + '$' + Math.abs(n).toFixed(2); };
+    const row = (id, view) => { const g = dash.data(id); return g.status === 'ok' ? (g.data.find((r) => r.view === view) || null) : null; };
+    const tone = (el, n) => { el.classList.toggle('good', n > 0); el.classList.toggle('badc', n < 0); };
+    return { when, money, signed, row, tone };
+  })();
+</script>
+
+<script>
+  // legend swatches take the series colors
+  document.querySelectorAll('[data-sw]').forEach((el) => { el.style.background = dash.colors[+el.getAttribute('data-sw')]; });
+  // headline sentence and tiles
+  const S = (name, view, field, fmt, colour) => dash.draw(name, (el) => {
+    const r = jp.row('summary', view);
+    if (!r) { el.textContent = '—'; return; }
+    el.textContent = fmt(r[field]);
+    if (colour) jp.tone(el, +r[field]);
+  });
+  S('t-total', 'within_rules', 'conservative_total', jp.signed, true);
+  S('t-days', 'within_rules', 'days', (v) => (+v).toFixed(1));
+  S('t-full', 'full_size', 'conservative_total', jp.signed, true);
+  S('t-risk', 'full_size', 'open_risk', jp.money);
+  S('t-asof', 'within_rules', 'data_to', jp.when);
+  S('t-status', 'within_rules', 'trader_status', (v) => (v === 'ok' ? 'running normally' : v || '—'));
+  S('equity', 'within_rules', 'equity', jp.money);
+  S('realized', 'within_rules', 'realized', jp.signed, true);
+  S('unrealized', 'within_rules', 'unrealized', jp.signed, true);
+  S('risk', 'within_rules', 'open_risk', jp.money);
+  S('ret', 'within_rules', 'return_pct', (v) => ((+v > 0 ? '+' : +v < 0 ? '−' : '') + Math.abs(+v).toFixed(2) + '%'), true);
+  S('f-equity', 'full_size', 'equity', jp.money);
+  S('f-realized', 'full_size', 'realized', jp.signed);
+  S('f-unrealized', 'full_size', 'unrealized', jp.signed);
+  S('f-risk', 'full_size', 'open_risk', jp.money);
+  S('f-fills', 'full_size', 'fills', (v) => String(+v));
+  S('k-free', 'within_rules', 'kalshi_free', jp.money);
+  S('k-use', 'within_rules', 'kalshi_in_use', jp.money);
+  S('p-free', 'within_rules', 'pmus_free', jp.money);
+  S('p-use', 'within_rules', 'pmus_in_use', jp.money);
+  S('last-run', 'within_rules', 'last_run', jp.when);
+  S('snaps', 'within_rules', 'snapshots', (v) => String(+v));
+
+  const meter = (name, useField) => dash.draw(name, (el) => {
+    const r = jp.row('summary', 'within_rules');
+    el.replaceChildren();
+    if (!r) return;
+    const use = Math.min(40, Math.max(0, +r[useField]));
+    [[use, 'var(--cds-chart-status-critical)'], [40 - use, 'var(--color-ok)'], [10, 'var(--cds-chart-muted)']].forEach(([v, c]) => {
+      const s = document.createElement('span');
+      s.style.width = (v / 50 * 100) + '%';
+      s.style.background = c;
+      el.appendChild(s);
+    });
+  });
+  meter('k-meter', 'kalshi_in_use');
+  meter('p-meter', 'pmus_in_use');
+</script>
+
+<script>
+  // profit over time
+  dash.draw('equity-chart', (el) => {
+    const g = dash.data('equity');
+    if (g.status !== 'ok') { el.textContent = g.status === 'error' ? 'Failed to load' : '—'; return; }
+    const rows = g.data.map((r) => ({ t: new Date(String(r.time).replace(/(\.\d+)?Z?$/, 'Z')), a: +r.within_rules, b: +r.full_size }))
+      .filter((r) => !isNaN(r.t));
+    el.replaceChildren();
+    if (!rows.length) { el.textContent = 'No fills yet.'; return; }
+    const W = el.clientWidth || 600, H = 220;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', 'Cumulative conservative profit over time, within your rules and at full size');
+    const lo = Math.min(0, d3.min(rows, (r) => Math.min(r.a, r.b))), hi = Math.max(0.5, d3.max(rows, (r) => Math.max(r.a, r.b)));
+    const y = d3.scaleLinear().domain([lo, hi]).nice().range([H - 24, 8]);
+    const yAxis = svg.append('g').call(d3.axisLeft(y).ticks(5).tickFormat((v) => (v < 0 ? '−$' : '$') + Math.abs(v).toFixed(2)));
+    let ml = 0; yAxis.selectAll('text').each(function () { ml = Math.max(ml, this.getComputedTextLength()); });
+    ml += 14;
+    yAxis.attr('transform', `translate(${ml},0)`);
+    const x = d3.scaleTime().domain(d3.extent(rows, (r) => r.t)).range([ml + 4, W - 8]);
+    const fmt = (d) => new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', month: 'short', day: 'numeric', hour: 'numeric' }).format(d);
+    const xa = svg.append('g').attr('transform', `translate(0,${H - 24})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 140))).tickFormat(fmt));
+    // drop any date label that would run past either edge of the chart
+    xa.selectAll('.tick').each(function () {
+      const t = this.querySelector('text'), w = t ? t.getComputedTextLength() : 0;
+      const tx = +(this.getAttribute('transform') || '').replace(/[^\d.,-]/g, '').split(',')[0] || 0;
+      if (tx - w / 2 < ml || tx + w / 2 > W - 2) this.remove();
+    });
+    svg.selectAll('.domain').style('stroke', 'var(--cds-chart-axis)');
+    svg.selectAll('.tick line').style('stroke', 'var(--cds-chart-axis)');
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', ml + 4).attr('x2', W - 8)
+      .attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).style('stroke', (v) => (v === 0 ? 'var(--cds-chart-reference)' : 'var(--cds-chart-grid)'));
+    [['b', 1], ['a', 0]].forEach(([k, i]) => {
+      svg.append('path').datum(rows).attr('fill', 'none').style('stroke', dash.colors[i]).attr('stroke-width', 2)
+        .attr('d', d3.line().curve(d3.curveStepAfter).x((r) => x(r.t)).y((r) => y(r[k])));
+      const last = rows[rows.length - 1];
+      svg.append('circle').attr('cx', x(last.t)).attr('cy', y(last[k])).attr('r', 3.5).style('fill', dash.colors[i]);
+    });
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; el.appendChild(tip);
+    const focus = svg.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').style('opacity', 0);
+    svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - ml).attr('height', H).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [mx] = d3.pointer(ev);
+        const t = x.invert(mx);
+        const i = Math.max(0, d3.bisector((r) => r.t).right(rows, t) - 1), r = rows[i];
+        focus.attr('x1', x(r.t)).attr('x2', x(r.t)).style('opacity', 1);
+        tip.hidden = false;
+        tip.textContent = `${jp.when(r.t.toISOString())} · within rules ${jp.signed(r.a)} · full size ${jp.signed(r.b)}`;
+        const px = x(r.t) * ((el.clientWidth || W) / W);
+        tip.style.left = Math.min(Math.max(0, px - tip.offsetWidth / 2), (el.clientWidth || W) - tip.offsetWidth) + 'px';
+        tip.style.top = '0px';
+      })
+      .on('pointerleave', () => { tip.hidden = true; focus.style('opacity', 0); });
+  });
+
+  // collector runs
+  dash.draw('runs-chart', (el) => {
+    const g = dash.data('runs');
+    if (g.status !== 'ok') { el.textContent = g.status === 'error' ? 'Failed to load' : '—'; return; }
+    const rows = g.data.map((r) => ({ t: r.time, v: +r.resting_placed, k: +r.kalshi_in_use }));
+    el.replaceChildren();
+    if (!rows.length) { el.textContent = 'No runs yet.'; return; }
+    const W = el.clientWidth || 400, H = 160;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('role', 'img').attr('aria-label', 'Resting orders placed in each collector run');
+    const y = d3.scaleLinear().domain([0, Math.max(1, d3.max(rows, (r) => r.v))]).nice().range([H - 20, 8]);
+    const ya = svg.append('g').call(d3.axisLeft(y).ticks(4));
+    let ml = 0; ya.selectAll('text').each(function () { ml = Math.max(ml, this.getComputedTextLength()); });
+    ml += 12; ya.attr('transform', `translate(${ml},0)`);
+    svg.selectAll('.domain, .tick line').style('stroke', 'var(--cds-chart-axis)');
+    const x = d3.scaleBand().domain(rows.map((r, i) => i)).range([ml + 4, W - 4]).padding(0.2);
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; el.appendChild(tip);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r, i) => x(i)).attr('width', x.bandwidth())
+      .attr('y', (r) => y(r.v)).attr('height', (r) => y(0) - y(r.v)).style('fill', dash.colors[0])
+      .on('pointerenter', (ev, r) => {
+        tip.hidden = false;
+        tip.textContent = `${jp.when(r.t)} · ${r.v} orders · Kalshi ${jp.money(r.k)} in use`;
+        const [mx] = d3.pointer(ev, el);
+        tip.style.left = Math.min(Math.max(0, mx - tip.offsetWidth / 2), (el.clientWidth || W) - tip.offsetWidth) + 'px';
+        tip.style.top = '0px';
+      })
+      .on('pointerleave', () => { tip.hidden = true; });
+    svg.append('text').attr('x', ml + 4).attr('y', H - 4).text(jp.when(rows[0].t));
+    const end = svg.append('text').attr('x', W - 4).attr('y', H - 4).attr('text-anchor', 'end').text(jp.when(rows[rows.length - 1].t));
+    if (rows.length < 2) end.remove();
+  });
+</script>
+
+<script>
+  // tables
+  const cell = (tr, text, cls) => { const td = document.createElement('td'); td.textContent = text; if (cls) td.className = cls; tr.appendChild(td); return td; };
+  const pill = (td, text, kind) => { td.textContent = ''; const s = document.createElement('span'); s.className = 'pill ' + (kind || ''); s.textContent = text; td.appendChild(s); };
+  const emptyRow = (tb, cols, text) => { const tr = document.createElement('tr'); const td = cell(tr, text, 'empty'); td.colSpan = cols; tb.appendChild(tr); };
+
+  dash.draw('positions', (tb) => {
+    const g = dash.data('positions');
+    tb.replaceChildren();
+    if (g.status !== 'ok') return;
+    const rows = g.data.slice().sort((a, b) => (a.fill_time < b.fill_time ? 1 : -1));
+    if (!rows.length) return emptyRow(tb, 11, 'No fills yet.');
+    rows.forEach((r) => {
+      const tr = document.createElement('tr');
+      cell(tr, jp.when(r.fill_time)); cell(tr, r.who); cell(tr, r.market + ' · ' + r.sport.toUpperCase());
+      pill(cell(tr, ''), r.state === 'open' ? 'Open' : 'Settled', r.state === 'open' ? 'warn' : '');
+      pill(cell(tr, ''), r.status === 'hedged' ? 'Hedged' : r.status === 'PARTIAL' ? 'Partly hedged' : 'Unhedged',
+        r.status === 'hedged' ? 'ok' : 'bad');
+      cell(tr, (+r.filled).toFixed(2), 'r'); cell(tr, (+r.unhedged).toFixed(2), 'r'); cell(tr, jp.signed(r.locked), 'r');
+      cell(tr, jp.money(r.open_risk), 'r');
+      const c = cell(tr, jp.signed(r.conservative), 'r'); jp.tone(c, +r.conservative);
+      cell(tr, r.in_rules === 'yes' ? 'Yes' : 'No');
+      tb.appendChild(tr);
+    });
+  });
+
+  dash.calc('resting_count', { inputs: ['resting'], title: 'Resting orders in the latest run',
+    description: 'How many resting orders the practice trader placed in its latest run.', fn: (resting) => resting.length });
+  dash.draw('rest-count', (el) => { const g = dash.data('resting_count'); el.textContent = g.status === 'ok' ? String(g.data) : '—'; });
+  dash.draw('rest-when', (el) => { const g = dash.data('resting'); el.textContent = g.status === 'ok' && g.data.length ? 'at ' + jp.when(g.data[0].placed) : ''; });
+  dash.draw('resting', (tb) => {
+    const g = dash.data('resting');
+    tb.replaceChildren();
+    if (g.status !== 'ok') return;
+    if (!g.data.length) return emptyRow(tb, 10, 'No resting orders in the latest run.');
+    g.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      cell(tr, r.who); cell(tr, r.market); cell(tr, r.sport.toUpperCase()); cell(tr, r.side.toUpperCase());
+      cell(tr, Math.round(+r.price * 100) + '¢', 'r'); cell(tr, String(+r.contracts), 'r'); cell(tr, jp.money(r.cost), 'r');
+      cell(tr, (+r.hedge_limit * 100).toFixed(1) + '¢ YES', 'r'); cell(tr, (+r.edge_cents).toFixed(1) + '¢', 'r');
+      cell(tr, jp.when(r.game_start));
+      tb.appendChild(tr);
+    });
+  });
+
+  dash.draw('rejections', (el) => {
+    const g = dash.data('rejections');
+    el.replaceChildren();
+    if (g.status !== 'ok') { el.textContent = '—'; return; }
+    if (!g.data.length) { el.textContent = 'Nothing turned down yet.'; return; }
+    const max = d3.max(g.data, (r) => +r.count) || 1;
+    g.data.forEach((r) => {
+      const row = document.createElement('div'); row.className = 'barrow';
+      const lab = document.createElement('span'); lab.textContent = r.reason;
+      const tr = document.createElement('div'); tr.className = 'track';
+      const f = document.createElement('div'); f.className = 'fill'; f.style.width = (+r.count / max * 100) + '%'; f.style.background = dash.colors[0];
+      tr.appendChild(f);
+      const n = document.createElement('span'); n.className = 'num'; n.textContent = String(+r.count);
+      n.setAttribute('data-source', 'rejections'); n.setAttribute('data-field', 'count'); n.setAttribute('data-where', 'reason=' + encodeURIComponent(r.reason));
+      row.append(lab, tr, n); el.appendChild(row);
+    });
+  });
+
+  dash.draw('learning', (tb) => {
+    const g = dash.data('learning');
+    tb.replaceChildren();
+    if (g.status !== 'ok') return;
+    if (!g.data.length) return emptyRow(tb, 7, 'Nothing learned yet.');
+    const name = (grp) => grp.replace(/^maker/, 'Resting orders').replace(/^taker/, 'Instant hedges').split('|').join(' › ');
+    const c = (v) => ((+v > 0 ? '+' : +v < 0 ? '−' : '') + Math.abs(+v).toFixed(2) + '¢');
+    g.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      const td = cell(tr, name(r.group)); td.style.paddingLeft = (8 + 14 * +r.level) + 'px';
+      cell(tr, String(+r.n), 'r'); cell(tr, (+r.hit_rate * 100).toFixed(1) + '%', 'r');
+      const lv = cell(tr, c(r.learned_cents), 'r'); jp.tone(lv, +r.learned_cents);
+      cell(tr, c(r.low_cents), 'r'); cell(tr, c(r.high_cents), 'r');
+      pill(cell(tr, ''), r.action === 'skip' ? 'Skipped' : 'Normal', r.action === 'skip' ? 'bad' : '');
+      tb.appendChild(tr);
+    });
+  });
+
+  dash.calc('instant_totals', { inputs: ['instant'], title: 'Instant hedge totals',
+    description: 'Gaps checked against real depth, and how many were actually tradable, summed over all runs.',
+    fn: (instant) => [{ gaps_checked: d3.sum(instant, (r) => +r.gaps_checked), tradable: d3.sum(instant, (r) => +r.tradable) }] });
+  const tot = (name, field) => dash.draw(name, (el) => { const g = dash.data('instant_totals'); el.textContent = g.status === 'ok' && g.data.length ? String(g.data[0][field]) : '—'; });
+  tot('inst-checked', 'gaps_checked');
+  tot('inst-real', 'tradable');
+</script>
