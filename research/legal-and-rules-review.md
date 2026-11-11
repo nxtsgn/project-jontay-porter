@@ -111,3 +111,27 @@ Rule: a pair is only "arbitrage" if every edge case above leaves you >= 0. Other
 - Source of truth: Kalshi contract PDFs (FOOTBALLGAMEWIN, FOOTBALLSPREAD, FOOTBALLTOTALS, FOOTBALLENTITYSTAT,
   BASKETBALLGAMEWIN, BASKETBALLTOTALS at assets.kalshi.com/regulatory/product-certifications/) and each Polymarket US market's
   own description. Re-read them if a market's wording changes.
+
+## 10. Arizona refresh (2026-11-11). Secondary sources; not legal advice. Check the dockets before funding.
+- **Kalshi criminal case (Maricopa County, 20 misdemeanors, filed 17 Mar 2026):**
+  - A federal judge paused it 10 Apr.
+  - On 5 May Judge Liburdi granted the CFTC an injunction stopping Arizona from enforcing its gambling laws against Kalshi.
+- **Ninth Circuit:**
+  - 28 Aug: sports event contracts are not "swaps", so states may regulate them (the Nevada case, *KalshiEX v. Assad*).
+  - Kalshi asked for rehearing en banc.
+  - 14 Sep: Arizona asked the Ninth Circuit (No. 26-4281) to vacate the May injunction for sports contracts. The CFTC asked
+    it to wait for the en banc decision. No ruling reported yet.
+- **Supreme Court:**
+  - Three cert petitions are pending on the Third Circuit vs Ninth Circuit split: 26-299 (New Jersey), 26-338 and 26-344.
+  - Responses are due 7 Dec 2026. None has been granted yet.
+- **AG Mayes** was re-elected in Nov 2026 and is described as aggressive toward prediction markets.
+- **Polymarket US:** no Arizona action on record as of 4 Nov 2026 (one dated secondary source). Older guides conflicting on
+  whether sports contracts are restricted in Arizona. **Confirm in the app before funding.**
+- **What it means for this project:** the main risk is that the Ninth Circuit lifts the Arizona injunction. Kalshi could then
+  geofence or restrict Arizona users, possibly mid-position (likely close-only, as in other states), which would strand one leg
+  of a hedge.
+  Mitigations already in the draft rules: small balances ($50/venue), 48-hour entry window, kill switch. Add one more:
+  re-check this section before funding, and again whenever the Ninth Circuit or Supreme Court acts (a watch item, not
+  automated).
+- Sources: azmirror.com (17 Mar 2026), coindesk.com (17 Mar 2026), covers.com (Ninth Circuit rehearing, Sep 2026),
+  natlawreview.com, supremecourt.gov docket 26-299, predictionmarketspicks.com (Polymarket US in Arizona, Nov 2026).

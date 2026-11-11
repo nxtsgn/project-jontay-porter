@@ -26,6 +26,7 @@ import gzip
 import json
 import math
 import sys
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -39,6 +40,15 @@ PAPER = ROOT / "data" / "paper"
 PLANS, FILLS, RUNS = PAPER / "maker_plans.csv", PAPER / "maker_fills.csv", PAPER / "maker_runs.csv"
 BAGS = PAPER / "maker_bags.csv"  # unhedged leftovers, graded at settlement
 BAG_FIELDS = ["placed_ts", "sport", "rest_id", "player", "unhedged_qty", "rest_px", "payout", "bag_pnl"]
+OUTCOMES = PAPER / "maker_outcomes.csv"  # every resolved plan, filled or not (what the learner trains on)
+OUTCOME_FIELDS = ["placed_ts", "resolved_ts", "sport", "market_type", "player", "event_time", "rest_id", "rest_norm_side",
+                  "rest_line", "hedge_id", "hedge_line", "rest_px", "rest_bid", "rest_ask", "hedge_px_at_plan", "edge_at_plan",
+                  "contracts", "middle", "filled", "hedge_status", "hedged_qty", "unhedged_qty", "locked_pnl"]
+# A resting order only counts as filled within 15 minutes of being placed. The bot re-places live plans every run (~5 min),
+# so this matches continuous quoting. Before 2026-11-11 the window ran until the next collector run, which was sometimes
+# hours later: too generous.
+ORDER_LIFETIME_S = 15 * 60
+MAKER_FEE_FIX_TS = "2026-11-11T19:10:00Z"  # fills resolved before this didn't net the Kalshi maker fee
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
 UA = {"User-Agent": "project-jontay-porter/0.2 (read-only research)"}
 PLAN_FIELDS = ["placed_ts", "sport", "game_date", "teams", "market_type", "player", "event_time",
@@ -54,13 +64,18 @@ def epoch(s):
     return int(datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp())
 
 
-def get(url, params):
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url + "?" + urllib.parse.urlencode(params), headers=UA), timeout=30) as r:
-            return json.load(r)
-    except Exception as e:  # noqa: BLE001
-        print(f"WARN {url}: {e}", file=sys.stderr)
-        return None
+def get(url, params, tries=4):
+    """GET with backoff; Kalshi rate-limits (HTTP 429) when many plans are resolved at once."""
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url + "?" + urllib.parse.urlencode(params), headers=UA), timeout=30) as r:
+                return json.load(r)
+        except Exception as e:  # noqa: BLE001
+            if i == tries - 1:
+                print(f"WARN {url}: {e}", file=sys.stderr)
+                return None
+            time.sleep(1.5 * (i + 1))
+    return None
 
 
 def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, max_book_checks=250, min_contracts=5):
@@ -138,7 +153,7 @@ def fills_since(ticker, raw_side, px, since_ts, until_ts):
             params["cursor"] = cursor
         d = get(f"{KALSHI}/markets/trades", params)
         if not d:
-            break
+            return None, None  # couldn't read the tape: unknown, NOT "didn't fill"
         for t in d.get("trades", []):
             # a taker buying the opposite side matches resting bids on our side
             taker = t.get("taker_side")
@@ -154,19 +169,26 @@ def fills_since(ticker, raw_side, px, since_ts, until_ts):
 
 
 def resolve(prev, rows, ts):
-    now = {r["market_id"]: r for r in rows if r["venue"] == "polymarket_us"}
-    out = []
+    out, unknown = [], 0
     for o in prev:
-        until = min(epoch(ts), epoch(o["event_time"])) if o.get("event_time") else epoch(ts)
+        until = min(epoch(ts), epoch(o["placed_ts"]) + ORDER_LIFETIME_S)
+        if o.get("event_time"):
+            until = min(until, epoch(o["event_time"]))
         qty, first = fills_since(o["rest_id"], o["rest_raw_side"], float(o["rest_px"]), epoch(o["placed_ts"]), until)
+        if qty is None:
+            unknown += 1
+            continue  # left out of results and learning rather than guessed
+        time.sleep(0.1)
         filled = min(qty, float(o["contracts"]))
         r = dict(o, resolved_ts=ts, filled=round(filled, 2), first_fill_ts=first or "")
         if filled <= 0:
             r.update(hedge_px_at_fill="", hedge_status="not filled", hedged_qty=0, unhedged_qty=0, cost="", hedge_fee=0,
                      locked_pnl=0, locked_per_contract="")
         else:
-            r.update(hedge(o, filled))
+            r.update(hedge(o, filled, first))
         out.append(r)
+    if unknown:
+        print(f"WARN resting-order test: {unknown} plans skipped (Kalshi trade tape unavailable)", file=sys.stderr)
     return out
 
 
@@ -182,7 +204,19 @@ def hedge_levels(o):
     return sorted(lv)
 
 
-def hedge(o, filled, max_loss=0.03):
+def price_at(slug, raw_yes, when_iso):
+    """Polymarket US display price (top of book) for one side at the minute of `when_iso`, from public price history."""
+    t = epoch(when_iso[:19] + "Z")
+    d = get("https://gateway.polymarket.us/v1/price-history", {"symbol": slug, "timestamp.startTimestamp": t - 300,
+                                                                 "timestamp.endTimestamp": t + 60, "fidelity": 1})
+    pts = sorted((p for p in (d or {}).get("history") or [] if p.get("timestamp", 0) <= t), key=lambda p: p["timestamp"])
+    if not pts:
+        return None
+    v = pts[-1].get("longPrice" if raw_yes else "shortPrice")
+    return float(v) if v not in (None, 0) else None
+
+
+def hedge(o, filled, first_fill_ts=None, max_loss=0.03):
     """Buy the other leg against the real book: walk price levels while each contract locks in no worse than -max_loss
     (cutting a small loss beats holding a one-sided bet). Whatever can't be hedged stays as an open 'bag' until settlement."""
     rest = float(o["rest_px"])
@@ -198,6 +232,13 @@ def hedge(o, filled, max_loss=0.03):
         return dict(hedge_px_at_fill="", hedge_status="UNHEDGED", hedged_qty=0, unhedged_qty=round(filled, 2), cost=rest,
                     hedge_fee=0, locked_pnl=-mfee, locked_per_contract="")
     avg = spend / got
+    # Conservative: the book above is read when this run resolves (up to ~15 min after the fill). Use whichever is worse:
+    # that book, or the top-of-book price at the minute the fill happened (public price history).
+    if first_fill_ts:
+        raw_yes = (o["hedge_norm_side"] == "yes") != bool(int(o.get("hedge_flipped") or 0))
+        at_fill = price_at(o["hedge_id"], raw_yes, first_fill_ts)
+        if at_fill is not None:
+            avg = max(avg, at_fill)
     hfee = fee("polymarket_us", float(o["hedge_fee_coef"]), avg, max(1, math.ceil(got)))
     pnl = (1 - rest - avg) * got - hfee - mfee  # locked_pnl includes the Kalshi maker fee where the series charges one
     return dict(hedge_px_at_fill=round(avg, 4), hedge_status="hedged" if left <= 1e-9 else "PARTIAL",
@@ -244,6 +285,8 @@ def step(rows, ts):
     filled = [r for r in res if float(r["filled"]) > 0]
     if filled:
         _write(FILLS, FILL_FIELDS, filled, "a")
+    if res:
+        _write(OUTCOMES, OUTCOME_FIELDS, res, "a")
     settle_bags()
     new = plan(rows, ts)
     _write(PLANS, PLAN_FIELDS, new, "w")
@@ -256,21 +299,34 @@ def step(rows, ts):
 
 
 def summary():
+    """Conservative by design: open unhedged contracts are counted as a total loss until they settle, and fills resolved
+    before the maker-fee fix have the Kalshi maker fee taken off."""
     if not FILLS.exists():
         print("no fills yet")
         return
     fl = list(csv.DictReader(FILLS.open()))
     runs = list(csv.DictReader(RUNS.open())) if RUNS.exists() else []
-    bags = list(csv.DictReader(BAGS.open())) if BAGS.exists() else []
+    bags = {(b["placed_ts"], b["rest_id"]): b for b in csv.DictReader(BAGS.open())} if BAGS.exists() else {}
     plans = sum(int(r["plans_resolved"]) for r in runs)
-    locked = sum(float(r["locked_pnl"]) for r in fl)
-    bag_pnl = sum(float(b["bag_pnl"]) for b in bags)
-    open_bags = sum(float(r.get("unhedged_qty") or 0) for r in fl) - sum(float(b["unhedged_qty"]) for b in bags)
-    print(f"{len(fl)} fills from {plans} plans ({len(fl) / max(plans, 1):.0%} fill rate)")
+    locked = fee_fix = settled = open_worst = 0.0
+    for r in fl:
+        locked += float(r["locked_pnl"] or 0)
+        if r["resolved_ts"] < MAKER_FEE_FIX_TS:
+            fee_fix += kalshi_maker_fee(r["rest_id"], float(r["rest_px"]), max(1, math.ceil(float(r["filled"]))))
+        q = float(r.get("unhedged_qty") or 0)
+        if q > 0:
+            b = bags.get((r["placed_ts"], r["rest_id"]))
+            if b:
+                settled += float(b["bag_pnl"])
+            else:
+                open_worst += q * float(r["rest_px"])
+    print(f"{len(fl)} fills from {plans} plans ({len(fl) / max(plans, 1):.1%} fill rate)")
     for st in ("hedged", "PARTIAL", "UNHEDGED"):
         print(f"  {st:<9} {sum(r['hedge_status'] == st for r in fl)}")
-    print(f"locked P&L on hedged contracts ${locked:+.2f}; settled bags ${bag_pnl:+.2f} ({len(bags)}); "
-          f"still-open unhedged contracts {open_bags:.0f}; total ${locked + bag_pnl:+.2f}")
+    cons = locked - fee_fix + settled - open_worst
+    print(f"locked on hedged contracts ${locked:+.2f}, maker-fee correction ${-fee_fix:+.2f}, settled bags ${settled:+.2f}, "
+          f"open bags at worst case ${-open_worst:+.2f}")
+    print(f"CONSERVATIVE TOTAL ${cons:+.2f}   (open bags valued at $0 until they settle)")
 
 
 def main():

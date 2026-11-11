@@ -33,6 +33,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "data" / "paper" / "opportunities.csv"
+CANDS = ROOT / "data" / "paper" / "taker_candidates.csv"  # every depth-checked candidate, profitable or not (for learning)
+CAND_FIELDS = ["ts_utc", "sport", "market_type", "event_time", "a_venue", "a_id", "a_line", "a_price", "b_venue", "b_id", "b_line",
+               "b_price", "net_top", "a_depth", "b_depth", "contracts", "net_per_contract"]
 LOG_FIELDS = ["ts_utc", "sport", "game_date", "teams", "market_type", "player", "event_time",
               "a_venue", "a_id", "a_line", "a_flipped", "a_price",
               "b_venue", "b_id", "b_line", "b_flipped", "b_price",
@@ -171,7 +174,16 @@ def detect_and_log(rows, ts, fetch_depth=True, budget=50.0, log=LOG, min_net=0.0
     hs = hedges(rows, ts, min_net=min_net)
     print(f"gap detector: {len(hs)} hedges with guaranteed net >= {min_net:+.3f} per contract (before sizing)")
     if fetch_depth:
-        hs = [size_up(o, budget) for o in hs[:40]]  # top 40 only, to keep the run fast
+        top = [dict(o, net_top=o["net_per_contract"]) for o in hs[:40]]  # top 40 only, to keep the run fast
+        hs = [size_up(o, budget) for o in top]
+        if hs and log:
+            new = not CANDS.exists()
+            CANDS.parent.mkdir(parents=True, exist_ok=True)
+            with CANDS.open("a", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=CAND_FIELDS, extrasaction="ignore")
+                if new:
+                    w.writeheader()
+                w.writerows(hs)
         hs = [o for o in hs if o["contracts"] >= 1 and o["net_per_contract"] > 0]
     for o in hs[:10]:
         print(f"  {o['net_per_contract']:+.3f}/contract x {o['contracts']} = ${o['net_total']:+.2f}  {o['market_type']:<9}"

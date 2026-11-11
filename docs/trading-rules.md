@@ -44,9 +44,30 @@ proposal. Change any of them.
 - **Timing:** only games starting within the next 48 hours. No new trades in the last 10 minutes before tip-off/kickoff, and
   **no in-game trading.**
 
+## Learning (on by default, can only tighten)
+After every run the bot re-learns from every opportunity, including the ones it didn't take:
+- **Resting orders:** would it have filled, could it be hedged, what was locked in.
+- **Instant hedges:** was it real at actual depth, and was it still there 5 minutes later.
+
+It groups results by strategy, market type, sport, price range and time to start. It assumes a new group slightly loses money,
+and only trusts it as results build up. It may only:
+- **re-order** which trades get the limited capital first (best proven first), and
+- **skip** a kind of trade once it has 30+ results and is confidently losing.
+
+It can't raise a limit, loosen a rule, or turn anything on. The paper test keeps checking skipped kinds of trades, so
+if they start working, the learner notices. `python scripts/learn.py` shows what it has learned and its suggested rule
+changes, which are for you to approve. Every change it makes is logged in `data/paper/learning/changes.csv`.
+
+## Counting results conservatively
+- A resting order only counts as filled within 15 minutes of being placed.
+- The hedge is priced at the worse of the live book and the price at the minute of the fill.
+- Unhedged leftovers count as a **total loss** until they settle.
+- If a fill can't be checked (rate limits), it's left out rather than guessed.
+- Instant hedges only count if they were profitable at real depth and still there one run later.
+
 ## One practical consequence
 The resting-order strategy needs the bot to hedge within about **2 minutes** of a fill. The GitHub Actions collector only
-runs every 15 minutes, so the live bot can't run there. It will need a small always-on process, like a cheap cloud VM or a
+runs every 5 minutes (and each run takes ~2), so the live bot can't run there. It will need a small always-on process, like a cheap cloud VM or a
 computer that stays on. We'll pick one when the data justifies going live. Taker-taker hedges have no waiting period, but they
 still need both orders sent within seconds of each other.
 

@@ -196,3 +196,12 @@ games matched on both venues; 3 tiny profitable taker hedges (NFL 2+ TD props, <
   API keys present, Polymarket US NO-price convention verified with a preview call, and an always-on runner exists.
 - Fix the same day: many Kalshi game-line series charge a **maker fee** (fee_type `quadratic_with_maker_fees`; props don't).
   `find_arbs.kalshi_maker_fee` now nets it out of the resting-order sim. Fills logged before this fix overstate profit slightly.
+
+## Learning loop + conservative accounting (2026-11-11)
+- `scripts/learn.py` rebuilds a model every run from every outcome, taken or not: `maker_outcomes.csv` (every resolved
+  resting plan) and `taker_candidates.csv` (every depth-checked taker hedge, near-misses included). Groups are shrunk toward
+  their parent, start slightly pessimistic, and are ranked by the low end of an 80% range. The trader uses it only to
+  re-order and to skip confidently losing groups (`learning` in the rules). Changes go to `data/paper/learning/changes.csv`.
+- Conservative: resting fills count only within 15 min of placement; the hedge is priced at the worse of the resolve-time
+  book and the Polymarket US price-history point at the fill minute; open bags = total loss; unreadable tapes are excluded,
+  not counted as "no fill". `python scripts/maker_sim.py --summary` prints the conservative total.

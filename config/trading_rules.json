@@ -46,6 +46,12 @@
     "in_game_trading": false
   },
 
+  "learning": {
+    "enabled": true,
+    "min_samples_to_skip": 30,
+    "_note": "the learner may only re-order which trades get capital first and skip kinds of trades that are confidently losing; it can never raise a limit or loosen a rule. Suggested rule changes go to `python scripts/learn.py` for you to approve"
+  },
+
   "kill_switch": {
     "repo_variable": "TRADING_ENABLED",
     "auto_kill_on": [

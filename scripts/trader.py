@@ -29,8 +29,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import learn  # noqa: E402
 import venues  # noqa: E402
 from find_arbs import f, fee, kalshi_maker_fee  # noqa: E402
+from learn import market_kind  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RULES = ROOT / "config" / "trading_rules.json"
@@ -78,12 +80,21 @@ def live_allowed(rules):
 
 
 # ------------------------------------------------------------------------------------------------------ helpers
-def market_kind(market_type, a_line=None, b_line=None):
-    if market_type == "margin":
-        return "moneyline" if (a_line in (0, 0.0) or b_line in (0, 0.0)) else "spread"
-    if market_type == "totals":
-        return "total"
-    return "prop"
+def ranked(rules, cands, groups_fn, rej):
+    """Learning (can only tighten): drop groups the learner is confident lose money, and spend capital on the best-proven
+    groups first. With learning off, keep the detector's own order."""
+    lr = rules.get("learning") or {}
+    if not lr.get("enabled"):
+        return cands
+    model, keep = learn.load(), []
+    for o in cands:
+        sc, action, _ = learn.score(model, groups_fn(o), lr.get("min_samples_to_skip", 30))
+        if action == "skip":
+            rej.update(["learned: this kind of trade loses money"])
+            continue
+        keep.append((sc, o))
+    keep.sort(key=lambda t: -t[0])  # stable: ties keep the detector's order
+    return [o for _, o in keep]
 
 
 def _ts(s):
@@ -174,7 +185,7 @@ def size(rules, book, kind, legs):
 # ------------------------------------------------------------------------------------------------------ strategies
 def taker(rules, book, opps, ts, now, rej):
     out = []
-    for o in opps:
+    for o in ranked(rules, opps, lambda o: learn.taker_groups(dict(o, ts_utc=ts)), rej):
         kind = market_kind(o["market_type"], f(o["a_line"]), f(o["b_line"]))
         key = f"T|{o['a_id']}|{o['b_id']}"
         if key in book.keys:
@@ -208,7 +219,7 @@ def taker(rules, book, opps, ts, now, rej):
 def maker(rules, book, plans, ts, now, rej):
     out = []
     expires = (now + timedelta(minutes=6)).timestamp()  # replaced next run, so never left stale on the book
-    for o in plans:
+    for o in ranked(rules, plans, learn.maker_groups, rej):
         kind = market_kind(o["market_type"], f(o["rest_line"]), f(o["hedge_line"]))
         key = f"M|{o['rest_id']}|{o['rest_norm_side']}|{o['hedge_id']}"
         if common_checks(rules, book, o, kind, now, rej) is not True:
