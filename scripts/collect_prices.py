@@ -351,8 +351,13 @@ def main():
     if not a.no_detect:
         import find_arbs
         import maker_sim
-        find_arbs.detect_and_log(rows, ts, fetch_depth=True)
-        maker_sim.step(rows, ts)  # paper test of resting Kalshi orders hedged on Polymarket US
+        opps = find_arbs.detect_and_log(rows, ts, fetch_depth=True)
+        plans = maker_sim.step(rows, ts)  # paper test of resting Kalshi orders hedged on Polymarket US
+        try:
+            import trader
+            trader.cycle(opps, plans, ts)  # practice mode: applies config/trading_rules.json, builds orders, sends nothing
+        except Exception as e:  # noqa: BLE001  (the trader must never break price collection)
+            print(f"WARN trader: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

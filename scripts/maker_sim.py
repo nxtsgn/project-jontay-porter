@@ -13,7 +13,8 @@ Each collector run (every ~15 min):
     Saved to data/paper/maker_plans.csv (replaced every run; unfilled plans are treated as cancelled).
 Every run appends a line to data/paper/maker_runs.csv (plans, fills, fill rate) so fill rates can be measured.
 
-Kalshi's NBA series are "quadratic" fee type: no fee on resting (maker) orders. Polymarket US doesn't publish its trades,
+Kalshi charges a maker fee only on series with fee_type "quadratic_with_maker_fees" (most game lines; props don't):
+find_arbs.kalshi_maker_fee looks it up per series and it's netted out of every edge and locked_pnl. Polymarket US doesn't publish its trades,
 so only the Kalshi leg can be tested as the resting one.
 
     python scripts/maker_sim.py --file data/prices/prices_us_2026-11-10.csv.gz     # plan from a saved snapshot only
@@ -31,7 +32,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from find_arbs import f, fee, groups  # noqa: E402
+from find_arbs import f, fee, groups, kalshi_maker_fee  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
@@ -87,7 +88,7 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, m
                     if c < 1:
                         continue
                     hfee = fee("polymarket_us", f(p["fee_coef"]), hp, c)
-                    edge = 1 - px - hp - hfee / c
+                    edge = 1 - px - hp - (hfee + kalshi_maker_fee(k["market_id"], px, c)) / c
                     if edge < min_edge:
                         continue
                     raw = rest_side if not int(k.get("flipped") or 0) else ("no" if rest_side == "yes" else "yes")
@@ -106,8 +107,9 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, m
     checked = []
     for o in sorted(best.values(), key=lambda o: -o["edge_at_plan"])[:max_book_checks]:
         lv, need, got, spend = hedge_levels(o), o["contracts"], 0.0, 0.0
+        mk = kalshi_maker_fee(o["rest_id"], o["rest_px"], need) / need  # Kalshi maker fee per contract
         for px, qty in lv:
-            if 1 - o["rest_px"] - px - o["hedge_fee_coef"] * px * (1 - px) < min_edge or got >= need:
+            if 1 - o["rest_px"] - px - o["hedge_fee_coef"] * px * (1 - px) - mk < min_edge or got >= need:
                 break
             take = min(need - got, qty)
             got, spend = got + take, spend + take * px
@@ -115,7 +117,7 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, m
         if c < min_contracts:
             continue
         hp = spend / got
-        edge = 1 - o["rest_px"] - hp - fee("polymarket_us", o["hedge_fee_coef"], hp, c) / c
+        edge = 1 - o["rest_px"] - hp - (fee("polymarket_us", o["hedge_fee_coef"], hp, c) + kalshi_maker_fee(o["rest_id"], o["rest_px"], c)) / c
         if edge >= min_edge:
             checked.append(dict(o, contracts=c, hedge_px_at_plan=round(hp, 4), edge_at_plan=round(edge, 4)))
     # best plans first, but no sport may take more than 60 slots, so football and college get tested too
@@ -184,18 +186,20 @@ def hedge(o, filled, max_loss=0.03):
     """Buy the other leg against the real book: walk price levels while each contract locks in no worse than -max_loss
     (cutting a small loss beats holding a one-sided bet). Whatever can't be hedged stays as an open 'bag' until settlement."""
     rest = float(o["rest_px"])
+    mfee = kalshi_maker_fee(o["rest_id"], rest, max(1, math.ceil(filled)))  # charged on the Kalshi fill either way
+    mk = mfee / max(1, math.ceil(filled))
     left, got, spend = filled, 0.0, 0.0
     for px, qty in hedge_levels(o):
-        if left <= 0 or 1 - rest - px - float(o["hedge_fee_coef"]) * px * (1 - px) < -max_loss:
+        if left <= 0 or 1 - rest - px - float(o["hedge_fee_coef"]) * px * (1 - px) - mk < -max_loss:
             break
         take = min(left, qty)
         got, spend, left = got + take, spend + take * px, left - take
     if got <= 0:
         return dict(hedge_px_at_fill="", hedge_status="UNHEDGED", hedged_qty=0, unhedged_qty=round(filled, 2), cost=rest,
-                    hedge_fee=0, locked_pnl=0, locked_per_contract="")
+                    hedge_fee=0, locked_pnl=-mfee, locked_per_contract="")
     avg = spend / got
     hfee = fee("polymarket_us", float(o["hedge_fee_coef"]), avg, max(1, math.ceil(got)))
-    pnl = (1 - rest - avg) * got - hfee
+    pnl = (1 - rest - avg) * got - hfee - mfee  # locked_pnl includes the Kalshi maker fee where the series charges one
     return dict(hedge_px_at_fill=round(avg, 4), hedge_status="hedged" if left <= 1e-9 else "PARTIAL",
                 hedged_qty=round(got, 2), unhedged_qty=round(max(left, 0), 2), cost=round(rest + avg, 4), hedge_fee=hfee,
                 locked_pnl=round(pnl, 2), locked_per_contract=round(pnl / got, 4))
@@ -220,7 +224,6 @@ def settle_bags():
                         unhedged_qty=q, rest_px=r["rest_px"], payout=pay, bag_pnl=round((pay - float(r["rest_px"])) * q, 2)))
     if out:
         _write(BAGS, BAG_FIELDS, out, "a")
-        out.append(r)
     return out
 
 
@@ -249,6 +252,7 @@ def step(rows, ts):
                                    contracts_filled=round(sum(float(r["filled"]) for r in filled), 2),
                                    locked_pnl=round(locked, 2), new_plans=len(new))], "a")
     print(f"resting-order test: {len(filled)}/{len(res)} previous plans filled, locked ${locked:+.2f}; {len(new)} new plans")
+    return new
 
 
 def summary():

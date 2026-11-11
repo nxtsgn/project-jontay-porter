@@ -61,6 +61,24 @@ def fee(venue, coef, price, contracts):
     return float(Decimal(str(raw)).quantize(Decimal("0.01"), rounding=ROUND_HALF_EVEN))
 
 
+_SERIES_FEE = {}
+
+
+def kalshi_maker_fee(ticker, price, contracts):
+    """Kalshi fee on a resting (maker) fill. Only series with fee_type 'quadratic_with_maker_fees' charge it:
+    roundup(0.0175 x C x P x (1-P) x multiplier). Checked 2026-11-11: most game/spread/total series charge it, props don't."""
+    series = ticker.split("-")[0]
+    if series not in _SERIES_FEE:
+        d = _get(f"https://api.elections.kalshi.com/trade-api/v2/series/{series}") or {}
+        s = d.get("series") or {}
+        # unknown -> assume the fee applies (the cautious choice)
+        _SERIES_FEE[series] = (s.get("fee_type", "quadratic_with_maker_fees"), float(s.get("fee_multiplier") or 1))
+    kind, mult = _SERIES_FEE[series]
+    if kind != "quadratic_with_maker_fees":
+        return 0.0
+    return math.ceil(round(0.0175 * mult * contracts * price * (1 - price) * 100, 6)) / 100
+
+
 def usable(r, max_spread):
     """Both sides quoted, and the book isn't so wide that the quote is probably stale."""
     yb, ya, nb, na = (f(r[k]) for k in ("yes_bid", "yes_ask", "no_bid", "no_ask"))

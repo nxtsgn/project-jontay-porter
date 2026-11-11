@@ -3,7 +3,7 @@ name: collect-prices
 # logs any guaranteed-payout gaps with order-book depth, and grades past gaps once their games settle.
 on:
   schedule:
-    - cron: "*/15 * * * *"   # GitHub's minimum is ~5 min and runs can be delayed
+    - cron: "*/15 * * * *"   # backup only; GitHub's scheduler is unreliable. cron-job.org triggers this every 5 min
   workflow_dispatch:
 
 permissions:
@@ -23,18 +23,20 @@ jobs:
           ref: price-data   # data lives here; code always comes from main (next step)
           fetch-depth: 0
       - name: Use the latest code from main
-        run: git checkout origin/main -- scripts requirements.txt
+        run: git checkout origin/main -- scripts config requirements.txt
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Collect snapshot and detect gaps
+      - name: Collect snapshot, detect gaps, practice trader (sends nothing)
         run: python scripts/collect_prices.py
+        env:
+          TRADING_ENABLED: ${{ vars.TRADING_ENABLED }}   # kill switch: set the repo variable to "false" to stop the trader
       - name: Grade settled paper hedges
         run: python scripts/grade.py
       - name: Commit data
         run: |
           git config user.name "price-bot"
           git config user.email "price-bot@users.noreply.github.com"
-          git reset -q scripts requirements.txt   # don't copy code into the data branch
+          git reset -q scripts config requirements.txt   # don't copy code into the data branch
           git add data/prices data/paper 2>/dev/null || git add data/prices
           git diff --cached --quiet || (git commit -m "prices $(date -u +%FT%TZ)" && git push)

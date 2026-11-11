@@ -183,3 +183,16 @@ games matched on both venues; 3 tiny profitable taker hedges (NFL 2+ TD props, <
 - Still not modeled: the book moving between our two orders in a real taker trade (legging), queue position for resting
   orders, and capital locked until settlement (both legs are held to settlement, so no exit liquidity is needed).
 - The legacy (international Polymarket) backtest did NOT account for depth at all.
+
+## Practice trader (built 2026-11-11)
+- `scripts/trader.py` runs inside every collector run (now every 5 min via cron-job.org). It applies
+  [`config/trading_rules.json`](config/trading_rules.json) (plain English: [docs/trading-rules.md](docs/trading-rules.md)) to
+  that run's taker hedges and resting-order plans and builds the exact orders it would send (`scripts/venues.py`: Kalshi V2
+  `portfolio/events/orders`, Polymarket US `/v1/orders`). **It sends nothing.**
+- Output in `data/paper/` on the price-data branch: `trader_orders.csv` (every payload), `trader_ledger.csv` (practice hedges,
+  graded at settlement), `trader_runs.csv` (one line per run with which rules rejected what). `python scripts/trader.py --status`.
+- Kill switch: repo variable `TRADING_ENABLED=false`.
+- `live_allowed()` refuses real orders until all of these hold: rules approved, mode `live`, `TRADING_ENABLED=true`, all four
+  API keys present, Polymarket US NO-price convention verified with a preview call, and an always-on runner exists.
+- Fix the same day: many Kalshi game-line series charge a **maker fee** (fee_type `quadratic_with_maker_fees`; props don't).
+  `find_arbs.kalshi_maker_fee` now nets it out of the resting-order sim. Fills logged before this fix overstate profit slightly.
