@@ -10,7 +10,9 @@ import csv
 import glob
 import gzip
 import json
+import re
 import sys
+import urllib.request
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,6 +22,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 START = {"kalshi": 50.0, "polymarket_us": 50.0}
 RESERVE = 10.0
+
+
+_EVENTS = {}
+
+
+def game_names(ticker):
+    """(full game name, short "AAA|BBB") for a Kalshi market, from its event, e.g. ("Northwestern vs West Virginia",
+    "NW|WVU"). The paper files don't keep team names for every row, so game lines would otherwise show no name."""
+    ev = "-".join((ticker or "").split("-")[:2])  # series-date+teams, e.g. KXNBAPTS-26NOV13NYKIND
+    if ev and ev not in _EVENTS:
+        try:
+            req = urllib.request.Request(f"https://api.elections.kalshi.com/trade-api/v2/events/{ev}",
+                                         headers={"User-Agent": "project-jontay-porter/0.2 (read-only research)"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                e = json.load(r)["event"]
+            short = re.sub(r"\s*\(.*\)\s*$", "", e.get("sub_title") or "")
+            _EVENTS[ev] = (e.get("title", "").split(":")[0].strip(), "|".join(t.strip() for t in short.split(" vs ")))
+        except Exception:  # noqa: BLE001
+            _EVENTS[ev] = ("", "")
+    return _EVENTS.get(ev, ("", ""))
 
 
 def _f(x):
@@ -79,13 +101,14 @@ def main():
         bag_key = (o["placed_ts"], o["rest_id"])
         settled_bag = bags.get(bag_key)
         game_over = o.get("event_time", "9999") < now
+        full, short = game_names(o["rest_id"])
         open_risk = q * _f(o["rest_px"]) if q > 0 and settled_bag is None else 0.0
         # hedged contracts are locked in, but stay "unrealized" until the game is over and both sides have settled
         realized = (locked if game_over else 0.0) + (settled_bag or 0.0)
         unrealized = 0.0 if game_over else locked
         pos.append(dict(
             fill_time=o.get("first_fill_ts", "")[:19] + "Z" if o.get("first_fill_ts") else o.get("resolved_ts", ""),
-            sport=o["sport"], market=o["market_type"], who=o.get("player") or o.get("teams", ""), teams=o.get("teams", ""),
+            sport=o["sport"], market=o["market_type"], who=o.get("player") or full or o.get("teams", ""), teams=short or o.get("teams", ""),
             line=o.get("rest_line", ""), side=o.get("rest_norm_side", ""), game_start=o.get("event_time", ""), rest_price=_f(o["rest_px"]), filled=round(_f(o["filled"]), 2),
             hedged=round(_f(o["hedged_qty"]), 2), unhedged=round(q, 2), status=o["hedge_status"],
             locked=round(locked, 2), open_risk=round(open_risk, 2), realized=round(realized, 2),
@@ -145,11 +168,12 @@ def main():
     for key, legs in by_key.items():
         _, rid, side, hid = key.split("|")
         p = plans_now.get((rid, side, hid), {})
+        full, short = game_names(rid)
         rb, hb = legs.get("rest", {}), legs.get("hedge_on_fill", {})
         c = _f(rb.get("count"))
         yes_px = _f(rb.get("price"))
         rest.append(dict(placed=latest, sport=p.get("sport", ""), market=p.get("market_type", ""),
-                         who=p.get("player") or p.get("teams", ""), teams=p.get("teams", ""), line=p.get("rest_line", ""),
+                         who=p.get("player") or full or p.get("teams", ""), teams=short or p.get("teams", ""), line=p.get("rest_line", ""),
                          game_start=p.get("event_time", ""), kalshi_market=rid, side=side, price=_f(p.get("rest_px")) or (yes_px if rb.get("side") == "bid" else round(1 - yes_px, 4)),
                          contracts=c, cost=round(c * _f(p.get("rest_px")), 2), hedge_market=hid,
                          hedge_limit=_f(hb.get("price", {}).get("value")), edge_cents=round(_f(p.get("edge_at_plan")) * 100, 2)))
