@@ -43,6 +43,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RULES = ROOT / "config" / "trading_rules.json"
 PAPER = ROOT / "data" / "paper"
 ORDERS, LEDGER, RUNS = PAPER / "trader_orders.csv", PAPER / "trader_ledger.csv", PAPER / "trader_runs.csv"
+LATEST = PAPER / "trader_latest.csv"
 ORDER_FIELDS = ["ts_utc", "mode", "strategy", "hedge_key", "leg", "venue", "market_id", "payload"]
 LEDGER_FIELDS = ["ts_utc", "hedge_key", "sport", "game_date", "teams", "market_type", "player", "event_time",
                  "a_venue", "a_id", "a_flipped", "a_price", "b_venue", "b_id", "b_flipped", "b_price",
@@ -382,6 +383,7 @@ def cycle(taker_opps, maker_plans, ts, rules=None):
               for a in t_acc + m_acc for leg, p in a["legs"]]
     if orders:
         _write(ORDERS, ORDER_FIELDS, orders)
+    _write(LATEST, ORDER_FIELDS, orders, "w")  # just this run's orders, for the always-on hedger (scripts/hedger.py)
     if t_acc:
         _write(LEDGER, LEDGER_FIELDS, [a["ledger"] for a in t_acc])
     _write(RUNS, RUN_FIELDS, [dict(ts_utc=ts, mode=mode, status=status, taker_candidates=len(taker_opps or []),
