@@ -59,5 +59,5 @@ jobs:
           title="Enough live data to review the strategy"
           gh issue list --state all --search "in:title \"$title\"" --json number -q '.[0].number' | grep -q . && exit 0
           python scripts/progress_report.py "$title" > report.md
-          printf '\n\n${{ steps.check.outputs.snapshots }} snapshots over ${{ steps.check.outputs.days }} days (newest ${{ steps.check.outputs.newest }}). Open Claude Code in project-jontay-porter and ask for the full live-data review (return estimate with a range, learner suggestions, rule changes to consider).\n' >> report.md
+          printf '\n\n${{ steps.check.outputs.snapshots }} snapshots over ${{ steps.check.outputs.days }} days (newest ${{ steps.check.outputs.newest }}). Open Claude Code in project-jontay-porter and ask for the full live-data review (return estimate with a range, learner suggestions, rule changes to consider).\n\nPlanned for this review: (1) cut unhedged fills: cancel or reprice the resting Kalshi order when the Polymarket US hedge price or depth moves, and only rest when the hedge side has 2x our size; (2) decide whether the 2c minimum edge on resting orders should drop to 1.5c (several 1.2-1.8c fills hedged fine); (3) check how bet sizing that grows with the balance has behaved.\n' >> report.md
           gh issue create --title "$title" --body-file report.md

@@ -7,6 +7,13 @@ proposal. Change any of them.
 ## Money
 - **$50 on Kalshi, $50 on Polymarket US.** $10 stays untouched on each venue so a hedge or fee can always be paid. That leaves
   **$40 per venue to trade with.**
+- **Bets grow with the balance.** Every dollar amount in these rules (bankroll, reserve, per-leg caps, unhedged cap, loss
+  limits) and the 25-contract cap is multiplied by *equity ÷ $100*, rounded down to the nearest 10%. So at $110 every limit
+  is 1.1× what's written here, at $150 it's 1.5×, and at $90 it shrinks to 0.9×. Two safeguards:
+  - Equity only counts **settled** results of trades the bot itself chose, minus any unhedged position still open (counted as
+    lost). Unsettled or lucky paper gains never make the bets bigger.
+  - Growth is capped at **3×** (`max_scale`) and shrinking stops at **0.5×**. Raise the cap once the results justify it.
+  - Profit percentages, the number of open positions and the time limits don't change.
 
 ## Each trade
 - **Max $10 per leg** (one side of a hedge on one venue), and at most 25 contracts.
@@ -27,7 +34,8 @@ proposal. Change any of them.
 
 ## Stop rules
 - **Lose $5 in a day:** no new trades until the next day.
-- **Down $15 in total (15% of $100):** cancel every open order, stop completely, and wait for you to restart it.
+- **Down $15 from the highest balance so far (15% of $100, scaled with the balance):** cancel every open order, stop
+  completely, and wait for you to restart it. Both loss limits count resting-order results as well as instant hedges.
 - **Kill switch:** a GitHub repo variable `TRADING_ENABLED`. Set it to `false` and the bot cancels all open orders on its next
   check and does nothing else. Existing hedged positions are left alone; they settle on their own.
 - **It also kills itself if:**

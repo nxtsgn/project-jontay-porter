@@ -91,8 +91,9 @@ def main():
             locked=round(locked, 2), open_risk=round(open_risk, 2), realized=round(realized, 2),
             unrealized=round(unrealized, 2), conservative=round(realized + unrealized - open_risk, 2),
             in_rules="yes" if share else "no", rules_conservative=round((realized + unrealized - open_risk) * share, 2),
-            state="open" if (open_risk or unrealized) else "settled", era=o["era"]))
-    _write(out, "positions.csv", pos, list(pos[0]) if pos else
+            state="open" if (open_risk or unrealized) else "settled", era=o["era"],
+            _share=share, _realized=realized, _unrealized=unrealized, _open_risk=open_risk))
+    _write(out, "positions.csv", pos, [c for c in pos[0] if not c.startswith("_")] if pos else
            ["fill_time", "sport", "market", "who", "teams", "line", "side", "game_start", "rest_price", "filled", "hedged", "unhedged", "status",
             "locked", "open_risk", "realized", "unrealized", "conservative", "in_rules", "rules_conservative", "state", "era"])
 
@@ -107,12 +108,14 @@ def main():
     _write(out, "equity.csv", curve, ["time", "full_size", "within_rules"])
 
     last = runs[-1] if runs else {}
+    k = _f(last.get("scale")) or 1.0  # the trader's bet-size multiplier (grows with settled profit)
     in_use = {"kalshi": _f(last.get("deployed_kalshi")), "polymarket_us": _f(last.get("deployed_pmus"))}
     led = _read(d, "trader_ledger.csv")
     taker_real = sum(_f(h["pnl"]) for h in led if h.get("pnl") not in ("", None))
-    rules = dict(realized=sum(p["realized"] * (p["in_rules"] == "yes") for p in pos) + taker_real,
-                 unrealized=sum(p["unrealized"] * (p["in_rules"] == "yes") for p in pos),
-                 open_risk=sum(p["open_risk"] * (p["in_rules"] == "yes") for p in pos))
+    # within rules = only what the practice trader chose, at the size it chose (share of the full-size fill)
+    rules = dict(realized=sum(p["_realized"] * p["_share"] for p in pos) + taker_real,
+                 unrealized=sum(p["_unrealized"] * p["_share"] for p in pos),
+                 open_risk=sum(p["_open_risk"] * p["_share"] for p in pos))
     full = dict(realized=sum(p["realized"] for p in pos) + taker_real, unrealized=sum(p["unrealized"] for p in pos),
                 open_risk=sum(p["open_risk"] for p in pos))
     span_days = ((datetime.strptime(max(stamps)[:19], "%Y-%m-%dT%H:%M:%S") - datetime.strptime(min(stamps)[:19], "%Y-%m-%dT%H:%M:%S"))
@@ -127,9 +130,9 @@ def main():
             unrealized=round(m["unrealized"], 2), open_risk=round(m["open_risk"], 2), conservative_total=round(total, 2),
             return_pct=round(total, 2), plans_checked=len(outcomes), fills=sum(1 for p in pos if (p["in_rules"] == "yes") or view == "full_size"),
             kalshi_in_use=round(in_use["kalshi"], 2), pmus_in_use=round(in_use["polymarket_us"], 2),
-            kalshi_free=round(max(0, START["kalshi"] - RESERVE - in_use["kalshi"]), 2),
-            pmus_free=round(max(0, START["polymarket_us"] - RESERVE - in_use["polymarket_us"]), 2),
-            last_run=last.get("ts_utc", ""), trader_status=last.get("status", ""), mode=last.get("mode", "")))
+            kalshi_free=round(max(0, (START["kalshi"] - RESERVE) * k - in_use["kalshi"]), 2),
+            pmus_free=round(max(0, (START["polymarket_us"] - RESERVE) * k - in_use["polymarket_us"]), 2),
+            last_run=last.get("ts_utc", ""), trader_status=last.get("status", ""), mode=last.get("mode", ""), bet_scale=k))
     _write(out, "summary.csv", summary, list(summary[0]))
 
     # resting orders the practice trader would have on the book right now (latest run)

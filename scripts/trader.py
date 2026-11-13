@@ -2,7 +2,12 @@
 it would send, but sends nothing. Runs inside the collector (collect_prices.py calls cycle()) every ~5 minutes.
 
 What it does each run:
-  1. Kill switch / loss stops: TRADING_ENABLED=false (GitHub repo variable), daily loss stop, total drawdown kill.
+  0. Bet size grows (or shrinks) with the balance: every dollar limit is multiplied by settled equity / starting bankroll,
+     in 10% steps, within the min/max set in "scale_with_balance". Equity counts only SETTLED results of what this
+     trader chose, minus any unhedged position still open (counted as lost), so unsettled or lucky paper gains never
+     raise the bet size.
+  1. Kill switch / loss stops: TRADING_ENABLED=false (GitHub repo variable), daily loss stop, drawdown kill (measured from
+     the highest equity so far). Both include the resting-order results, not just the instant hedges.
   2. Taker-taker hedges (from find_arbs): resize to the rules' caps, re-check profit after fees, check open-hedge / per-game /
      prop / per-venue capital limits, then build both IOC orders. Accepted hedges go into the practice ledger as if both
      legs filled at the quoted price (optimistic; depth was checked when the hedge was found).
@@ -43,7 +48,9 @@ LEDGER_FIELDS = ["ts_utc", "hedge_key", "sport", "game_date", "teams", "market_t
                  "a_venue", "a_id", "a_flipped", "a_price", "b_venue", "b_id", "b_flipped", "b_price",
                  "contracts", "cost", "fees", "net_per_contract", "net_total", "a_settle", "b_settle", "payout", "pnl"]
 RUN_FIELDS = ["ts_utc", "mode", "status", "taker_candidates", "taker_accepted", "maker_candidates", "maker_accepted",
-              "open_hedges", "deployed_kalshi", "deployed_pmus", "realized_today", "realized_total", "rejections"]
+              "open_hedges", "deployed_kalshi", "deployed_pmus", "realized_today", "realized_total", "rejections",
+              "equity", "scale"]
+MAKER_OUTCOMES, MAKER_BAGS = PAPER / "maker_outcomes.csv", PAPER / "maker_bags.csv"
 SETTLE_AFTER = timedelta(hours=4)
 LIVE_RUNNER_BUILT = False  # the always-on process that can hedge within max_unhedged_minutes
 
@@ -80,19 +87,26 @@ def live_allowed(rules):
 
 
 # ------------------------------------------------------------------------------------------------------ helpers
+def own_edge(o):
+    """The candidate's own expected profit per contract, as the detector priced it."""
+    return f(o.get("edge_at_plan")) or f(o.get("net_per_contract")) or 0.0
+
+
 def ranked(rules, cands, groups_fn, rej):
-    """Learning (can only tighten): drop groups the learner is confident lose money, and spend capital on the best-proven
-    groups first. With learning off, keep the detector's own order."""
+    """Order in which candidates get capital: biggest own edge first, tilted by what the learner has seen for that kind
+    of trade (its conservative per-contract value). Learning can also drop groups it is confident lose money; it can
+    never loosen a rule. (Until 2026-11-13 the order used the learner's score alone, which let thin-edge props use up
+    the Kalshi capital before 5-9c spreads and totals were considered.)"""
     lr = rules.get("learning") or {}
     if not lr.get("enabled"):
-        return cands
+        return sorted(cands, key=lambda o: -own_edge(o))
     model, keep = learn.load(), []
     for o in cands:
         sc, action, _ = learn.score(model, groups_fn(o), lr.get("min_samples_to_skip", 30))
         if action == "skip":
             rej.update(["learned: this kind of trade loses money"])
             continue
-        keep.append((sc, o))
+        keep.append((own_edge(o) + sc, o))
     keep.sort(key=lambda t: -t[0])  # stable: ties keep the detector's order
     return [o for _, o in keep]
 
@@ -107,12 +121,83 @@ def _read(path):
 
 def _write(path, fields, rows, mode="a"):
     path.parent.mkdir(parents=True, exist_ok=True)
+    if mode == "a" and path.exists():
+        with path.open() as fh:
+            header = next(csv.reader(fh), [])
+        if header != fields:  # columns were added: rewrite the old rows under the new header (missing values stay blank)
+            rows = _read(path) + list(rows)
+            mode = "w"
     new = mode == "w" or not path.exists()
     with path.open(mode, newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")
         if new:
             w.writeheader()
         w.writerows(rows)
+
+
+def rules_pnl(now):
+    """Conservative practice P&L of what THIS trader chose (not every plan at full size): (settled_total, settled_today,
+    open_risk). Resting orders: hedged contracts count once the game is over; unhedged ones count when they settle and,
+    until then, as a total loss (open_risk). Instant hedges: graded ledger P&L. Same rules as the dashboard."""
+    chosen = {}
+    if ORDERS.exists():
+        with ORDERS.open() as fh:
+            for r in csv.DictReader(fh):
+                if r["strategy"] == "maker" and r["leg"] == "rest":
+                    _, rid, side, hid = r["hedge_key"].split("|")
+                    chosen[(r["ts_utc"], rid, side, hid)] = float(json.loads(r["payload"])["count"])
+    bags = {(b["placed_ts"], b["rest_id"]): f(b["bag_pnl"]) for b in _read(MAKER_BAGS)}
+    today = now.strftime("%Y-%m-%d")
+    total = day = risk = 0.0
+    for o in _read(MAKER_OUTCOMES):
+        k = (o["placed_ts"], o["rest_id"], o["rest_norm_side"], o["hedge_id"])
+        if k not in chosen or f(o["filled"]) <= 0:
+            continue
+        share = chosen[k] / max(f(o["contracts"]), 1)
+        done = bool(o.get("event_time")) and _ts(o["event_time"]) + SETTLE_AFTER <= now
+        v = f(o["locked_pnl"]) * share if done else 0.0
+        q = f(o["unhedged_qty"])
+        if q > 0:
+            bag = bags.get((o["placed_ts"], o["rest_id"]))
+            if bag is None:
+                risk += q * f(o["rest_px"]) * share
+            else:
+                v += bag * share
+        total += v
+        day += v if o.get("event_time", "")[:10] == today else 0.0
+    for h in _read(LEDGER):
+        if h.get("pnl") not in ("", None):
+            total += float(h["pnl"])
+            day += float(h["pnl"]) if h["ts_utc"].startswith(today) else 0.0
+    return total, day, risk
+
+
+def scale_for(rules, equity):
+    """Bet-size multiplier from equity: equity / starting bankroll, rounded DOWN to the step, kept within min..max."""
+    s = rules.get("scale_with_balance") or {}
+    if not s.get("enabled"):
+        return 1.0
+    b = rules["bankroll"]
+    start = b["kalshi_start"] + b["polymarket_us_start"]
+    step = s.get("step", 0.1)
+    k = math.floor(equity / start / step + 1e-9) * step
+    return round(max(s.get("min_scale", 0.5), min(s.get("max_scale", 2.0), k)), 4)
+
+
+def scaled(rules, k):
+    """A copy of the rules with every dollar limit (and the contract cap) multiplied by k. Edges, counts of positions,
+    time limits and min_contracts are not money, so they stay as written."""
+    r = json.loads(json.dumps(rules))
+    if k == 1.0:
+        return r
+    for sec, keys in (("bankroll", ("kalshi_start", "polymarket_us_start", "reserve_per_venue")),
+                      ("per_hedge", ("max_cost_per_leg",)),
+                      ("portfolio", ("max_unhedged_exposure", "max_cost_per_prop_leg")),
+                      ("loss_limits", ("daily_loss_stop", "total_drawdown_kill"))):
+        for key in keys:
+            r[sec][key] = round(r[sec][key] * k, 2)
+    r["per_hedge"]["max_contracts"] = max(r["per_hedge"]["min_contracts"], math.floor(r["per_hedge"]["max_contracts"] * k))
+    return r
 
 
 class Book:
@@ -268,19 +353,25 @@ def grade_ledger(now):
 
 # ------------------------------------------------------------------------------------------------------ one run
 def cycle(taker_opps, maker_plans, ts, rules=None):
-    rules = rules or load_rules()
+    base = rules or load_rules()
     now = _ts(ts)
-    mode = rules["mode"] if live_allowed(rules) is True else ("paper" if rules["mode"] == "paper" else "dry_run")
+    mode = base["mode"] if live_allowed(base) is True else ("paper" if base["mode"] == "paper" else "dry_run")
     grade_ledger(now)
+    settled, settled_today, open_risk = rules_pnl(now)
+    start = base["bankroll"]["kalshi_start"] + base["bankroll"]["polymarket_us_start"]
+    equity = start + settled - open_risk
+    k = scale_for(base, equity)
+    rules = scaled(base, k)
     book = Book(rules, now)
     rej, status = Counter(), "ok"
     ll = rules["loss_limits"]
+    peak = max([start, equity] + [f(r.get("equity")) for r in _read(RUNS) if r.get("equity")])
     if kill_switch_off():
         status = "KILLED (TRADING_ENABLED=false): would cancel all open orders on both venues"
-    elif -book.realized_total >= ll["total_drawdown_kill"]:
-        status = f"KILLED (drawdown ${-book.realized_total:.2f}): would cancel all open orders and wait for a reset"
-    elif -book.realized_today >= ll["daily_loss_stop"]:
-        status = f"DAILY STOP (lost ${-book.realized_today:.2f} today)"
+    elif peak - equity >= ll["total_drawdown_kill"]:
+        status = f"KILLED (down ${peak - equity:.2f} from the ${peak:.2f} high): would cancel all open orders and wait for a reset"
+    elif -settled_today >= ll["daily_loss_stop"]:
+        status = f"DAILY STOP (lost ${-settled_today:.2f} today)"
     t_acc, m_acc = [], []
     if status == "ok":
         t_acc = taker(rules, book, taker_opps or [], ts, now, rej)
@@ -297,9 +388,9 @@ def cycle(taker_opps, maker_plans, ts, rules=None):
                                    taker_accepted=len(t_acc), maker_candidates=len(maker_plans or []), maker_accepted=len(m_acc),
                                    open_hedges=len(book.open), deployed_kalshi=round(book.deployed["kalshi"], 2),
                                    deployed_pmus=round(book.deployed["polymarket_us"], 2),
-                                   realized_today=round(book.realized_today, 2), realized_total=round(book.realized_total, 2),
-                                   rejections=json.dumps(dict(rej)))])
-    print(f"trader [{mode}] {status}: taker {len(t_acc)}/{len(taker_opps or [])}, resting {len(m_acc)}/{len(maker_plans or [])} "
+                                   realized_today=round(settled_today, 2), realized_total=round(settled, 2),
+                                   rejections=json.dumps(dict(rej)), equity=round(equity, 2), scale=k)])
+    print(f"trader [{mode}] {status}: equity ${equity:.2f}, bet size x{k}; taker {len(t_acc)}/{len(taker_opps or [])}, resting {len(m_acc)}/{len(maker_plans or [])} "
           f"accepted; open {len(book.open)}; Kalshi ${book.deployed['kalshi']:.2f} / PM-US ${book.deployed['polymarket_us']:.2f} "
           f"in use; rejected {dict(rej.most_common(4))}")
     return t_acc, m_acc

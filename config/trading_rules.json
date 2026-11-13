@@ -13,6 +13,14 @@
     "_reserve_note": "kept back on each venue so a hedge or fee can always be paid"
   },
 
+  "scale_with_balance": {
+    "enabled": true,
+    "step": 0.1,
+    "min_scale": 0.5,
+    "max_scale": 3.0,
+    "_note": "every dollar limit (bankroll per venue, reserve, cost per leg, prop cost per leg, unhedged exposure, loss limits) and max_contracts is multiplied by equity / $100, rounded down to the step. Equity = $100 + SETTLED results of trades the bot chose - unhedged positions still open (counted as lost). So bets grow 10% for every $10 of settled profit and shrink the same way on losses. Edges, position counts and time limits don't scale. max_scale caps growth (3.0 = bets up to 3x today's); raise it once the results justify it"
+  },
+
   "per_hedge": {
     "max_cost_per_leg": 10.0,
     "max_contracts": 25,
