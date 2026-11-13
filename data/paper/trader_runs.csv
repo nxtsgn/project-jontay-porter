@@ -1,550 +1,551 @@
-ts_utc,mode,status,taker_candidates,taker_accepted,maker_candidates,maker_accepted,open_hedges,deployed_kalshi,deployed_pmus,realized_today,realized_total,rejections
-2026-11-11T19:05:13Z,dry_run,ok,0,0,56,15,0,39.99,0,0,0,"{""too few contracts after caps"": 41}"
-2026-11-11T19:10:18Z,dry_run,ok,0,0,61,15,0,39.99,0,0,0,"{""too few contracts after caps"": 46}"
-2026-11-11T19:15:18Z,dry_run,ok,0,0,63,14,0,39.95,0,0,0,"{""too few contracts after caps"": 49}"
-2026-11-11T19:20:19Z,dry_run,ok,0,0,66,30,0,39.89,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 31}"
-2026-11-11T19:25:14Z,dry_run,ok,0,0,65,31,0,39.95,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 29}"
-2026-11-11T19:30:22Z,dry_run,ok,0,0,62,31,0,39.53,0,0,0,"{""too few contracts after caps"": 31}"
-2026-11-11T19:35:13Z,dry_run,ok,0,0,63,31,0,39.6,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 31}"
-2026-11-11T19:40:16Z,dry_run,ok,0,0,63,32,0,39.97,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 29}"
-2026-11-11T19:45:17Z,dry_run,ok,0,0,63,29,0,39.85,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 33}"
-2026-11-11T19:50:16Z,dry_run,ok,0,0,60,24,0,39.85,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 35}"
-2026-11-11T19:55:14Z,dry_run,ok,0,0,54,25,0,39.95,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 28}"
-2026-11-11T20:00:23Z,dry_run,ok,0,0,62,36,0,40.0,0,0,0,"{""too few contracts after caps"": 26}"
-2026-11-11T20:06:51Z,dry_run,ok,0,0,51,25,0,40.0,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 23}"
-2026-11-11T20:11:39Z,dry_run,ok,0,0,51,32,0,39.95,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 14}"
-2026-11-11T20:15:16Z,dry_run,ok,0,0,52,33,0,39.93,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 13}"
-2026-11-11T20:57:37Z,dry_run,ok,0,0,27,23,0,35.94,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-11T21:00:24Z,dry_run,ok,0,0,34,22,0,39.69,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 6}"
-2026-11-11T21:02:28Z,dry_run,ok,0,0,41,20,0,39.99,0,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 14}"
-2026-11-11T21:05:15Z,dry_run,ok,0,0,34,24,0,37.8,0,0,0,"{""edge below minimum after resize"": 10}"
-2026-11-11T21:10:18Z,dry_run,ok,0,0,7,5,0,11.21,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T21:15:18Z,dry_run,ok,0,0,26,17,0,39.49,0,0,0,"{""edge below minimum after resize"": 9}"
-2026-11-11T21:20:20Z,dry_run,ok,0,0,22,11,0,18.02,0,0,0,"{""edge below minimum after resize"": 11}"
-2026-11-11T21:25:14Z,dry_run,ok,0,0,20,13,0,20.68,0,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-11T21:30:19Z,dry_run,ok,0,0,9,5,0,9.13,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-11T21:35:13Z,dry_run,ok,0,0,9,7,0,14.78,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T21:40:16Z,dry_run,ok,0,0,6,5,0,9.24,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-11T21:45:16Z,dry_run,ok,0,0,11,8,0,21.76,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-11T21:50:16Z,dry_run,ok,0,0,8,7,0,18.14,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-11T21:55:19Z,dry_run,ok,0,0,8,8,0,19.14,0,0,0,{}
-2026-11-11T22:00:28Z,dry_run,ok,0,0,7,5,0,8.07,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:05:15Z,dry_run,ok,0,0,4,4,0,2.66,0,0,0,{}
-2026-11-11T22:10:19Z,dry_run,ok,0,0,6,3,0,2.32,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-11T22:15:15Z,dry_run,ok,0,0,6,6,0,12.31,0,0,0,{}
-2026-11-11T22:20:16Z,dry_run,ok,0,0,7,6,0,10.88,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-11T22:25:14Z,dry_run,ok,0,0,8,6,0,13.01,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:30:23Z,dry_run,ok,0,0,8,6,0,11.85,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:35:13Z,dry_run,ok,0,0,8,6,0,12.1,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:40:16Z,dry_run,ok,0,0,3,3,0,2.87,0,0,0,{}
-2026-11-11T22:45:17Z,dry_run,ok,0,0,6,4,0,7.57,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:50:18Z,dry_run,ok,0,0,7,5,0,7.56,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T22:55:14Z,dry_run,ok,0,0,3,2,0,2.1,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-11T23:00:25Z,dry_run,ok,0,0,8,6,0,3.6,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T23:05:15Z,dry_run,ok,0,0,15,13,0,36.14,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T23:10:17Z,dry_run,ok,0,0,13,8,0,31.26,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-11T23:15:17Z,dry_run,ok,0,0,8,6,0,8.5,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T23:20:19Z,dry_run,ok,0,0,12,10,0,39.45,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T23:25:16Z,dry_run,ok,0,0,11,8,0,11.77,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-11T23:30:20Z,dry_run,ok,0,0,16,13,0,27.75,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-11T23:35:14Z,dry_run,ok,0,0,12,9,0,32.62,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-11T23:38:19Z,dry_run,ok,0,0,10,8,0,26.68,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-11T23:40:18Z,dry_run,ok,0,0,5,5,0,11.97,0,0,0,{}
-2026-11-11T23:45:16Z,dry_run,ok,0,0,9,8,0,26.25,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-11T23:50:16Z,dry_run,ok,0,0,11,11,0,33.63,0,0,0,{}
-2026-11-11T23:55:14Z,dry_run,ok,0,0,4,2,0,12.55,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T00:00:23Z,dry_run,ok,0,0,18,11,0,39.78,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 1}"
-2026-11-12T00:05:15Z,dry_run,ok,0,0,13,10,0,36.5,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T00:10:19Z,dry_run,ok,0,0,15,10,0,38.88,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 3}"
-2026-11-12T00:15:16Z,dry_run,ok,0,0,10,8,0,18.36,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T00:20:17Z,dry_run,ok,0,0,9,9,0,39.65,0,0,0,{}
-2026-11-12T00:25:14Z,dry_run,ok,0,0,18,12,0,39.95,0,0,0,"{""edge below minimum after resize"": 2, ""too close to start / started"": 1, ""too few contracts after caps"": 3}"
-2026-11-12T00:30:21Z,dry_run,ok,0,0,7,5,0,21.02,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T00:35:13Z,dry_run,ok,0,0,11,9,0,21.63,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T00:40:19Z,dry_run,ok,0,0,15,13,0,34.98,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T00:45:20Z,dry_run,ok,0,0,10,9,0,22.17,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T00:50:17Z,dry_run,ok,0,0,10,4,0,28.7,0,0,0,"{""too close to start / started"": 6}"
-2026-11-12T00:55:14Z,dry_run,ok,0,0,5,2,0,7.8,0,0,0,"{""edge below minimum after resize"": 1, ""too close to start / started"": 2}"
-2026-11-12T01:00:23Z,dry_run,ok,0,0,10,4,0,30.0,0,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T01:05:14Z,dry_run,ok,0,0,7,2,0,19.58,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T01:10:17Z,dry_run,ok,0,0,3,2,0,19.58,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T01:15:16Z,dry_run,ok,0,0,5,3,0,19.83,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T01:20:17Z,dry_run,ok,0,0,5,4,0,29.66,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T01:25:13Z,dry_run,ok,0,0,11,6,0,26.31,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T01:30:21Z,dry_run,ok,0,0,11,7,0,35.02,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T01:35:13Z,dry_run,ok,0,0,13,8,0,39.89,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 1}"
-2026-11-12T01:40:17Z,dry_run,ok,0,0,9,6,0,22.08,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T01:45:16Z,dry_run,ok,0,0,47,9,0,40.0,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 37}"
-2026-11-12T01:50:16Z,dry_run,ok,0,0,24,12,0,39.07,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 8}"
-2026-11-12T01:55:14Z,dry_run,ok,0,0,52,11,0,39.79,0,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 31}"
-2026-11-12T02:00:25Z,dry_run,ok,0,0,52,8,0,39.87,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 38}"
-2026-11-12T02:05:15Z,dry_run,ok,0,0,14,5,0,39.96,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 4}"
-2026-11-12T02:10:17Z,dry_run,ok,0,0,14,5,0,39.86,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 6}"
-2026-11-12T02:15:17Z,dry_run,ok,0,0,12,4,0,39.08,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 4}"
-2026-11-12T02:20:17Z,dry_run,ok,0,0,11,4,0,37.54,0,0,0,"{""edge below minimum after resize"": 5, ""too close to start / started"": 1, ""too few contracts after caps"": 1}"
-2026-11-12T02:25:13Z,dry_run,ok,0,0,7,3,0,27.22,0,0,0,"{""too close to start / started"": 2, ""edge below minimum after resize"": 2}"
-2026-11-12T02:30:21Z,dry_run,ok,0,0,8,4,0,35.54,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T02:35:14Z,dry_run,ok,0,0,8,5,0,29.11,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T02:40:17Z,dry_run,ok,0,0,5,2,0,16.15,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T02:45:17Z,dry_run,ok,0,0,3,0,0,0,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T02:50:18Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""too close to start / started"": 1, ""edge below minimum after resize"": 1}"
-2026-11-12T02:55:13Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""too close to start / started"": 1, ""edge below minimum after resize"": 1}"
-2026-11-12T03:00:24Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T03:05:13Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T03:10:21Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T03:15:16Z,dry_run,ok,0,0,3,1,0,9.2,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T03:20:17Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T03:25:15Z,dry_run,ok,0,0,8,5,0,38.5,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 1}"
-2026-11-12T03:30:22Z,dry_run,ok,0,0,4,2,0,10.16,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T03:35:14Z,dry_run,ok,0,0,5,2,0,10.16,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T03:40:20Z,dry_run,ok,0,0,2,2,0,10.16,0,0,0,{}
-2026-11-12T03:45:16Z,dry_run,ok,0,0,3,3,0,19.1,0,0,0,{}
-2026-11-12T03:50:17Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{}
-2026-11-12T03:55:14Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{}
-2026-11-12T04:00:24Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{}
-2026-11-12T04:05:15Z,dry_run,ok,0,0,55,15,0,39.5,0,0,0,"{""edge below minimum after resize"": 15, ""too few contracts after caps"": 25}"
-2026-11-12T04:10:19Z,dry_run,ok,0,0,1,1,0,9.79,0,0,0,{}
-2026-11-12T04:15:20Z,dry_run,ok,0,0,4,1,0,9.79,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:19:57Z,dry_run,ok,0,0,3,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T04:21:58Z,dry_run,ok,0,0,4,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:25:14Z,dry_run,ok,0,0,4,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:30:21Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:35:16Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:40:17Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:45:17Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T04:50:18Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T04:55:15Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T05:00:24Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T05:05:16Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T05:10:17Z,dry_run,ok,0,0,10,3,0,8.85,0,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-12T05:15:19Z,dry_run,ok,0,0,5,2,0,10.04,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T05:20:19Z,dry_run,ok,0,0,9,5,0,29.56,0,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T05:25:15Z,dry_run,ok,0,0,7,2,0,0.4,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T05:30:23Z,dry_run,ok,0,0,8,3,0,9.97,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T05:35:17Z,dry_run,ok,0,0,6,1,0,0.2,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T05:40:17Z,dry_run,ok,0,0,6,1,0,0.2,0,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T05:45:17Z,dry_run,ok,0,0,8,1,0,4.8,0,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-12T05:50:19Z,dry_run,ok,0,0,15,3,0,19.61,0,0,0,"{""edge below minimum after resize"": 12}"
-2026-11-12T05:55:15Z,dry_run,ok,0,0,14,5,0,25.94,0,0,0,"{""edge below minimum after resize"": 9}"
-2026-11-12T06:00:25Z,dry_run,ok,0,0,4,2,0,2.73,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T06:05:15Z,dry_run,ok,0,0,6,4,0,7.85,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T06:10:20Z,dry_run,ok,0,0,2,1,0,4.2,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T06:15:17Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T06:20:19Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T06:25:16Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T06:30:22Z,dry_run,ok,0,0,4,4,0,18.9,0,0,0,{}
-2026-11-12T06:35:15Z,dry_run,ok,0,0,2,2,0,7.48,0,0,0,{}
-2026-11-12T06:40:19Z,dry_run,ok,0,0,2,2,0,7.48,0,0,0,{}
-2026-11-12T06:45:18Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T06:50:20Z,dry_run,ok,0,0,3,1,0,4.9,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T06:55:17Z,dry_run,ok,0,0,1,1,0,4.38,0,0,0,{}
-2026-11-12T07:00:24Z,dry_run,ok,0,0,6,5,0,26.43,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T07:05:17Z,dry_run,ok,0,0,6,5,0,19.73,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T07:10:19Z,dry_run,ok,0,0,5,3,0,9.87,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T07:15:19Z,dry_run,ok,0,0,6,4,0,17.83,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T07:20:19Z,dry_run,ok,0,0,6,3,0,14.18,0,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T07:25:16Z,dry_run,ok,0,0,3,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T07:30:22Z,dry_run,ok,0,0,3,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T07:35:16Z,dry_run,ok,0,0,2,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T07:40:18Z,dry_run,ok,0,0,5,3,0,9.52,0,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T07:45:20Z,dry_run,ok,0,0,3,2,0,7.04,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T07:50:19Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T07:55:16Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T08:00:24Z,dry_run,ok,0,0,26,8,0,39.85,0,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 5}"
-2026-11-12T08:05:18Z,dry_run,ok,0,0,75,11,0,39.95,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 61}"
-2026-11-12T08:10:22Z,dry_run,ok,0,0,87,9,0,39.96,0,0,0,"{""too few contracts after caps"": 71, ""edge below minimum after resize"": 7}"
-2026-11-12T08:15:19Z,dry_run,ok,0,0,88,10,0,39.99,0,0,0,"{""too few contracts after caps"": 78}"
-2026-11-12T08:20:19Z,dry_run,ok,0,0,90,10,0,39.98,0,0,0,"{""too few contracts after caps"": 80}"
-2026-11-12T08:25:16Z,dry_run,ok,0,0,89,10,0,39.98,0,0,0,"{""too few contracts after caps"": 79}"
-2026-11-12T08:30:25Z,dry_run,ok,0,0,88,10,0,39.95,0,0,0,"{""too few contracts after caps"": 78}"
-2026-11-12T08:35:18Z,dry_run,ok,0,0,89,10,0,39.95,0,0,0,"{""too few contracts after caps"": 79}"
-2026-11-12T08:40:18Z,dry_run,ok,0,0,89,14,0,40.0,0,0,0,"{""too few contracts after caps"": 75}"
-2026-11-12T08:45:19Z,dry_run,ok,0,0,100,13,0,39.99,0,0,0,"{""too few contracts after caps"": 87}"
-2026-11-12T08:50:19Z,dry_run,ok,0,0,105,12,0,39.97,0,0,0,"{""too few contracts after caps"": 93}"
-2026-11-12T08:55:18Z,dry_run,ok,0,0,103,10,0,39.95,0,0,0,"{""too few contracts after caps"": 93}"
-2026-11-12T09:00:28Z,dry_run,ok,0,0,110,5,0,39.95,0,0,0,"{""too few contracts after caps"": 105}"
-2026-11-12T09:05:17Z,dry_run,ok,1,1,111,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 106}"
-2026-11-12T09:10:22Z,dry_run,ok,1,0,111,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}"
-2026-11-12T09:15:23Z,dry_run,ok,1,0,111,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}"
-2026-11-12T09:20:20Z,dry_run,ok,1,0,108,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}"
-2026-11-12T09:25:16Z,dry_run,ok,1,0,108,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}"
-2026-11-12T09:30:24Z,dry_run,ok,1,0,108,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}"
-2026-11-12T09:35:16Z,dry_run,ok,1,0,109,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 103}"
-2026-11-12T09:40:20Z,dry_run,ok,1,0,111,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}"
-2026-11-12T09:45:19Z,dry_run,ok,1,0,110,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 104}"
-2026-11-12T09:50:21Z,dry_run,ok,1,0,110,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 104}"
-2026-11-12T09:55:15Z,dry_run,ok,1,0,108,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}"
-2026-11-12T10:00:26Z,dry_run,ok,0,0,68,9,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 56}"
-2026-11-12T10:05:22Z,dry_run,ok,0,0,5,2,1,12.49,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T10:10:22Z,dry_run,ok,0,0,3,1,1,11.26,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T10:15:20Z,dry_run,ok,0,0,4,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T10:20:19Z,dry_run,ok,0,0,6,4,1,21.79,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T10:25:20Z,dry_run,ok,0,0,6,5,1,25.44,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T10:30:24Z,dry_run,ok,0,0,4,3,1,17.25,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T10:35:18Z,dry_run,ok,0,0,7,5,1,26.47,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T10:40:22Z,dry_run,ok,0,0,4,3,1,17.19,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T10:45:19Z,dry_run,ok,0,0,17,8,1,39.73,0.75,0,0,"{""too few contracts after caps"": 9}"
-2026-11-12T10:50:22Z,dry_run,ok,0,0,8,6,1,31.27,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T10:55:19Z,dry_run,ok,0,0,10,6,1,30.64,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T11:00:27Z,dry_run,ok,0,0,4,4,1,21.79,0.75,0,0,{}
-2026-11-12T11:05:18Z,dry_run,ok,0,0,20,10,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 9}"
-2026-11-12T11:10:19Z,dry_run,ok,0,0,5,5,1,23.75,0.75,0,0,{}
-2026-11-12T11:15:21Z,dry_run,ok,0,0,7,7,1,37.89,0.75,0,0,{}
-2026-11-12T11:20:23Z,dry_run,ok,0,0,10,8,1,39.88,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T11:25:18Z,dry_run,ok,0,0,7,6,1,33.11,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T11:30:23Z,dry_run,ok,0,0,7,7,1,33.65,0.75,0,0,{}
-2026-11-12T11:35:23Z,dry_run,ok,0,0,9,8,1,38.72,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T11:40:21Z,dry_run,ok,0,0,8,8,1,39.59,0.75,0,0,{}
-2026-11-12T11:45:19Z,dry_run,ok,0,0,7,5,1,23.87,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T11:50:21Z,dry_run,ok,0,0,7,5,1,24.02,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T11:55:18Z,dry_run,ok,0,0,7,6,1,28.37,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T12:00:28Z,dry_run,ok,0,0,5,4,1,19.19,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T12:05:18Z,dry_run,ok,0,0,8,5,1,24.16,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T12:10:22Z,dry_run,ok,0,0,6,4,1,19.07,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T12:15:20Z,dry_run,ok,0,0,6,6,1,20.86,0.75,0,0,{}
-2026-11-12T12:20:23Z,dry_run,ok,0,0,8,7,1,25.05,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T12:25:19Z,dry_run,ok,0,0,6,4,1,18.13,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T12:30:24Z,dry_run,ok,0,0,4,4,1,18.13,0.75,0,0,{}
-2026-11-12T12:35:16Z,dry_run,ok,0,0,5,4,1,18.13,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T12:40:20Z,dry_run,ok,0,0,4,4,1,20.65,0.75,0,0,{}
-2026-11-12T12:45:21Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{}
-2026-11-12T12:50:20Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{}
-2026-11-12T12:55:19Z,dry_run,ok,0,0,4,4,1,20.93,0.75,0,0,{}
-2026-11-12T13:00:30Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{}
-2026-11-12T13:05:17Z,dry_run,ok,0,0,3,3,1,17.99,0.75,0,0,{}
-2026-11-12T13:07:00Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{}
-2026-11-12T13:10:23Z,dry_run,ok,0,0,7,4,1,24.53,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T13:15:19Z,dry_run,ok,0,0,4,4,1,25.01,0.75,0,0,{}
-2026-11-12T13:20:20Z,dry_run,ok,0,0,8,6,1,35.17,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T13:25:20Z,dry_run,ok,0,0,9,8,1,37.61,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T13:30:25Z,dry_run,ok,0,0,7,6,1,27.53,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T13:35:19Z,dry_run,ok,0,0,15,7,1,39.54,0.75,0,0,"{""too few contracts after caps"": 8}"
-2026-11-12T13:40:39Z,dry_run,ok,0,0,21,11,1,39.57,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 1}"
-2026-11-12T13:45:21Z,dry_run,ok,0,0,26,16,1,39.86,0.75,0,0,"{""edge below minimum after resize"": 10}"
-2026-11-12T13:50:23Z,dry_run,ok,0,0,27,18,1,39.56,0.75,0,0,"{""edge below minimum after resize"": 9}"
-2026-11-12T13:55:20Z,dry_run,ok,0,0,26,18,1,37.57,0.75,0,0,"{""edge below minimum after resize"": 8}"
-2026-11-12T14:00:27Z,dry_run,ok,0,0,24,14,1,37.97,0.75,0,0,"{""edge below minimum after resize"": 10}"
-2026-11-12T14:05:20Z,dry_run,ok,0,0,32,17,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 8}"
-2026-11-12T14:10:22Z,dry_run,ok,0,0,28,14,1,35.08,0.75,0,0,"{""edge below minimum after resize"": 14}"
-2026-11-12T14:15:22Z,dry_run,ok,0,0,29,17,1,39.66,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 1}"
-2026-11-12T14:20:24Z,dry_run,ok,0,0,29,16,1,32.35,0.75,0,0,"{""edge below minimum after resize"": 13}"
-2026-11-12T14:25:19Z,dry_run,ok,0,0,29,15,1,36.62,0.75,0,0,"{""edge below minimum after resize"": 14}"
-2026-11-12T14:30:27Z,dry_run,ok,0,0,33,14,1,39.84,0.75,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 14}"
-2026-11-12T14:35:18Z,dry_run,ok,0,0,31,16,1,39.85,0.75,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 11}"
-2026-11-12T14:40:24Z,dry_run,ok,0,0,23,12,1,38.87,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 3}"
-2026-11-12T14:45:21Z,dry_run,ok,0,0,14,7,1,34.33,0.75,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-12T14:50:23Z,dry_run,ok,0,0,18,7,1,34.12,0.75,0,0,"{""edge below minimum after resize"": 11}"
-2026-11-12T14:55:20Z,dry_run,ok,0,0,17,6,1,28.98,0.75,0,0,"{""edge below minimum after resize"": 11}"
-2026-11-12T15:00:31Z,dry_run,ok,0,0,20,8,1,39.24,0.75,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 6}"
-2026-11-12T15:05:20Z,dry_run,ok,0,0,11,3,1,19.06,0.75,0,0,"{""edge below minimum after resize"": 8}"
-2026-11-12T15:10:26Z,dry_run,ok,0,0,11,5,1,30.59,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T15:15:22Z,dry_run,ok,0,0,17,4,1,22.62,0.75,0,0,"{""edge below minimum after resize"": 13}"
-2026-11-12T15:20:21Z,dry_run,ok,0,0,10,3,1,18.45,0.75,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-12T15:25:19Z,dry_run,ok,0,0,15,4,1,18.48,0.75,0,0,"{""edge below minimum after resize"": 11}"
-2026-11-12T15:30:30Z,dry_run,ok,0,0,17,5,1,37.83,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 1}"
-2026-11-12T15:35:19Z,dry_run,ok,0,0,6,2,1,17.02,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T15:40:21Z,dry_run,ok,0,0,5,2,1,12.69,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T15:45:20Z,dry_run,ok,0,0,18,4,1,16.66,0.75,0,0,"{""edge below minimum after resize"": 14}"
-2026-11-12T15:50:22Z,dry_run,ok,0,0,6,5,1,15.17,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T15:55:25Z,dry_run,ok,0,0,7,5,1,17.71,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T16:00:29Z,dry_run,ok,0,0,5,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T16:05:23Z,dry_run,ok,0,0,2,2,1,12.45,0.75,0,0,{}
-2026-11-12T16:10:24Z,dry_run,ok,0,0,2,1,1,12.37,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T16:15:21Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T16:20:24Z,dry_run,ok,0,0,6,1,1,9.5,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T16:25:30Z,dry_run,ok,0,0,7,3,1,12.3,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T16:30:28Z,dry_run,ok,0,0,4,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T16:35:19Z,dry_run,ok,0,0,9,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 9}"
-2026-11-12T16:40:24Z,dry_run,ok,0,0,6,2,1,26.95,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T16:45:23Z,dry_run,ok,0,0,6,1,1,17.55,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T16:50:24Z,dry_run,ok,0,0,2,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T16:55:20Z,dry_run,ok,0,0,4,3,1,19.84,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T17:00:31Z,dry_run,ok,0,0,7,2,1,18.98,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T17:05:19Z,dry_run,ok,0,0,7,2,1,17.23,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T17:10:24Z,dry_run,ok,0,0,9,3,1,23.63,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T17:15:24Z,dry_run,ok,0,0,9,1,1,12.25,0.75,0,0,"{""edge below minimum after resize"": 8}"
-2026-11-12T17:20:23Z,dry_run,ok,0,0,10,3,1,21.1,0.75,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-12T17:25:22Z,dry_run,ok,0,0,9,1,1,13.35,0.75,0,0,"{""edge below minimum after resize"": 8}"
-2026-11-12T17:30:28Z,dry_run,ok,0,0,3,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T17:35:19Z,dry_run,ok,0,0,5,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T17:40:25Z,dry_run,ok,0,0,6,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T17:45:22Z,dry_run,ok,0,0,5,2,1,9.15,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T17:50:23Z,dry_run,ok,0,0,3,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T17:55:19Z,dry_run,ok,0,0,3,1,1,12.44,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T18:00:31Z,dry_run,ok,0,0,4,1,1,8.1,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T18:05:20Z,dry_run,ok,0,0,8,3,1,21.95,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T18:10:25Z,dry_run,ok,0,0,6,3,1,16.87,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T18:15:23Z,dry_run,ok,0,0,4,3,1,26.88,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T18:20:24Z,dry_run,ok,0,0,4,2,1,17.35,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T18:25:27Z,dry_run,ok,0,0,3,3,1,23.32,0.75,0,0,{}
-2026-11-12T18:30:30Z,dry_run,ok,0,0,7,3,1,32.33,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T18:35:18Z,dry_run,ok,0,0,3,2,1,17.29,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T18:40:27Z,dry_run,ok,0,0,4,3,1,25.98,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T18:45:23Z,dry_run,ok,0,0,3,1,1,17.2,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T18:50:22Z,dry_run,ok,0,0,4,1,1,12.0,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T18:55:23Z,dry_run,ok,0,0,2,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T19:00:32Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T19:05:22Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T19:10:26Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T19:15:26Z,dry_run,ok,0,0,3,3,1,21.98,0.75,0,0,{}
-2026-11-12T19:20:23Z,dry_run,ok,0,0,5,1,1,7.85,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T19:25:21Z,dry_run,ok,0,0,7,4,1,17.95,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T19:30:31Z,dry_run,ok,0,0,1,1,1,8.35,0.75,0,0,{}
-2026-11-12T19:35:24Z,dry_run,ok,0,0,3,3,1,17.29,0.75,0,0,{}
-2026-11-12T19:40:31Z,dry_run,ok,0,0,4,1,1,8.1,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T19:45:25Z,dry_run,ok,0,0,6,2,1,12.45,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T19:50:28Z,dry_run,ok,0,0,3,2,1,12.55,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T19:55:32Z,dry_run,ok,0,0,3,2,1,15.7,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T20:00:32Z,dry_run,ok,0,0,3,3,1,21.08,0.75,0,0,{}
-2026-11-12T20:05:27Z,dry_run,ok,0,0,1,1,1,8.2,0.75,0,0,{}
-2026-11-12T20:10:23Z,dry_run,ok,0,0,6,5,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T20:15:22Z,dry_run,ok,0,0,0,0,1,7.75,0.75,0,0,{}
-2026-11-12T20:20:23Z,dry_run,ok,0,0,5,5,1,15.27,0.75,0,0,{}
-2026-11-12T20:25:21Z,dry_run,ok,0,0,4,2,1,13.38,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T20:30:29Z,dry_run,ok,0,0,2,2,1,15.27,0.75,0,0,{}
-2026-11-12T20:35:24Z,dry_run,ok,0,0,5,4,1,23.42,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T20:40:23Z,dry_run,ok,0,0,7,4,1,24.88,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T20:45:25Z,dry_run,ok,0,0,10,5,1,17.15,0.75,0,0,"{""edge below minimum after resize"": 5}"
-2026-11-12T20:50:24Z,dry_run,ok,0,0,12,6,1,25.5,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T20:52:32Z,dry_run,ok,0,0,8,5,1,27.65,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T20:55:22Z,dry_run,ok,0,0,9,3,1,14.01,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T21:00:29Z,dry_run,ok,0,0,8,4,1,19.28,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T21:05:24Z,dry_run,ok,0,0,7,6,1,24.26,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T21:10:24Z,dry_run,ok,0,0,7,5,1,19.81,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T21:15:23Z,dry_run,ok,0,0,8,5,1,15.83,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T21:20:22Z,dry_run,ok,0,0,5,4,1,11.05,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T21:25:22Z,dry_run,ok,0,0,6,5,1,22.35,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T21:30:28Z,dry_run,ok,0,0,5,4,1,21.0,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T21:35:20Z,dry_run,ok,0,0,4,4,1,18.43,0.75,0,0,{}
-2026-11-12T21:40:25Z,dry_run,ok,0,0,5,3,1,17.05,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T21:45:23Z,dry_run,ok,0,0,6,5,1,23.22,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T21:50:26Z,dry_run,ok,0,0,5,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T21:55:19Z,dry_run,ok,0,0,6,3,1,12.87,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T22:00:28Z,dry_run,ok,0,0,9,5,1,11.21,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-12T22:05:23Z,dry_run,ok,0,0,4,4,1,9.83,0.75,0,0,{}
-2026-11-12T22:10:27Z,dry_run,ok,0,0,6,4,1,14.55,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T22:20:25Z,dry_run,ok,0,0,3,3,1,12.99,0.75,0,0,{}
-2026-11-12T22:25:27Z,dry_run,ok,0,0,7,4,1,14.31,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T22:30:29Z,dry_run,ok,0,0,4,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T22:35:19Z,dry_run,ok,0,0,9,3,1,18.15,0.75,0,0,"{""edge below minimum after resize"": 6}"
-2026-11-12T22:40:29Z,dry_run,ok,0,0,22,4,1,39.99,0.75,0,0,"{""too few contracts after caps"": 18}"
-2026-11-12T22:45:24Z,dry_run,ok,0,0,5,3,1,12.5,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T22:50:26Z,dry_run,ok,0,0,3,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 1}"
-2026-11-12T22:55:27Z,dry_run,ok,0,0,7,4,1,18.55,0.75,0,0,"{""edge below minimum after resize"": 1, ""too close to start / started"": 2}"
-2026-11-12T23:00:32Z,dry_run,ok,0,0,6,3,1,17.85,0.75,0,0,"{""edge below minimum after resize"": 3}"
-2026-11-12T23:05:25Z,dry_run,ok,0,0,8,6,1,39.47,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 1}"
-2026-11-12T23:10:25Z,dry_run,ok,0,0,6,4,1,32.48,0.75,0,0,"{""edge below minimum after resize"": 2}"
-2026-11-12T23:15:26Z,dry_run,ok,0,0,23,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 17}"
-2026-11-12T23:20:29Z,dry_run,ok,0,0,25,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 19}"
-2026-11-12T23:25:23Z,dry_run,ok,0,0,25,6,1,39.81,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 17, ""too close to start / started"": 1}"
-2026-11-12T23:30:30Z,dry_run,ok,0,0,22,5,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 16}"
-2026-11-12T23:35:21Z,dry_run,ok,0,0,23,5,1,39.69,0.75,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 14}"
-2026-11-12T23:40:24Z,dry_run,ok,0,0,21,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 14, ""edge below minimum after resize"": 2}"
-2026-11-12T23:45:27Z,dry_run,ok,0,0,22,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 17}"
-2026-11-12T23:50:27Z,dry_run,ok,0,0,20,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 12, ""too close to start / started"": 3}"
-2026-11-12T23:55:24Z,dry_run,ok,0,0,13,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 7, ""too close to start / started"": 1}"
-2026-11-13T00:00:33Z,dry_run,ok,0,0,63,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 58}"
-2026-11-13T00:05:26Z,dry_run,ok,0,0,62,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T00:10:29Z,dry_run,ok,0,0,62,4,1,39.99,0.75,0,0,"{""too few contracts after caps"": 58}"
-2026-11-13T00:15:30Z,dry_run,ok,0,0,62,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T00:20:23Z,dry_run,ok,0,0,62,6,1,39.98,0.75,0,0,"{""too few contracts after caps"": 56}"
-2026-11-13T00:25:21Z,dry_run,ok,0,0,62,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T00:30:30Z,dry_run,ok,0,0,62,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T00:35:24Z,dry_run,ok,0,0,62,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T00:40:23Z,dry_run,ok,0,0,62,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}"
-2026-11-13T00:45:22Z,dry_run,ok,0,0,63,4,1,39.95,0.75,0,0,"{""too few contracts after caps"": 59}"
-2026-11-13T00:50:26Z,dry_run,ok,0,0,60,6,1,39.97,0.75,0,0,"{""too few contracts after caps"": 54}"
-2026-11-13T00:55:25Z,dry_run,ok,0,0,60,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 54, ""too close to start / started"": 1}"
-2026-11-13T01:00:33Z,dry_run,ok,0,0,62,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}"
-2026-11-13T01:05:22Z,dry_run,ok,0,0,44,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 39}"
-2026-11-13T01:10:31Z,dry_run,ok,0,0,40,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 35}"
-2026-11-13T01:15:26Z,dry_run,ok,0,0,67,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 61}"
-2026-11-13T01:20:25Z,dry_run,ok,0,0,67,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 62}"
-2026-11-13T01:25:26Z,dry_run,ok,0,0,68,4,1,40.0,0.75,0,0,"{""too few contracts after caps"": 64}"
-2026-11-13T01:30:30Z,dry_run,ok,0,0,67,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 62}"
-2026-11-13T01:35:22Z,dry_run,ok,0,0,67,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 62}"
-2026-11-13T01:40:24Z,dry_run,ok,0,0,69,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T01:43:16Z,dry_run,ok,0,0,69,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T01:46:32Z,dry_run,ok,0,0,68,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T01:50:23Z,dry_run,ok,0,0,68,4,1,39.95,0.75,0,0,"{""too few contracts after caps"": 64}"
-2026-11-13T01:55:24Z,dry_run,ok,0,0,68,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T02:00:36Z,dry_run,ok,0,0,7,3,1,33.5,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-13T02:05:18Z,dry_run,ok,0,0,9,5,1,33.72,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-13T02:10:24Z,dry_run,ok,0,0,16,5,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 10}"
-2026-11-13T02:15:22Z,dry_run,ok,0,0,21,7,1,39.91,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 13}"
-2026-11-13T02:20:25Z,dry_run,ok,0,0,17,6,1,39.74,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 9}"
-2026-11-13T02:25:23Z,dry_run,ok,0,0,15,5,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 8}"
-2026-11-13T02:30:28Z,dry_run,ok,0,0,17,4,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 11}"
-2026-11-13T02:35:24Z,dry_run,ok,0,0,13,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 5}"
-2026-11-13T02:40:25Z,dry_run,ok,0,0,13,5,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 5}"
-2026-11-13T02:45:28Z,dry_run,ok,0,0,13,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 6}"
-2026-11-13T02:50:30Z,dry_run,ok,0,0,14,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 6, ""too close to start / started"": 1}"
-2026-11-13T02:55:21Z,dry_run,ok,0,0,14,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 7}"
-2026-11-13T03:00:32Z,dry_run,ok,0,0,11,4,1,39.98,0.75,0,0,"{""too few contracts after caps"": 7}"
-2026-11-13T03:05:24Z,dry_run,ok,0,0,19,6,1,39.31,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 12}"
-2026-11-13T03:10:28Z,dry_run,ok,0,0,20,4,1,39.98,0.75,0,0,"{""too few contracts after caps"": 16}"
-2026-11-13T03:15:25Z,dry_run,ok,0,0,0,0,1,7.75,0.75,0,0,{}
-2026-11-13T03:20:27Z,dry_run,ok,0,0,19,7,1,39.35,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 11}"
-2026-11-13T03:25:25Z,dry_run,ok,0,0,18,6,1,39.85,0.75,0,0,"{""too few contracts after caps"": 12}"
-2026-11-13T03:30:30Z,dry_run,ok,0,0,17,7,1,40.0,0.75,0,0,"{""too few contracts after caps"": 10}"
-2026-11-13T03:35:21Z,dry_run,ok,0,0,15,6,1,39.97,0.75,0,0,"{""too few contracts after caps"": 9}"
-2026-11-13T03:40:25Z,dry_run,ok,0,0,15,7,1,39.46,0.75,0,0,"{""too few contracts after caps"": 8}"
-2026-11-13T03:45:23Z,dry_run,ok,0,0,18,7,1,39.39,0.75,0,0,"{""too few contracts after caps"": 11}"
-2026-11-13T03:50:27Z,dry_run,ok,0,0,18,7,1,39.51,0.75,0,0,"{""too few contracts after caps"": 11}"
-2026-11-13T03:55:23Z,dry_run,ok,0,0,19,7,1,39.8,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 11}"
-2026-11-13T04:00:32Z,dry_run,ok,0,0,18,7,1,40.0,0.75,0,0,"{""too few contracts after caps"": 11}"
-2026-11-13T04:05:25Z,dry_run,ok,0,0,17,7,1,39.99,0.75,0,0,"{""too few contracts after caps"": 10}"
-2026-11-13T04:10:28Z,dry_run,ok,0,0,19,7,1,39.42,0.75,0,0,"{""too few contracts after caps"": 12}"
-2026-11-13T04:15:24Z,dry_run,ok,0,0,17,6,1,39.91,0.75,0,0,"{""too few contracts after caps"": 11}"
-2026-11-13T04:20:28Z,dry_run,ok,0,0,20,6,1,39.13,0.75,0,0,"{""too few contracts after caps"": 14}"
-2026-11-13T04:25:24Z,dry_run,ok,0,0,18,6,1,39.8,0.75,0,0,"{""too few contracts after caps"": 12}"
-2026-11-13T04:30:31Z,dry_run,ok,0,0,20,6,1,39.8,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 13}"
-2026-11-13T04:35:24Z,dry_run,ok,0,0,22,7,1,39.47,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 7}"
-2026-11-13T04:40:28Z,dry_run,ok,0,0,65,6,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 58}"
-2026-11-13T04:45:22Z,dry_run,ok,0,0,68,7,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 59}"
-2026-11-13T04:50:27Z,dry_run,ok,0,0,65,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 59}"
-2026-11-13T04:55:20Z,dry_run,ok,0,0,12,8,1,19.86,0.75,0,0,"{""edge below minimum after resize"": 4}"
-2026-11-13T05:00:33Z,dry_run,ok,0,0,17,10,1,37.47,0.75,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-13T05:05:24Z,dry_run,ok,0,0,12,5,1,27.54,0.75,0,0,"{""edge below minimum after resize"": 7}"
-2026-11-13T05:10:28Z,dry_run,ok,0,0,11,7,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 1}"
-2026-11-13T05:15:25Z,dry_run,ok,0,0,15,6,1,39.77,0.75,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 4}"
-2026-11-13T05:20:31Z,dry_run,ok,0,0,33,7,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 25}"
-2026-11-13T05:25:22Z,dry_run,ok,0,0,36,7,1,39.99,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T05:30:32Z,dry_run,ok,0,0,42,9,1,40.0,0.75,0,0,"{""too few contracts after caps"": 33}"
-2026-11-13T05:35:25Z,dry_run,ok,0,0,42,9,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 32}"
-2026-11-13T05:40:29Z,dry_run,ok,0,0,38,7,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 30}"
-2026-11-13T05:45:23Z,dry_run,ok,0,0,62,11,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 48}"
-2026-11-13T05:50:26Z,dry_run,ok,0,0,93,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 82}"
-2026-11-13T05:55:21Z,dry_run,ok,0,0,80,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 67}"
-2026-11-13T06:00:33Z,dry_run,ok,0,0,65,16,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 43}"
-2026-11-13T06:05:29Z,dry_run,ok,0,0,67,13,1,39.96,0.75,0,0,"{""too few contracts after caps"": 54}"
-2026-11-13T06:10:23Z,dry_run,ok,0,0,64,14,1,39.99,0.75,0,0,"{""too few contracts after caps"": 50}"
-2026-11-13T06:15:23Z,dry_run,ok,0,0,64,27,1,39.94,0.75,0,0,"{""too few contracts after caps"": 37}"
-2026-11-13T06:20:31Z,dry_run,ok,0,0,79,15,1,39.97,0.75,0,0,"{""too few contracts after caps"": 64}"
-2026-11-13T06:25:21Z,dry_run,ok,0,0,74,14,1,39.97,0.75,0,0,"{""too few contracts after caps"": 60}"
-2026-11-13T06:30:27Z,dry_run,ok,0,0,76,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T06:35:29Z,dry_run,ok,0,0,76,13,1,39.95,0.75,0,0,"{""too few contracts after caps"": 63}"
-2026-11-13T06:40:28Z,dry_run,ok,0,0,75,14,1,39.98,0.75,0,0,"{""too few contracts after caps"": 61}"
-2026-11-13T06:45:24Z,dry_run,ok,0,0,76,27,1,39.96,0.75,0,0,"{""too few contracts after caps"": 49}"
-2026-11-13T06:50:31Z,dry_run,ok,0,0,74,15,1,40.0,0.75,0,0,"{""too few contracts after caps"": 59}"
-2026-11-13T06:55:21Z,dry_run,ok,0,0,70,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T07:00:32Z,dry_run,ok,0,0,73,11,1,39.96,0.75,0,0,"{""too few contracts after caps"": 62}"
-2026-11-13T07:05:25Z,dry_run,ok,0,0,70,12,1,39.98,0.75,0,0,"{""too few contracts after caps"": 58}"
-2026-11-13T07:10:26Z,dry_run,ok,0,0,65,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 54}"
-2026-11-13T07:15:29Z,dry_run,ok,0,0,71,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 58}"
-2026-11-13T07:20:23Z,dry_run,ok,0,0,70,15,1,39.99,0.75,0,0,"{""too few contracts after caps"": 55}"
-2026-11-13T07:25:34Z,dry_run,ok,0,0,67,14,1,39.98,0.75,0,0,"{""too few contracts after caps"": 53}"
-2026-11-13T07:30:35Z,dry_run,ok,0,0,67,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}"
-2026-11-13T07:35:25Z,dry_run,ok,0,0,68,10,1,40.0,0.75,0,0,"{""too few contracts after caps"": 58}"
-2026-11-13T07:40:40Z,dry_run,ok,0,0,66,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}"
-2026-11-13T07:45:24Z,dry_run,ok,0,0,67,10,1,39.96,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T07:50:26Z,dry_run,ok,0,0,66,15,1,40.0,0.75,0,0,"{""too few contracts after caps"": 51}"
-2026-11-13T07:55:27Z,dry_run,ok,0,0,66,16,1,39.97,0.75,0,0,"{""too few contracts after caps"": 50}"
-2026-11-13T08:00:37Z,dry_run,ok,0,0,67,14,1,40.0,0.75,0,0,"{""too few contracts after caps"": 53}"
-2026-11-13T08:05:22Z,dry_run,ok,0,0,65,13,1,39.97,0.75,0,0,"{""too few contracts after caps"": 52}"
-2026-11-13T08:10:27Z,dry_run,ok,0,0,67,14,1,39.99,0.75,0,0,"{""too few contracts after caps"": 53}"
-2026-11-13T08:15:26Z,dry_run,ok,0,0,69,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 56}"
-2026-11-13T08:20:27Z,dry_run,ok,0,0,70,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 57}"
-2026-11-13T08:25:22Z,dry_run,ok,0,0,69,16,1,40.0,0.75,0,0,"{""too few contracts after caps"": 53}"
-2026-11-13T08:30:30Z,dry_run,ok,0,0,70,10,1,39.99,0.75,0,0,"{""too few contracts after caps"": 60}"
-2026-11-13T08:35:25Z,dry_run,ok,0,0,69,14,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}"
-2026-11-13T08:40:34Z,dry_run,ok,0,0,69,17,1,39.96,0.75,0,0,"{""too few contracts after caps"": 52}"
-2026-11-13T08:45:28Z,dry_run,ok,0,0,66,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}"
-2026-11-13T08:48:45Z,dry_run,ok,0,0,64,12,1,40.0,0.75,0,0,"{""too few contracts after caps"": 52}"
-2026-11-13T08:51:30Z,dry_run,ok,0,0,62,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 49}"
-2026-11-13T08:55:24Z,dry_run,ok,0,0,61,22,1,40.0,0.75,0,0,"{""too few contracts after caps"": 39}"
-2026-11-13T09:00:34Z,dry_run,ok,0,0,60,11,1,39.95,0.75,0,0,"{""too few contracts after caps"": 49}"
-2026-11-13T09:05:23Z,dry_run,ok,0,0,60,9,1,39.97,0.75,0,0,"{""too few contracts after caps"": 51}"
-2026-11-13T09:10:34Z,dry_run,ok,0,0,61,10,1,39.96,0.75,0,0,"{""too few contracts after caps"": 51}"
-2026-11-13T09:15:24Z,dry_run,ok,0,0,60,10,1,39.99,0.75,0,0,"{""too few contracts after caps"": 50}"
-2026-11-13T09:20:30Z,dry_run,ok,0,0,60,12,1,40.0,0.75,0,0,"{""too few contracts after caps"": 48}"
-2026-11-13T09:25:28Z,dry_run,ok,0,0,62,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 49}"
-2026-11-13T09:30:33Z,dry_run,ok,0,0,60,19,1,40.0,0.75,0,0,"{""too few contracts after caps"": 41}"
-2026-11-13T09:35:26Z,dry_run,ok,0,0,61,26,1,39.95,0.75,0,0,"{""too few contracts after caps"": 35}"
-2026-11-13T09:40:26Z,dry_run,ok,0,0,60,30,1,39.76,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T09:45:24Z,dry_run,ok,0,0,60,30,1,39.81,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T09:50:28Z,dry_run,ok,0,0,60,32,1,39.94,0.75,0,0,"{""too few contracts after caps"": 28}"
-2026-11-13T09:55:28Z,dry_run,ok,0,0,61,31,1,39.59,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T10:00:37Z,dry_run,ok,0,0,60,35,1,39.69,0.75,0,0,"{""too few contracts after caps"": 25}"
-2026-11-13T10:05:28Z,dry_run,ok,0,0,60,34,1,39.99,0.75,0,0,"{""too few contracts after caps"": 26}"
-2026-11-13T10:10:26Z,dry_run,ok,0,0,60,36,1,40.0,0.75,0,0,"{""too few contracts after caps"": 24}"
-2026-11-13T10:15:26Z,dry_run,ok,0,0,61,34,1,39.95,0.75,0,0,"{""too few contracts after caps"": 27}"
-2026-11-13T10:20:27Z,dry_run,ok,0,0,61,34,1,39.55,0.75,0,0,"{""too few contracts after caps"": 27}"
-2026-11-13T10:25:30Z,dry_run,ok,0,0,61,32,1,39.7,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T10:30:33Z,dry_run,ok,0,0,60,31,1,39.9,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T10:35:28Z,dry_run,ok,0,0,60,34,1,39.96,0.75,0,0,"{""too few contracts after caps"": 26}"
-2026-11-13T10:40:28Z,dry_run,ok,0,0,61,33,1,39.42,0.75,0,0,"{""too few contracts after caps"": 28}"
-2026-11-13T10:45:32Z,dry_run,ok,0,0,61,31,1,39.61,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T10:50:26Z,dry_run,ok,0,0,61,26,1,39.94,0.75,0,0,"{""too few contracts after caps"": 35}"
-2026-11-13T10:55:23Z,dry_run,ok,0,0,60,30,1,39.91,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T11:00:36Z,dry_run,ok,0,0,60,28,1,39.93,0.75,0,0,"{""too few contracts after caps"": 32}"
-2026-11-13T11:05:23Z,dry_run,ok,0,0,62,31,1,39.69,0.75,0,0,"{""too few contracts after caps"": 31}"
-2026-11-13T11:10:30Z,dry_run,ok,0,0,61,29,1,39.86,0.75,0,0,"{""too few contracts after caps"": 32}"
-2026-11-13T11:15:31Z,dry_run,ok,0,0,60,26,1,39.69,0.75,0,0,"{""too few contracts after caps"": 34}"
-2026-11-13T11:20:27Z,dry_run,ok,0,0,60,30,1,39.61,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T11:25:23Z,dry_run,ok,0,0,60,32,1,39.87,0.75,0,0,"{""too few contracts after caps"": 28}"
-2026-11-13T11:30:29Z,dry_run,ok,0,0,60,31,1,39.96,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T11:35:29Z,dry_run,ok,0,0,60,34,1,39.93,0.75,0,0,"{""too few contracts after caps"": 26}"
-2026-11-13T11:40:26Z,dry_run,ok,0,0,60,31,1,39.88,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T11:45:30Z,dry_run,ok,0,0,60,31,1,39.83,0.75,0,0,"{""too few contracts after caps"": 29}"
-2026-11-13T11:50:27Z,dry_run,ok,0,0,60,29,1,39.99,0.75,0,0,"{""too few contracts after caps"": 31}"
-2026-11-13T11:55:23Z,dry_run,ok,0,0,60,30,1,39.6,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T12:00:40Z,dry_run,ok,0,0,60,30,1,39.86,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T12:05:35Z,dry_run,ok,0,0,61,33,1,39.98,0.75,0,0,"{""too few contracts after caps"": 28}"
-2026-11-13T12:10:28Z,dry_run,ok,0,0,60,30,1,39.88,0.75,0,0,"{""too few contracts after caps"": 30}"
-2026-11-13T12:15:41Z,dry_run,ok,0,0,61,28,1,39.98,0.75,0,0,"{""too few contracts after caps"": 33}"
-2026-11-13T12:20:28Z,dry_run,ok,0,0,61,27,1,39.97,0.75,0,0,"{""too few contracts after caps"": 34}"
-2026-11-13T12:25:31Z,dry_run,ok,0,0,61,22,1,39.97,0.75,0,0,"{""too few contracts after caps"": 39}"
-2026-11-13T12:30:36Z,dry_run,ok,0,0,62,24,1,40.0,0.75,0,0,"{""too few contracts after caps"": 38}"
-2026-11-13T12:35:30Z,dry_run,ok,0,0,62,26,1,39.93,0.75,0,0,"{""too few contracts after caps"": 36}"
-2026-11-13T12:40:36Z,dry_run,ok,0,0,63,23,1,40.0,0.75,0,0,"{""too few contracts after caps"": 40}"
-2026-11-13T12:45:29Z,dry_run,ok,0,0,61,34,1,39.99,0.75,0,0,"{""too few contracts after caps"": 27}"
-2026-11-13T12:50:34Z,dry_run,ok,0,0,60,29,1,39.97,0.75,0,0,"{""too few contracts after caps"": 31}"
-2026-11-13T12:55:25Z,dry_run,ok,0,0,60,29,1,39.88,0.75,0,0,"{""too few contracts after caps"": 31}"
-2026-11-13T13:00:39Z,dry_run,ok,0,0,60,22,1,40.0,0.75,0,0,"{""too few contracts after caps"": 38}"
-2026-11-13T13:05:29Z,dry_run,ok,0,0,59,20,1,39.9,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 37}"
-2026-11-13T13:10:33Z,dry_run,ok,0,0,53,21,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 30}"
-2026-11-13T13:15:31Z,dry_run,ok,0,0,49,18,1,39.94,0.75,0,0,"{""too few contracts after caps"": 31}"
-2026-11-13T13:20:27Z,dry_run,ok,0,0,45,19,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 19}"
-2026-11-13T13:25:29Z,dry_run,ok,0,0,44,20,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 14, ""too few contracts after caps"": 10}"
-2026-11-13T13:30:35Z,dry_run,ok,0,0,43,22,1,39.96,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 12}"
-2026-11-13T13:35:41Z,dry_run,ok,0,0,41,20,1,39.63,0.75,0,0,"{""edge below minimum after resize"": 14, ""too few contracts after caps"": 7}"
-2026-11-13T13:40:36Z,dry_run,ok,0,0,39,21,1,38.12,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 6}"
-2026-11-13T13:45:33Z,dry_run,ok,0,0,41,21,1,39.29,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 12}"
-2026-11-13T13:50:29Z,dry_run,ok,0,0,42,19,1,39.76,0.75,0,0,"{""edge below minimum after resize"": 15, ""too few contracts after caps"": 8}"
-2026-11-13T13:55:27Z,dry_run,ok,0,0,43,18,1,39.45,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 15}"
-2026-11-13T14:00:42Z,dry_run,ok,0,0,41,20,1,39.52,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 9}"
-2026-11-13T14:05:34Z,dry_run,ok,0,0,36,22,1,38.27,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 4}"
-2026-11-13T14:10:38Z,dry_run,ok,0,0,35,23,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 5}"
-2026-11-13T14:15:36Z,dry_run,ok,0,0,40,23,1,39.27,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 5}"
-2026-11-13T14:20:29Z,dry_run,ok,0,0,38,20,1,39.31,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 2}"
-2026-11-13T14:25:30Z,dry_run,ok,0,0,38,16,1,39.18,0.75,0,0,"{""edge below minimum after resize"": 21, ""too few contracts after caps"": 1}"
-2026-11-13T14:30:34Z,dry_run,ok,0,0,40,20,1,39.54,0.75,0,0,"{""edge below minimum after resize"": 19, ""too few contracts after caps"": 1}"
-2026-11-13T14:35:34Z,dry_run,ok,0,0,46,22,1,39.74,0.75,0,0,"{""edge below minimum after resize"": 17, ""too few contracts after caps"": 7}"
-2026-11-13T14:40:29Z,dry_run,ok,0,0,54,20,1,39.81,0.75,0,0,"{""edge below minimum after resize"": 22, ""too few contracts after caps"": 12}"
-2026-11-13T14:45:37Z,dry_run,ok,0,0,52,20,1,39.2,0.75,0,0,"{""edge below minimum after resize"": 29, ""too few contracts after caps"": 3}"
-2026-11-13T14:50:32Z,dry_run,ok,0,0,47,19,1,39.06,0.75,0,0,"{""edge below minimum after resize"": 27, ""too few contracts after caps"": 1}"
-2026-11-13T14:55:30Z,dry_run,ok,0,0,52,19,1,39.67,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 22}"
-2026-11-13T15:00:39Z,dry_run,ok,0,0,40,15,1,39.33,0.75,0,0,"{""edge below minimum after resize"": 18, ""too few contracts after caps"": 7}"
-2026-11-13T15:05:40Z,dry_run,ok,0,0,33,14,1,30.28,0.75,0,0,"{""edge below minimum after resize"": 19}"
-2026-11-13T15:10:34Z,dry_run,ok,0,0,30,16,1,39.37,0.75,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 1}"
-2026-11-13T15:15:33Z,dry_run,ok,0,0,30,16,1,39.25,0.75,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 1}"
-2026-11-13T15:20:32Z,dry_run,ok,0,0,35,15,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 8}"
-2026-11-13T15:25:32Z,dry_run,ok,0,0,35,16,1,38.05,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 10}"
-2026-11-13T15:30:40Z,dry_run,ok,0,0,27,13,1,39.88,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 4}"
-2026-11-13T15:35:32Z,dry_run,ok,0,0,32,16,1,39.42,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 7}"
-2026-11-13T15:40:30Z,dry_run,ok,0,0,34,18,1,38.95,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 4}"
-2026-11-13T15:45:29Z,dry_run,ok,0,0,33,18,1,39.68,0.75,0,0,"{""edge below minimum after resize"": 15}"
-2026-11-13T15:50:32Z,dry_run,ok,0,0,38,18,1,39.34,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 4}"
-2026-11-13T15:55:33Z,dry_run,ok,0,0,32,14,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 17, ""too few contracts after caps"": 1}"
-2026-11-13T16:00:37Z,dry_run,ok,0,0,32,17,1,39.3,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 3}"
-2026-11-13T16:05:34Z,dry_run,ok,0,0,31,16,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 7}"
-2026-11-13T16:10:42Z,dry_run,ok,0,0,33,14,1,35.74,0.75,0,0,"{""edge below minimum after resize"": 19}"
-2026-11-13T16:15:30Z,dry_run,ok,0,0,31,16,1,31.72,0.75,0,0,"{""edge below minimum after resize"": 15}"
-2026-11-13T16:20:36Z,dry_run,ok,0,0,32,15,1,38.66,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 1}"
-2026-11-13T16:25:32Z,dry_run,ok,0,0,29,15,1,34.31,0.75,0,0,"{""edge below minimum after resize"": 14}"
-2026-11-13T16:30:38Z,dry_run,ok,0,0,22,9,1,28.22,0.75,0,0,"{""edge below minimum after resize"": 13}"
-2026-11-13T16:35:34Z,dry_run,ok,0,0,21,11,1,37.63,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 2}"
-2026-11-13T16:40:34Z,dry_run,ok,0,0,26,10,1,30.7,0.75,0,0,"{""edge below minimum after resize"": 16}"
-2026-11-13T16:45:36Z,dry_run,ok,0,0,29,12,1,32.16,0.75,0,0,"{""edge below minimum after resize"": 17}"
-2026-11-13T16:50:37Z,dry_run,ok,0,0,23,9,1,19.76,0.75,0,0,"{""edge below minimum after resize"": 14}"
+ts_utc,mode,status,taker_candidates,taker_accepted,maker_candidates,maker_accepted,open_hedges,deployed_kalshi,deployed_pmus,realized_today,realized_total,rejections,equity,scale
+2026-11-11T19:05:13Z,dry_run,ok,0,0,56,15,0,39.99,0,0,0,"{""too few contracts after caps"": 41}",,
+2026-11-11T19:10:18Z,dry_run,ok,0,0,61,15,0,39.99,0,0,0,"{""too few contracts after caps"": 46}",,
+2026-11-11T19:15:18Z,dry_run,ok,0,0,63,14,0,39.95,0,0,0,"{""too few contracts after caps"": 49}",,
+2026-11-11T19:20:19Z,dry_run,ok,0,0,66,30,0,39.89,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 31}",,
+2026-11-11T19:25:14Z,dry_run,ok,0,0,65,31,0,39.95,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 29}",,
+2026-11-11T19:30:22Z,dry_run,ok,0,0,62,31,0,39.53,0,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-11T19:35:13Z,dry_run,ok,0,0,63,31,0,39.6,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 31}",,
+2026-11-11T19:40:16Z,dry_run,ok,0,0,63,32,0,39.97,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 29}",,
+2026-11-11T19:45:17Z,dry_run,ok,0,0,63,29,0,39.85,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 33}",,
+2026-11-11T19:50:16Z,dry_run,ok,0,0,60,24,0,39.85,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 35}",,
+2026-11-11T19:55:14Z,dry_run,ok,0,0,54,25,0,39.95,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 28}",,
+2026-11-11T20:00:23Z,dry_run,ok,0,0,62,36,0,40.0,0,0,0,"{""too few contracts after caps"": 26}",,
+2026-11-11T20:06:51Z,dry_run,ok,0,0,51,25,0,40.0,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 23}",,
+2026-11-11T20:11:39Z,dry_run,ok,0,0,51,32,0,39.95,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 14}",,
+2026-11-11T20:15:16Z,dry_run,ok,0,0,52,33,0,39.93,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 13}",,
+2026-11-11T20:57:37Z,dry_run,ok,0,0,27,23,0,35.94,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-11T21:00:24Z,dry_run,ok,0,0,34,22,0,39.69,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 6}",,
+2026-11-11T21:02:28Z,dry_run,ok,0,0,41,20,0,39.99,0,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 14}",,
+2026-11-11T21:05:15Z,dry_run,ok,0,0,34,24,0,37.8,0,0,0,"{""edge below minimum after resize"": 10}",,
+2026-11-11T21:10:18Z,dry_run,ok,0,0,7,5,0,11.21,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T21:15:18Z,dry_run,ok,0,0,26,17,0,39.49,0,0,0,"{""edge below minimum after resize"": 9}",,
+2026-11-11T21:20:20Z,dry_run,ok,0,0,22,11,0,18.02,0,0,0,"{""edge below minimum after resize"": 11}",,
+2026-11-11T21:25:14Z,dry_run,ok,0,0,20,13,0,20.68,0,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-11T21:30:19Z,dry_run,ok,0,0,9,5,0,9.13,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-11T21:35:13Z,dry_run,ok,0,0,9,7,0,14.78,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T21:40:16Z,dry_run,ok,0,0,6,5,0,9.24,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-11T21:45:16Z,dry_run,ok,0,0,11,8,0,21.76,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-11T21:50:16Z,dry_run,ok,0,0,8,7,0,18.14,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-11T21:55:19Z,dry_run,ok,0,0,8,8,0,19.14,0,0,0,{},,
+2026-11-11T22:00:28Z,dry_run,ok,0,0,7,5,0,8.07,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:05:15Z,dry_run,ok,0,0,4,4,0,2.66,0,0,0,{},,
+2026-11-11T22:10:19Z,dry_run,ok,0,0,6,3,0,2.32,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-11T22:15:15Z,dry_run,ok,0,0,6,6,0,12.31,0,0,0,{},,
+2026-11-11T22:20:16Z,dry_run,ok,0,0,7,6,0,10.88,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-11T22:25:14Z,dry_run,ok,0,0,8,6,0,13.01,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:30:23Z,dry_run,ok,0,0,8,6,0,11.85,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:35:13Z,dry_run,ok,0,0,8,6,0,12.1,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:40:16Z,dry_run,ok,0,0,3,3,0,2.87,0,0,0,{},,
+2026-11-11T22:45:17Z,dry_run,ok,0,0,6,4,0,7.57,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:50:18Z,dry_run,ok,0,0,7,5,0,7.56,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T22:55:14Z,dry_run,ok,0,0,3,2,0,2.1,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-11T23:00:25Z,dry_run,ok,0,0,8,6,0,3.6,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T23:05:15Z,dry_run,ok,0,0,15,13,0,36.14,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T23:10:17Z,dry_run,ok,0,0,13,8,0,31.26,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-11T23:15:17Z,dry_run,ok,0,0,8,6,0,8.5,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T23:20:19Z,dry_run,ok,0,0,12,10,0,39.45,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T23:25:16Z,dry_run,ok,0,0,11,8,0,11.77,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-11T23:30:20Z,dry_run,ok,0,0,16,13,0,27.75,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-11T23:35:14Z,dry_run,ok,0,0,12,9,0,32.62,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-11T23:38:19Z,dry_run,ok,0,0,10,8,0,26.68,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-11T23:40:18Z,dry_run,ok,0,0,5,5,0,11.97,0,0,0,{},,
+2026-11-11T23:45:16Z,dry_run,ok,0,0,9,8,0,26.25,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-11T23:50:16Z,dry_run,ok,0,0,11,11,0,33.63,0,0,0,{},,
+2026-11-11T23:55:14Z,dry_run,ok,0,0,4,2,0,12.55,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T00:00:23Z,dry_run,ok,0,0,18,11,0,39.78,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 1}",,
+2026-11-12T00:05:15Z,dry_run,ok,0,0,13,10,0,36.5,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T00:10:19Z,dry_run,ok,0,0,15,10,0,38.88,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 3}",,
+2026-11-12T00:15:16Z,dry_run,ok,0,0,10,8,0,18.36,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T00:20:17Z,dry_run,ok,0,0,9,9,0,39.65,0,0,0,{},,
+2026-11-12T00:25:14Z,dry_run,ok,0,0,18,12,0,39.95,0,0,0,"{""edge below minimum after resize"": 2, ""too close to start / started"": 1, ""too few contracts after caps"": 3}",,
+2026-11-12T00:30:21Z,dry_run,ok,0,0,7,5,0,21.02,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T00:35:13Z,dry_run,ok,0,0,11,9,0,21.63,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T00:40:19Z,dry_run,ok,0,0,15,13,0,34.98,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T00:45:20Z,dry_run,ok,0,0,10,9,0,22.17,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T00:50:17Z,dry_run,ok,0,0,10,4,0,28.7,0,0,0,"{""too close to start / started"": 6}",,
+2026-11-12T00:55:14Z,dry_run,ok,0,0,5,2,0,7.8,0,0,0,"{""edge below minimum after resize"": 1, ""too close to start / started"": 2}",,
+2026-11-12T01:00:23Z,dry_run,ok,0,0,10,4,0,30.0,0,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T01:05:14Z,dry_run,ok,0,0,7,2,0,19.58,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T01:10:17Z,dry_run,ok,0,0,3,2,0,19.58,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T01:15:16Z,dry_run,ok,0,0,5,3,0,19.83,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T01:20:17Z,dry_run,ok,0,0,5,4,0,29.66,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T01:25:13Z,dry_run,ok,0,0,11,6,0,26.31,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T01:30:21Z,dry_run,ok,0,0,11,7,0,35.02,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T01:35:13Z,dry_run,ok,0,0,13,8,0,39.89,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 1}",,
+2026-11-12T01:40:17Z,dry_run,ok,0,0,9,6,0,22.08,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T01:45:16Z,dry_run,ok,0,0,47,9,0,40.0,0,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 37}",,
+2026-11-12T01:50:16Z,dry_run,ok,0,0,24,12,0,39.07,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 8}",,
+2026-11-12T01:55:14Z,dry_run,ok,0,0,52,11,0,39.79,0,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 31}",,
+2026-11-12T02:00:25Z,dry_run,ok,0,0,52,8,0,39.87,0,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 38}",,
+2026-11-12T02:05:15Z,dry_run,ok,0,0,14,5,0,39.96,0,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 4}",,
+2026-11-12T02:10:17Z,dry_run,ok,0,0,14,5,0,39.86,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 6}",,
+2026-11-12T02:15:17Z,dry_run,ok,0,0,12,4,0,39.08,0,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 4}",,
+2026-11-12T02:20:17Z,dry_run,ok,0,0,11,4,0,37.54,0,0,0,"{""edge below minimum after resize"": 5, ""too close to start / started"": 1, ""too few contracts after caps"": 1}",,
+2026-11-12T02:25:13Z,dry_run,ok,0,0,7,3,0,27.22,0,0,0,"{""too close to start / started"": 2, ""edge below minimum after resize"": 2}",,
+2026-11-12T02:30:21Z,dry_run,ok,0,0,8,4,0,35.54,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T02:35:14Z,dry_run,ok,0,0,8,5,0,29.11,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T02:40:17Z,dry_run,ok,0,0,5,2,0,16.15,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T02:45:17Z,dry_run,ok,0,0,3,0,0,0,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T02:50:18Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""too close to start / started"": 1, ""edge below minimum after resize"": 1}",,
+2026-11-12T02:55:13Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""too close to start / started"": 1, ""edge below minimum after resize"": 1}",,
+2026-11-12T03:00:24Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T03:05:13Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T03:10:21Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T03:15:16Z,dry_run,ok,0,0,3,1,0,9.2,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T03:20:17Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T03:25:15Z,dry_run,ok,0,0,8,5,0,38.5,0,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 1}",,
+2026-11-12T03:30:22Z,dry_run,ok,0,0,4,2,0,10.16,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T03:35:14Z,dry_run,ok,0,0,5,2,0,10.16,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T03:40:20Z,dry_run,ok,0,0,2,2,0,10.16,0,0,0,{},,
+2026-11-12T03:45:16Z,dry_run,ok,0,0,3,3,0,19.1,0,0,0,{},,
+2026-11-12T03:50:17Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{},,
+2026-11-12T03:55:14Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{},,
+2026-11-12T04:00:24Z,dry_run,ok,0,0,1,1,0,9.46,0,0,0,{},,
+2026-11-12T04:05:15Z,dry_run,ok,0,0,55,15,0,39.5,0,0,0,"{""edge below minimum after resize"": 15, ""too few contracts after caps"": 25}",,
+2026-11-12T04:10:19Z,dry_run,ok,0,0,1,1,0,9.79,0,0,0,{},,
+2026-11-12T04:15:20Z,dry_run,ok,0,0,4,1,0,9.79,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:19:57Z,dry_run,ok,0,0,3,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T04:21:58Z,dry_run,ok,0,0,4,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:25:14Z,dry_run,ok,0,0,4,1,0,9.57,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:30:21Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:35:16Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:40:17Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:45:17Z,dry_run,ok,0,0,4,1,0,9.68,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T04:50:18Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T04:55:15Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T05:00:24Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T05:05:16Z,dry_run,ok,0,0,4,0,0,0,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T05:10:17Z,dry_run,ok,0,0,10,3,0,8.85,0,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-12T05:15:19Z,dry_run,ok,0,0,5,2,0,10.04,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T05:20:19Z,dry_run,ok,0,0,9,5,0,29.56,0,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T05:25:15Z,dry_run,ok,0,0,7,2,0,0.4,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T05:30:23Z,dry_run,ok,0,0,8,3,0,9.97,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T05:35:17Z,dry_run,ok,0,0,6,1,0,0.2,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T05:40:17Z,dry_run,ok,0,0,6,1,0,0.2,0,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T05:45:17Z,dry_run,ok,0,0,8,1,0,4.8,0,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-12T05:50:19Z,dry_run,ok,0,0,15,3,0,19.61,0,0,0,"{""edge below minimum after resize"": 12}",,
+2026-11-12T05:55:15Z,dry_run,ok,0,0,14,5,0,25.94,0,0,0,"{""edge below minimum after resize"": 9}",,
+2026-11-12T06:00:25Z,dry_run,ok,0,0,4,2,0,2.73,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T06:05:15Z,dry_run,ok,0,0,6,4,0,7.85,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T06:10:20Z,dry_run,ok,0,0,2,1,0,4.2,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T06:15:17Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T06:20:19Z,dry_run,ok,0,0,2,0,0,0,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T06:25:16Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T06:30:22Z,dry_run,ok,0,0,4,4,0,18.9,0,0,0,{},,
+2026-11-12T06:35:15Z,dry_run,ok,0,0,2,2,0,7.48,0,0,0,{},,
+2026-11-12T06:40:19Z,dry_run,ok,0,0,2,2,0,7.48,0,0,0,{},,
+2026-11-12T06:45:18Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T06:50:20Z,dry_run,ok,0,0,3,1,0,4.9,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T06:55:17Z,dry_run,ok,0,0,1,1,0,4.38,0,0,0,{},,
+2026-11-12T07:00:24Z,dry_run,ok,0,0,6,5,0,26.43,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T07:05:17Z,dry_run,ok,0,0,6,5,0,19.73,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T07:10:19Z,dry_run,ok,0,0,5,3,0,9.87,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T07:15:19Z,dry_run,ok,0,0,6,4,0,17.83,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T07:20:19Z,dry_run,ok,0,0,6,3,0,14.18,0,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T07:25:16Z,dry_run,ok,0,0,3,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T07:30:22Z,dry_run,ok,0,0,3,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T07:35:16Z,dry_run,ok,0,0,2,1,0,9.12,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T07:40:18Z,dry_run,ok,0,0,5,3,0,9.52,0,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T07:45:20Z,dry_run,ok,0,0,3,2,0,7.04,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T07:50:19Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T07:55:16Z,dry_run,ok,0,0,1,0,0,0,0,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T08:00:24Z,dry_run,ok,0,0,26,8,0,39.85,0,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 5}",,
+2026-11-12T08:05:18Z,dry_run,ok,0,0,75,11,0,39.95,0,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 61}",,
+2026-11-12T08:10:22Z,dry_run,ok,0,0,87,9,0,39.96,0,0,0,"{""too few contracts after caps"": 71, ""edge below minimum after resize"": 7}",,
+2026-11-12T08:15:19Z,dry_run,ok,0,0,88,10,0,39.99,0,0,0,"{""too few contracts after caps"": 78}",,
+2026-11-12T08:20:19Z,dry_run,ok,0,0,90,10,0,39.98,0,0,0,"{""too few contracts after caps"": 80}",,
+2026-11-12T08:25:16Z,dry_run,ok,0,0,89,10,0,39.98,0,0,0,"{""too few contracts after caps"": 79}",,
+2026-11-12T08:30:25Z,dry_run,ok,0,0,88,10,0,39.95,0,0,0,"{""too few contracts after caps"": 78}",,
+2026-11-12T08:35:18Z,dry_run,ok,0,0,89,10,0,39.95,0,0,0,"{""too few contracts after caps"": 79}",,
+2026-11-12T08:40:18Z,dry_run,ok,0,0,89,14,0,40.0,0,0,0,"{""too few contracts after caps"": 75}",,
+2026-11-12T08:45:19Z,dry_run,ok,0,0,100,13,0,39.99,0,0,0,"{""too few contracts after caps"": 87}",,
+2026-11-12T08:50:19Z,dry_run,ok,0,0,105,12,0,39.97,0,0,0,"{""too few contracts after caps"": 93}",,
+2026-11-12T08:55:18Z,dry_run,ok,0,0,103,10,0,39.95,0,0,0,"{""too few contracts after caps"": 93}",,
+2026-11-12T09:00:28Z,dry_run,ok,0,0,110,5,0,39.95,0,0,0,"{""too few contracts after caps"": 105}",,
+2026-11-12T09:05:17Z,dry_run,ok,1,1,111,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 106}",,
+2026-11-12T09:10:22Z,dry_run,ok,1,0,111,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}",,
+2026-11-12T09:15:23Z,dry_run,ok,1,0,111,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}",,
+2026-11-12T09:20:20Z,dry_run,ok,1,0,108,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}",,
+2026-11-12T09:25:16Z,dry_run,ok,1,0,108,6,1,40.0,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}",,
+2026-11-12T09:30:24Z,dry_run,ok,1,0,108,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}",,
+2026-11-12T09:35:16Z,dry_run,ok,1,0,109,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 103}",,
+2026-11-12T09:40:20Z,dry_run,ok,1,0,111,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 105}",,
+2026-11-12T09:45:19Z,dry_run,ok,1,0,110,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 104}",,
+2026-11-12T09:50:21Z,dry_run,ok,1,0,110,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 104}",,
+2026-11-12T09:55:15Z,dry_run,ok,1,0,108,6,1,39.99,0.75,0,0,"{""already holding this hedge"": 1, ""too few contracts after caps"": 102}",,
+2026-11-12T10:00:26Z,dry_run,ok,0,0,68,9,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 56}",,
+2026-11-12T10:05:22Z,dry_run,ok,0,0,5,2,1,12.49,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T10:10:22Z,dry_run,ok,0,0,3,1,1,11.26,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T10:15:20Z,dry_run,ok,0,0,4,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T10:20:19Z,dry_run,ok,0,0,6,4,1,21.79,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T10:25:20Z,dry_run,ok,0,0,6,5,1,25.44,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T10:30:24Z,dry_run,ok,0,0,4,3,1,17.25,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T10:35:18Z,dry_run,ok,0,0,7,5,1,26.47,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T10:40:22Z,dry_run,ok,0,0,4,3,1,17.19,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T10:45:19Z,dry_run,ok,0,0,17,8,1,39.73,0.75,0,0,"{""too few contracts after caps"": 9}",,
+2026-11-12T10:50:22Z,dry_run,ok,0,0,8,6,1,31.27,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T10:55:19Z,dry_run,ok,0,0,10,6,1,30.64,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T11:00:27Z,dry_run,ok,0,0,4,4,1,21.79,0.75,0,0,{},,
+2026-11-12T11:05:18Z,dry_run,ok,0,0,20,10,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 9}",,
+2026-11-12T11:10:19Z,dry_run,ok,0,0,5,5,1,23.75,0.75,0,0,{},,
+2026-11-12T11:15:21Z,dry_run,ok,0,0,7,7,1,37.89,0.75,0,0,{},,
+2026-11-12T11:20:23Z,dry_run,ok,0,0,10,8,1,39.88,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T11:25:18Z,dry_run,ok,0,0,7,6,1,33.11,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T11:30:23Z,dry_run,ok,0,0,7,7,1,33.65,0.75,0,0,{},,
+2026-11-12T11:35:23Z,dry_run,ok,0,0,9,8,1,38.72,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T11:40:21Z,dry_run,ok,0,0,8,8,1,39.59,0.75,0,0,{},,
+2026-11-12T11:45:19Z,dry_run,ok,0,0,7,5,1,23.87,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T11:50:21Z,dry_run,ok,0,0,7,5,1,24.02,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T11:55:18Z,dry_run,ok,0,0,7,6,1,28.37,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T12:00:28Z,dry_run,ok,0,0,5,4,1,19.19,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T12:05:18Z,dry_run,ok,0,0,8,5,1,24.16,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T12:10:22Z,dry_run,ok,0,0,6,4,1,19.07,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T12:15:20Z,dry_run,ok,0,0,6,6,1,20.86,0.75,0,0,{},,
+2026-11-12T12:20:23Z,dry_run,ok,0,0,8,7,1,25.05,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T12:25:19Z,dry_run,ok,0,0,6,4,1,18.13,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T12:30:24Z,dry_run,ok,0,0,4,4,1,18.13,0.75,0,0,{},,
+2026-11-12T12:35:16Z,dry_run,ok,0,0,5,4,1,18.13,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T12:40:20Z,dry_run,ok,0,0,4,4,1,20.65,0.75,0,0,{},,
+2026-11-12T12:45:21Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{},,
+2026-11-12T12:50:20Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{},,
+2026-11-12T12:55:19Z,dry_run,ok,0,0,4,4,1,20.93,0.75,0,0,{},,
+2026-11-12T13:00:30Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{},,
+2026-11-12T13:05:17Z,dry_run,ok,0,0,3,3,1,17.99,0.75,0,0,{},,
+2026-11-12T13:07:00Z,dry_run,ok,0,0,3,3,1,18.05,0.75,0,0,{},,
+2026-11-12T13:10:23Z,dry_run,ok,0,0,7,4,1,24.53,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T13:15:19Z,dry_run,ok,0,0,4,4,1,25.01,0.75,0,0,{},,
+2026-11-12T13:20:20Z,dry_run,ok,0,0,8,6,1,35.17,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T13:25:20Z,dry_run,ok,0,0,9,8,1,37.61,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T13:30:25Z,dry_run,ok,0,0,7,6,1,27.53,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T13:35:19Z,dry_run,ok,0,0,15,7,1,39.54,0.75,0,0,"{""too few contracts after caps"": 8}",,
+2026-11-12T13:40:39Z,dry_run,ok,0,0,21,11,1,39.57,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 1}",,
+2026-11-12T13:45:21Z,dry_run,ok,0,0,26,16,1,39.86,0.75,0,0,"{""edge below minimum after resize"": 10}",,
+2026-11-12T13:50:23Z,dry_run,ok,0,0,27,18,1,39.56,0.75,0,0,"{""edge below minimum after resize"": 9}",,
+2026-11-12T13:55:20Z,dry_run,ok,0,0,26,18,1,37.57,0.75,0,0,"{""edge below minimum after resize"": 8}",,
+2026-11-12T14:00:27Z,dry_run,ok,0,0,24,14,1,37.97,0.75,0,0,"{""edge below minimum after resize"": 10}",,
+2026-11-12T14:05:20Z,dry_run,ok,0,0,32,17,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 8}",,
+2026-11-12T14:10:22Z,dry_run,ok,0,0,28,14,1,35.08,0.75,0,0,"{""edge below minimum after resize"": 14}",,
+2026-11-12T14:15:22Z,dry_run,ok,0,0,29,17,1,39.66,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 1}",,
+2026-11-12T14:20:24Z,dry_run,ok,0,0,29,16,1,32.35,0.75,0,0,"{""edge below minimum after resize"": 13}",,
+2026-11-12T14:25:19Z,dry_run,ok,0,0,29,15,1,36.62,0.75,0,0,"{""edge below minimum after resize"": 14}",,
+2026-11-12T14:30:27Z,dry_run,ok,0,0,33,14,1,39.84,0.75,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 14}",,
+2026-11-12T14:35:18Z,dry_run,ok,0,0,31,16,1,39.85,0.75,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 11}",,
+2026-11-12T14:40:24Z,dry_run,ok,0,0,23,12,1,38.87,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 3}",,
+2026-11-12T14:45:21Z,dry_run,ok,0,0,14,7,1,34.33,0.75,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-12T14:50:23Z,dry_run,ok,0,0,18,7,1,34.12,0.75,0,0,"{""edge below minimum after resize"": 11}",,
+2026-11-12T14:55:20Z,dry_run,ok,0,0,17,6,1,28.98,0.75,0,0,"{""edge below minimum after resize"": 11}",,
+2026-11-12T15:00:31Z,dry_run,ok,0,0,20,8,1,39.24,0.75,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 6}",,
+2026-11-12T15:05:20Z,dry_run,ok,0,0,11,3,1,19.06,0.75,0,0,"{""edge below minimum after resize"": 8}",,
+2026-11-12T15:10:26Z,dry_run,ok,0,0,11,5,1,30.59,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T15:15:22Z,dry_run,ok,0,0,17,4,1,22.62,0.75,0,0,"{""edge below minimum after resize"": 13}",,
+2026-11-12T15:20:21Z,dry_run,ok,0,0,10,3,1,18.45,0.75,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-12T15:25:19Z,dry_run,ok,0,0,15,4,1,18.48,0.75,0,0,"{""edge below minimum after resize"": 11}",,
+2026-11-12T15:30:30Z,dry_run,ok,0,0,17,5,1,37.83,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 1}",,
+2026-11-12T15:35:19Z,dry_run,ok,0,0,6,2,1,17.02,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T15:40:21Z,dry_run,ok,0,0,5,2,1,12.69,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T15:45:20Z,dry_run,ok,0,0,18,4,1,16.66,0.75,0,0,"{""edge below minimum after resize"": 14}",,
+2026-11-12T15:50:22Z,dry_run,ok,0,0,6,5,1,15.17,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T15:55:25Z,dry_run,ok,0,0,7,5,1,17.71,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T16:00:29Z,dry_run,ok,0,0,5,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T16:05:23Z,dry_run,ok,0,0,2,2,1,12.45,0.75,0,0,{},,
+2026-11-12T16:10:24Z,dry_run,ok,0,0,2,1,1,12.37,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T16:15:21Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T16:20:24Z,dry_run,ok,0,0,6,1,1,9.5,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T16:25:30Z,dry_run,ok,0,0,7,3,1,12.3,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T16:30:28Z,dry_run,ok,0,0,4,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T16:35:19Z,dry_run,ok,0,0,9,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 9}",,
+2026-11-12T16:40:24Z,dry_run,ok,0,0,6,2,1,26.95,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T16:45:23Z,dry_run,ok,0,0,6,1,1,17.55,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T16:50:24Z,dry_run,ok,0,0,2,1,1,7.95,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T16:55:20Z,dry_run,ok,0,0,4,3,1,19.84,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T17:00:31Z,dry_run,ok,0,0,7,2,1,18.98,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T17:05:19Z,dry_run,ok,0,0,7,2,1,17.23,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T17:10:24Z,dry_run,ok,0,0,9,3,1,23.63,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T17:15:24Z,dry_run,ok,0,0,9,1,1,12.25,0.75,0,0,"{""edge below minimum after resize"": 8}",,
+2026-11-12T17:20:23Z,dry_run,ok,0,0,10,3,1,21.1,0.75,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-12T17:25:22Z,dry_run,ok,0,0,9,1,1,13.35,0.75,0,0,"{""edge below minimum after resize"": 8}",,
+2026-11-12T17:30:28Z,dry_run,ok,0,0,3,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T17:35:19Z,dry_run,ok,0,0,5,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T17:40:25Z,dry_run,ok,0,0,6,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T17:45:22Z,dry_run,ok,0,0,5,2,1,9.15,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T17:50:23Z,dry_run,ok,0,0,3,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T17:55:19Z,dry_run,ok,0,0,3,1,1,12.44,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T18:00:31Z,dry_run,ok,0,0,4,1,1,8.1,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T18:05:20Z,dry_run,ok,0,0,8,3,1,21.95,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T18:10:25Z,dry_run,ok,0,0,6,3,1,16.87,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T18:15:23Z,dry_run,ok,0,0,4,3,1,26.88,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T18:20:24Z,dry_run,ok,0,0,4,2,1,17.35,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T18:25:27Z,dry_run,ok,0,0,3,3,1,23.32,0.75,0,0,{},,
+2026-11-12T18:30:30Z,dry_run,ok,0,0,7,3,1,32.33,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T18:35:18Z,dry_run,ok,0,0,3,2,1,17.29,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T18:40:27Z,dry_run,ok,0,0,4,3,1,25.98,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T18:45:23Z,dry_run,ok,0,0,3,1,1,17.2,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T18:50:22Z,dry_run,ok,0,0,4,1,1,12.0,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T18:55:23Z,dry_run,ok,0,0,2,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T19:00:32Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T19:05:22Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T19:10:26Z,dry_run,ok,0,0,1,0,1,7.75,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T19:15:26Z,dry_run,ok,0,0,3,3,1,21.98,0.75,0,0,{},,
+2026-11-12T19:20:23Z,dry_run,ok,0,0,5,1,1,7.85,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T19:25:21Z,dry_run,ok,0,0,7,4,1,17.95,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T19:30:31Z,dry_run,ok,0,0,1,1,1,8.35,0.75,0,0,{},,
+2026-11-12T19:35:24Z,dry_run,ok,0,0,3,3,1,17.29,0.75,0,0,{},,
+2026-11-12T19:40:31Z,dry_run,ok,0,0,4,1,1,8.1,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T19:45:25Z,dry_run,ok,0,0,6,2,1,12.45,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T19:50:28Z,dry_run,ok,0,0,3,2,1,12.55,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T19:55:32Z,dry_run,ok,0,0,3,2,1,15.7,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T20:00:32Z,dry_run,ok,0,0,3,3,1,21.08,0.75,0,0,{},,
+2026-11-12T20:05:27Z,dry_run,ok,0,0,1,1,1,8.2,0.75,0,0,{},,
+2026-11-12T20:10:23Z,dry_run,ok,0,0,6,5,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T20:15:22Z,dry_run,ok,0,0,0,0,1,7.75,0.75,0,0,{},,
+2026-11-12T20:20:23Z,dry_run,ok,0,0,5,5,1,15.27,0.75,0,0,{},,
+2026-11-12T20:25:21Z,dry_run,ok,0,0,4,2,1,13.38,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T20:30:29Z,dry_run,ok,0,0,2,2,1,15.27,0.75,0,0,{},,
+2026-11-12T20:35:24Z,dry_run,ok,0,0,5,4,1,23.42,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T20:40:23Z,dry_run,ok,0,0,7,4,1,24.88,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T20:45:25Z,dry_run,ok,0,0,10,5,1,17.15,0.75,0,0,"{""edge below minimum after resize"": 5}",,
+2026-11-12T20:50:24Z,dry_run,ok,0,0,12,6,1,25.5,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T20:52:32Z,dry_run,ok,0,0,8,5,1,27.65,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T20:55:22Z,dry_run,ok,0,0,9,3,1,14.01,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T21:00:29Z,dry_run,ok,0,0,8,4,1,19.28,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T21:05:24Z,dry_run,ok,0,0,7,6,1,24.26,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T21:10:24Z,dry_run,ok,0,0,7,5,1,19.81,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T21:15:23Z,dry_run,ok,0,0,8,5,1,15.83,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T21:20:22Z,dry_run,ok,0,0,5,4,1,11.05,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T21:25:22Z,dry_run,ok,0,0,6,5,1,22.35,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T21:30:28Z,dry_run,ok,0,0,5,4,1,21.0,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T21:35:20Z,dry_run,ok,0,0,4,4,1,18.43,0.75,0,0,{},,
+2026-11-12T21:40:25Z,dry_run,ok,0,0,5,3,1,17.05,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T21:45:23Z,dry_run,ok,0,0,6,5,1,23.22,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T21:50:26Z,dry_run,ok,0,0,5,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T21:55:19Z,dry_run,ok,0,0,6,3,1,12.87,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T22:00:28Z,dry_run,ok,0,0,9,5,1,11.21,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-12T22:05:23Z,dry_run,ok,0,0,4,4,1,9.83,0.75,0,0,{},,
+2026-11-12T22:10:27Z,dry_run,ok,0,0,6,4,1,14.55,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T22:20:25Z,dry_run,ok,0,0,3,3,1,12.99,0.75,0,0,{},,
+2026-11-12T22:25:27Z,dry_run,ok,0,0,7,4,1,14.31,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T22:30:29Z,dry_run,ok,0,0,4,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T22:35:19Z,dry_run,ok,0,0,9,3,1,18.15,0.75,0,0,"{""edge below minimum after resize"": 6}",,
+2026-11-12T22:40:29Z,dry_run,ok,0,0,22,4,1,39.99,0.75,0,0,"{""too few contracts after caps"": 18}",,
+2026-11-12T22:45:24Z,dry_run,ok,0,0,5,3,1,12.5,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T22:50:26Z,dry_run,ok,0,0,3,2,1,8.25,0.75,0,0,"{""edge below minimum after resize"": 1}",,
+2026-11-12T22:55:27Z,dry_run,ok,0,0,7,4,1,18.55,0.75,0,0,"{""edge below minimum after resize"": 1, ""too close to start / started"": 2}",,
+2026-11-12T23:00:32Z,dry_run,ok,0,0,6,3,1,17.85,0.75,0,0,"{""edge below minimum after resize"": 3}",,
+2026-11-12T23:05:25Z,dry_run,ok,0,0,8,6,1,39.47,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 1}",,
+2026-11-12T23:10:25Z,dry_run,ok,0,0,6,4,1,32.48,0.75,0,0,"{""edge below minimum after resize"": 2}",,
+2026-11-12T23:15:26Z,dry_run,ok,0,0,23,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 17}",,
+2026-11-12T23:20:29Z,dry_run,ok,0,0,25,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 19}",,
+2026-11-12T23:25:23Z,dry_run,ok,0,0,25,6,1,39.81,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 17, ""too close to start / started"": 1}",,
+2026-11-12T23:30:30Z,dry_run,ok,0,0,22,5,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 16}",,
+2026-11-12T23:35:21Z,dry_run,ok,0,0,23,5,1,39.69,0.75,0,0,"{""edge below minimum after resize"": 4, ""too few contracts after caps"": 14}",,
+2026-11-12T23:40:24Z,dry_run,ok,0,0,21,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 14, ""edge below minimum after resize"": 2}",,
+2026-11-12T23:45:27Z,dry_run,ok,0,0,22,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 17}",,
+2026-11-12T23:50:27Z,dry_run,ok,0,0,20,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 12, ""too close to start / started"": 3}",,
+2026-11-12T23:55:24Z,dry_run,ok,0,0,13,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 7, ""too close to start / started"": 1}",,
+2026-11-13T00:00:33Z,dry_run,ok,0,0,63,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 58}",,
+2026-11-13T00:05:26Z,dry_run,ok,0,0,62,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T00:10:29Z,dry_run,ok,0,0,62,4,1,39.99,0.75,0,0,"{""too few contracts after caps"": 58}",,
+2026-11-13T00:15:30Z,dry_run,ok,0,0,62,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T00:20:23Z,dry_run,ok,0,0,62,6,1,39.98,0.75,0,0,"{""too few contracts after caps"": 56}",,
+2026-11-13T00:25:21Z,dry_run,ok,0,0,62,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T00:30:30Z,dry_run,ok,0,0,62,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T00:35:24Z,dry_run,ok,0,0,62,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T00:40:23Z,dry_run,ok,0,0,62,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}",,
+2026-11-13T00:45:22Z,dry_run,ok,0,0,63,4,1,39.95,0.75,0,0,"{""too few contracts after caps"": 59}",,
+2026-11-13T00:50:26Z,dry_run,ok,0,0,60,6,1,39.97,0.75,0,0,"{""too few contracts after caps"": 54}",,
+2026-11-13T00:55:25Z,dry_run,ok,0,0,60,5,1,39.98,0.75,0,0,"{""too few contracts after caps"": 54, ""too close to start / started"": 1}",,
+2026-11-13T01:00:33Z,dry_run,ok,0,0,62,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}",,
+2026-11-13T01:05:22Z,dry_run,ok,0,0,44,5,1,39.97,0.75,0,0,"{""too few contracts after caps"": 39}",,
+2026-11-13T01:10:31Z,dry_run,ok,0,0,40,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 35}",,
+2026-11-13T01:15:26Z,dry_run,ok,0,0,67,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 61}",,
+2026-11-13T01:20:25Z,dry_run,ok,0,0,67,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 62}",,
+2026-11-13T01:25:26Z,dry_run,ok,0,0,68,4,1,40.0,0.75,0,0,"{""too few contracts after caps"": 64}",,
+2026-11-13T01:30:30Z,dry_run,ok,0,0,67,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 62}",,
+2026-11-13T01:35:22Z,dry_run,ok,0,0,67,5,1,39.99,0.75,0,0,"{""too few contracts after caps"": 62}",,
+2026-11-13T01:40:24Z,dry_run,ok,0,0,69,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T01:43:16Z,dry_run,ok,0,0,69,6,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T01:46:32Z,dry_run,ok,0,0,68,5,1,39.96,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T01:50:23Z,dry_run,ok,0,0,68,4,1,39.95,0.75,0,0,"{""too few contracts after caps"": 64}",,
+2026-11-13T01:55:24Z,dry_run,ok,0,0,68,5,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T02:00:36Z,dry_run,ok,0,0,7,3,1,33.5,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-13T02:05:18Z,dry_run,ok,0,0,9,5,1,33.72,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-13T02:10:24Z,dry_run,ok,0,0,16,5,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 10}",,
+2026-11-13T02:15:22Z,dry_run,ok,0,0,21,7,1,39.91,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 13}",,
+2026-11-13T02:20:25Z,dry_run,ok,0,0,17,6,1,39.74,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 9}",,
+2026-11-13T02:25:23Z,dry_run,ok,0,0,15,5,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 8}",,
+2026-11-13T02:30:28Z,dry_run,ok,0,0,17,4,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 11}",,
+2026-11-13T02:35:24Z,dry_run,ok,0,0,13,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 5}",,
+2026-11-13T02:40:25Z,dry_run,ok,0,0,13,5,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 5}",,
+2026-11-13T02:45:28Z,dry_run,ok,0,0,13,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 6}",,
+2026-11-13T02:50:30Z,dry_run,ok,0,0,14,5,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 6, ""too close to start / started"": 1}",,
+2026-11-13T02:55:21Z,dry_run,ok,0,0,14,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 7}",,
+2026-11-13T03:00:32Z,dry_run,ok,0,0,11,4,1,39.98,0.75,0,0,"{""too few contracts after caps"": 7}",,
+2026-11-13T03:05:24Z,dry_run,ok,0,0,19,6,1,39.31,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 12}",,
+2026-11-13T03:10:28Z,dry_run,ok,0,0,20,4,1,39.98,0.75,0,0,"{""too few contracts after caps"": 16}",,
+2026-11-13T03:15:25Z,dry_run,ok,0,0,0,0,1,7.75,0.75,0,0,{},,
+2026-11-13T03:20:27Z,dry_run,ok,0,0,19,7,1,39.35,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 11}",,
+2026-11-13T03:25:25Z,dry_run,ok,0,0,18,6,1,39.85,0.75,0,0,"{""too few contracts after caps"": 12}",,
+2026-11-13T03:30:30Z,dry_run,ok,0,0,17,7,1,40.0,0.75,0,0,"{""too few contracts after caps"": 10}",,
+2026-11-13T03:35:21Z,dry_run,ok,0,0,15,6,1,39.97,0.75,0,0,"{""too few contracts after caps"": 9}",,
+2026-11-13T03:40:25Z,dry_run,ok,0,0,15,7,1,39.46,0.75,0,0,"{""too few contracts after caps"": 8}",,
+2026-11-13T03:45:23Z,dry_run,ok,0,0,18,7,1,39.39,0.75,0,0,"{""too few contracts after caps"": 11}",,
+2026-11-13T03:50:27Z,dry_run,ok,0,0,18,7,1,39.51,0.75,0,0,"{""too few contracts after caps"": 11}",,
+2026-11-13T03:55:23Z,dry_run,ok,0,0,19,7,1,39.8,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 11}",,
+2026-11-13T04:00:32Z,dry_run,ok,0,0,18,7,1,40.0,0.75,0,0,"{""too few contracts after caps"": 11}",,
+2026-11-13T04:05:25Z,dry_run,ok,0,0,17,7,1,39.99,0.75,0,0,"{""too few contracts after caps"": 10}",,
+2026-11-13T04:10:28Z,dry_run,ok,0,0,19,7,1,39.42,0.75,0,0,"{""too few contracts after caps"": 12}",,
+2026-11-13T04:15:24Z,dry_run,ok,0,0,17,6,1,39.91,0.75,0,0,"{""too few contracts after caps"": 11}",,
+2026-11-13T04:20:28Z,dry_run,ok,0,0,20,6,1,39.13,0.75,0,0,"{""too few contracts after caps"": 14}",,
+2026-11-13T04:25:24Z,dry_run,ok,0,0,18,6,1,39.8,0.75,0,0,"{""too few contracts after caps"": 12}",,
+2026-11-13T04:30:31Z,dry_run,ok,0,0,20,6,1,39.8,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 13}",,
+2026-11-13T04:35:24Z,dry_run,ok,0,0,22,7,1,39.47,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 7}",,
+2026-11-13T04:40:28Z,dry_run,ok,0,0,65,6,1,39.99,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 58}",,
+2026-11-13T04:45:22Z,dry_run,ok,0,0,68,7,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 59}",,
+2026-11-13T04:50:27Z,dry_run,ok,0,0,65,5,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 59}",,
+2026-11-13T04:55:20Z,dry_run,ok,0,0,12,8,1,19.86,0.75,0,0,"{""edge below minimum after resize"": 4}",,
+2026-11-13T05:00:33Z,dry_run,ok,0,0,17,10,1,37.47,0.75,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-13T05:05:24Z,dry_run,ok,0,0,12,5,1,27.54,0.75,0,0,"{""edge below minimum after resize"": 7}",,
+2026-11-13T05:10:28Z,dry_run,ok,0,0,11,7,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 1}",,
+2026-11-13T05:15:25Z,dry_run,ok,0,0,15,6,1,39.77,0.75,0,0,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 4}",,
+2026-11-13T05:20:31Z,dry_run,ok,0,0,33,7,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 25}",,
+2026-11-13T05:25:22Z,dry_run,ok,0,0,36,7,1,39.99,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T05:30:32Z,dry_run,ok,0,0,42,9,1,40.0,0.75,0,0,"{""too few contracts after caps"": 33}",,
+2026-11-13T05:35:25Z,dry_run,ok,0,0,42,9,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 32}",,
+2026-11-13T05:40:29Z,dry_run,ok,0,0,38,7,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 1, ""too few contracts after caps"": 30}",,
+2026-11-13T05:45:23Z,dry_run,ok,0,0,62,11,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 3, ""too few contracts after caps"": 48}",,
+2026-11-13T05:50:26Z,dry_run,ok,0,0,93,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 82}",,
+2026-11-13T05:55:21Z,dry_run,ok,0,0,80,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 67}",,
+2026-11-13T06:00:33Z,dry_run,ok,0,0,65,16,1,39.97,0.75,0,0,"{""edge below minimum after resize"": 6, ""too few contracts after caps"": 43}",,
+2026-11-13T06:05:29Z,dry_run,ok,0,0,67,13,1,39.96,0.75,0,0,"{""too few contracts after caps"": 54}",,
+2026-11-13T06:10:23Z,dry_run,ok,0,0,64,14,1,39.99,0.75,0,0,"{""too few contracts after caps"": 50}",,
+2026-11-13T06:15:23Z,dry_run,ok,0,0,64,27,1,39.94,0.75,0,0,"{""too few contracts after caps"": 37}",,
+2026-11-13T06:20:31Z,dry_run,ok,0,0,79,15,1,39.97,0.75,0,0,"{""too few contracts after caps"": 64}",,
+2026-11-13T06:25:21Z,dry_run,ok,0,0,74,14,1,39.97,0.75,0,0,"{""too few contracts after caps"": 60}",,
+2026-11-13T06:30:27Z,dry_run,ok,0,0,76,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T06:35:29Z,dry_run,ok,0,0,76,13,1,39.95,0.75,0,0,"{""too few contracts after caps"": 63}",,
+2026-11-13T06:40:28Z,dry_run,ok,0,0,75,14,1,39.98,0.75,0,0,"{""too few contracts after caps"": 61}",,
+2026-11-13T06:45:24Z,dry_run,ok,0,0,76,27,1,39.96,0.75,0,0,"{""too few contracts after caps"": 49}",,
+2026-11-13T06:50:31Z,dry_run,ok,0,0,74,15,1,40.0,0.75,0,0,"{""too few contracts after caps"": 59}",,
+2026-11-13T06:55:21Z,dry_run,ok,0,0,70,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T07:00:32Z,dry_run,ok,0,0,73,11,1,39.96,0.75,0,0,"{""too few contracts after caps"": 62}",,
+2026-11-13T07:05:25Z,dry_run,ok,0,0,70,12,1,39.98,0.75,0,0,"{""too few contracts after caps"": 58}",,
+2026-11-13T07:10:26Z,dry_run,ok,0,0,65,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 54}",,
+2026-11-13T07:15:29Z,dry_run,ok,0,0,71,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 58}",,
+2026-11-13T07:20:23Z,dry_run,ok,0,0,70,15,1,39.99,0.75,0,0,"{""too few contracts after caps"": 55}",,
+2026-11-13T07:25:34Z,dry_run,ok,0,0,67,14,1,39.98,0.75,0,0,"{""too few contracts after caps"": 53}",,
+2026-11-13T07:30:35Z,dry_run,ok,0,0,67,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 56}",,
+2026-11-13T07:35:25Z,dry_run,ok,0,0,68,10,1,40.0,0.75,0,0,"{""too few contracts after caps"": 58}",,
+2026-11-13T07:40:40Z,dry_run,ok,0,0,66,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}",,
+2026-11-13T07:45:24Z,dry_run,ok,0,0,67,10,1,39.96,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T07:50:26Z,dry_run,ok,0,0,66,15,1,40.0,0.75,0,0,"{""too few contracts after caps"": 51}",,
+2026-11-13T07:55:27Z,dry_run,ok,0,0,66,16,1,39.97,0.75,0,0,"{""too few contracts after caps"": 50}",,
+2026-11-13T08:00:37Z,dry_run,ok,0,0,67,14,1,40.0,0.75,0,0,"{""too few contracts after caps"": 53}",,
+2026-11-13T08:05:22Z,dry_run,ok,0,0,65,13,1,39.97,0.75,0,0,"{""too few contracts after caps"": 52}",,
+2026-11-13T08:10:27Z,dry_run,ok,0,0,67,14,1,39.99,0.75,0,0,"{""too few contracts after caps"": 53}",,
+2026-11-13T08:15:26Z,dry_run,ok,0,0,69,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 56}",,
+2026-11-13T08:20:27Z,dry_run,ok,0,0,70,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 57}",,
+2026-11-13T08:25:22Z,dry_run,ok,0,0,69,16,1,40.0,0.75,0,0,"{""too few contracts after caps"": 53}",,
+2026-11-13T08:30:30Z,dry_run,ok,0,0,70,10,1,39.99,0.75,0,0,"{""too few contracts after caps"": 60}",,
+2026-11-13T08:35:25Z,dry_run,ok,0,0,69,14,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}",,
+2026-11-13T08:40:34Z,dry_run,ok,0,0,69,17,1,39.96,0.75,0,0,"{""too few contracts after caps"": 52}",,
+2026-11-13T08:45:28Z,dry_run,ok,0,0,66,11,1,40.0,0.75,0,0,"{""too few contracts after caps"": 55}",,
+2026-11-13T08:48:45Z,dry_run,ok,0,0,64,12,1,40.0,0.75,0,0,"{""too few contracts after caps"": 52}",,
+2026-11-13T08:51:30Z,dry_run,ok,0,0,62,13,1,39.99,0.75,0,0,"{""too few contracts after caps"": 49}",,
+2026-11-13T08:55:24Z,dry_run,ok,0,0,61,22,1,40.0,0.75,0,0,"{""too few contracts after caps"": 39}",,
+2026-11-13T09:00:34Z,dry_run,ok,0,0,60,11,1,39.95,0.75,0,0,"{""too few contracts after caps"": 49}",,
+2026-11-13T09:05:23Z,dry_run,ok,0,0,60,9,1,39.97,0.75,0,0,"{""too few contracts after caps"": 51}",,
+2026-11-13T09:10:34Z,dry_run,ok,0,0,61,10,1,39.96,0.75,0,0,"{""too few contracts after caps"": 51}",,
+2026-11-13T09:15:24Z,dry_run,ok,0,0,60,10,1,39.99,0.75,0,0,"{""too few contracts after caps"": 50}",,
+2026-11-13T09:20:30Z,dry_run,ok,0,0,60,12,1,40.0,0.75,0,0,"{""too few contracts after caps"": 48}",,
+2026-11-13T09:25:28Z,dry_run,ok,0,0,62,13,1,40.0,0.75,0,0,"{""too few contracts after caps"": 49}",,
+2026-11-13T09:30:33Z,dry_run,ok,0,0,60,19,1,40.0,0.75,0,0,"{""too few contracts after caps"": 41}",,
+2026-11-13T09:35:26Z,dry_run,ok,0,0,61,26,1,39.95,0.75,0,0,"{""too few contracts after caps"": 35}",,
+2026-11-13T09:40:26Z,dry_run,ok,0,0,60,30,1,39.76,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T09:45:24Z,dry_run,ok,0,0,60,30,1,39.81,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T09:50:28Z,dry_run,ok,0,0,60,32,1,39.94,0.75,0,0,"{""too few contracts after caps"": 28}",,
+2026-11-13T09:55:28Z,dry_run,ok,0,0,61,31,1,39.59,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T10:00:37Z,dry_run,ok,0,0,60,35,1,39.69,0.75,0,0,"{""too few contracts after caps"": 25}",,
+2026-11-13T10:05:28Z,dry_run,ok,0,0,60,34,1,39.99,0.75,0,0,"{""too few contracts after caps"": 26}",,
+2026-11-13T10:10:26Z,dry_run,ok,0,0,60,36,1,40.0,0.75,0,0,"{""too few contracts after caps"": 24}",,
+2026-11-13T10:15:26Z,dry_run,ok,0,0,61,34,1,39.95,0.75,0,0,"{""too few contracts after caps"": 27}",,
+2026-11-13T10:20:27Z,dry_run,ok,0,0,61,34,1,39.55,0.75,0,0,"{""too few contracts after caps"": 27}",,
+2026-11-13T10:25:30Z,dry_run,ok,0,0,61,32,1,39.7,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T10:30:33Z,dry_run,ok,0,0,60,31,1,39.9,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T10:35:28Z,dry_run,ok,0,0,60,34,1,39.96,0.75,0,0,"{""too few contracts after caps"": 26}",,
+2026-11-13T10:40:28Z,dry_run,ok,0,0,61,33,1,39.42,0.75,0,0,"{""too few contracts after caps"": 28}",,
+2026-11-13T10:45:32Z,dry_run,ok,0,0,61,31,1,39.61,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T10:50:26Z,dry_run,ok,0,0,61,26,1,39.94,0.75,0,0,"{""too few contracts after caps"": 35}",,
+2026-11-13T10:55:23Z,dry_run,ok,0,0,60,30,1,39.91,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T11:00:36Z,dry_run,ok,0,0,60,28,1,39.93,0.75,0,0,"{""too few contracts after caps"": 32}",,
+2026-11-13T11:05:23Z,dry_run,ok,0,0,62,31,1,39.69,0.75,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-13T11:10:30Z,dry_run,ok,0,0,61,29,1,39.86,0.75,0,0,"{""too few contracts after caps"": 32}",,
+2026-11-13T11:15:31Z,dry_run,ok,0,0,60,26,1,39.69,0.75,0,0,"{""too few contracts after caps"": 34}",,
+2026-11-13T11:20:27Z,dry_run,ok,0,0,60,30,1,39.61,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T11:25:23Z,dry_run,ok,0,0,60,32,1,39.87,0.75,0,0,"{""too few contracts after caps"": 28}",,
+2026-11-13T11:30:29Z,dry_run,ok,0,0,60,31,1,39.96,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T11:35:29Z,dry_run,ok,0,0,60,34,1,39.93,0.75,0,0,"{""too few contracts after caps"": 26}",,
+2026-11-13T11:40:26Z,dry_run,ok,0,0,60,31,1,39.88,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T11:45:30Z,dry_run,ok,0,0,60,31,1,39.83,0.75,0,0,"{""too few contracts after caps"": 29}",,
+2026-11-13T11:50:27Z,dry_run,ok,0,0,60,29,1,39.99,0.75,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-13T11:55:23Z,dry_run,ok,0,0,60,30,1,39.6,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T12:00:40Z,dry_run,ok,0,0,60,30,1,39.86,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T12:05:35Z,dry_run,ok,0,0,61,33,1,39.98,0.75,0,0,"{""too few contracts after caps"": 28}",,
+2026-11-13T12:10:28Z,dry_run,ok,0,0,60,30,1,39.88,0.75,0,0,"{""too few contracts after caps"": 30}",,
+2026-11-13T12:15:41Z,dry_run,ok,0,0,61,28,1,39.98,0.75,0,0,"{""too few contracts after caps"": 33}",,
+2026-11-13T12:20:28Z,dry_run,ok,0,0,61,27,1,39.97,0.75,0,0,"{""too few contracts after caps"": 34}",,
+2026-11-13T12:25:31Z,dry_run,ok,0,0,61,22,1,39.97,0.75,0,0,"{""too few contracts after caps"": 39}",,
+2026-11-13T12:30:36Z,dry_run,ok,0,0,62,24,1,40.0,0.75,0,0,"{""too few contracts after caps"": 38}",,
+2026-11-13T12:35:30Z,dry_run,ok,0,0,62,26,1,39.93,0.75,0,0,"{""too few contracts after caps"": 36}",,
+2026-11-13T12:40:36Z,dry_run,ok,0,0,63,23,1,40.0,0.75,0,0,"{""too few contracts after caps"": 40}",,
+2026-11-13T12:45:29Z,dry_run,ok,0,0,61,34,1,39.99,0.75,0,0,"{""too few contracts after caps"": 27}",,
+2026-11-13T12:50:34Z,dry_run,ok,0,0,60,29,1,39.97,0.75,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-13T12:55:25Z,dry_run,ok,0,0,60,29,1,39.88,0.75,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-13T13:00:39Z,dry_run,ok,0,0,60,22,1,40.0,0.75,0,0,"{""too few contracts after caps"": 38}",,
+2026-11-13T13:05:29Z,dry_run,ok,0,0,59,20,1,39.9,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 37}",,
+2026-11-13T13:10:33Z,dry_run,ok,0,0,53,21,1,40.0,0.75,0,0,"{""edge below minimum after resize"": 2, ""too few contracts after caps"": 30}",,
+2026-11-13T13:15:31Z,dry_run,ok,0,0,49,18,1,39.94,0.75,0,0,"{""too few contracts after caps"": 31}",,
+2026-11-13T13:20:27Z,dry_run,ok,0,0,45,19,1,39.95,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 19}",,
+2026-11-13T13:25:29Z,dry_run,ok,0,0,44,20,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 14, ""too few contracts after caps"": 10}",,
+2026-11-13T13:30:35Z,dry_run,ok,0,0,43,22,1,39.96,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 12}",,
+2026-11-13T13:35:41Z,dry_run,ok,0,0,41,20,1,39.63,0.75,0,0,"{""edge below minimum after resize"": 14, ""too few contracts after caps"": 7}",,
+2026-11-13T13:40:36Z,dry_run,ok,0,0,39,21,1,38.12,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 6}",,
+2026-11-13T13:45:33Z,dry_run,ok,0,0,41,21,1,39.29,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 12}",,
+2026-11-13T13:50:29Z,dry_run,ok,0,0,42,19,1,39.76,0.75,0,0,"{""edge below minimum after resize"": 15, ""too few contracts after caps"": 8}",,
+2026-11-13T13:55:27Z,dry_run,ok,0,0,43,18,1,39.45,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 15}",,
+2026-11-13T14:00:42Z,dry_run,ok,0,0,41,20,1,39.52,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 9}",,
+2026-11-13T14:05:34Z,dry_run,ok,0,0,36,22,1,38.27,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 4}",,
+2026-11-13T14:10:38Z,dry_run,ok,0,0,35,23,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 7, ""too few contracts after caps"": 5}",,
+2026-11-13T14:15:36Z,dry_run,ok,0,0,40,23,1,39.27,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 5}",,
+2026-11-13T14:20:29Z,dry_run,ok,0,0,38,20,1,39.31,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 2}",,
+2026-11-13T14:25:30Z,dry_run,ok,0,0,38,16,1,39.18,0.75,0,0,"{""edge below minimum after resize"": 21, ""too few contracts after caps"": 1}",,
+2026-11-13T14:30:34Z,dry_run,ok,0,0,40,20,1,39.54,0.75,0,0,"{""edge below minimum after resize"": 19, ""too few contracts after caps"": 1}",,
+2026-11-13T14:35:34Z,dry_run,ok,0,0,46,22,1,39.74,0.75,0,0,"{""edge below minimum after resize"": 17, ""too few contracts after caps"": 7}",,
+2026-11-13T14:40:29Z,dry_run,ok,0,0,54,20,1,39.81,0.75,0,0,"{""edge below minimum after resize"": 22, ""too few contracts after caps"": 12}",,
+2026-11-13T14:45:37Z,dry_run,ok,0,0,52,20,1,39.2,0.75,0,0,"{""edge below minimum after resize"": 29, ""too few contracts after caps"": 3}",,
+2026-11-13T14:50:32Z,dry_run,ok,0,0,47,19,1,39.06,0.75,0,0,"{""edge below minimum after resize"": 27, ""too few contracts after caps"": 1}",,
+2026-11-13T14:55:30Z,dry_run,ok,0,0,52,19,1,39.67,0.75,0,0,"{""edge below minimum after resize"": 11, ""too few contracts after caps"": 22}",,
+2026-11-13T15:00:39Z,dry_run,ok,0,0,40,15,1,39.33,0.75,0,0,"{""edge below minimum after resize"": 18, ""too few contracts after caps"": 7}",,
+2026-11-13T15:05:40Z,dry_run,ok,0,0,33,14,1,30.28,0.75,0,0,"{""edge below minimum after resize"": 19}",,
+2026-11-13T15:10:34Z,dry_run,ok,0,0,30,16,1,39.37,0.75,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 1}",,
+2026-11-13T15:15:33Z,dry_run,ok,0,0,30,16,1,39.25,0.75,0,0,"{""edge below minimum after resize"": 13, ""too few contracts after caps"": 1}",,
+2026-11-13T15:20:32Z,dry_run,ok,0,0,35,15,1,39.92,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 8}",,
+2026-11-13T15:25:32Z,dry_run,ok,0,0,35,16,1,38.05,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 10}",,
+2026-11-13T15:30:40Z,dry_run,ok,0,0,27,13,1,39.88,0.75,0,0,"{""edge below minimum after resize"": 10, ""too few contracts after caps"": 4}",,
+2026-11-13T15:35:32Z,dry_run,ok,0,0,32,16,1,39.42,0.75,0,0,"{""edge below minimum after resize"": 9, ""too few contracts after caps"": 7}",,
+2026-11-13T15:40:30Z,dry_run,ok,0,0,34,18,1,38.95,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 4}",,
+2026-11-13T15:45:29Z,dry_run,ok,0,0,33,18,1,39.68,0.75,0,0,"{""edge below minimum after resize"": 15}",,
+2026-11-13T15:50:32Z,dry_run,ok,0,0,38,18,1,39.34,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 4}",,
+2026-11-13T15:55:33Z,dry_run,ok,0,0,32,14,1,39.98,0.75,0,0,"{""edge below minimum after resize"": 17, ""too few contracts after caps"": 1}",,
+2026-11-13T16:00:37Z,dry_run,ok,0,0,32,17,1,39.3,0.75,0,0,"{""edge below minimum after resize"": 12, ""too few contracts after caps"": 3}",,
+2026-11-13T16:05:34Z,dry_run,ok,0,0,31,16,1,39.65,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 7}",,
+2026-11-13T16:10:42Z,dry_run,ok,0,0,33,14,1,35.74,0.75,0,0,"{""edge below minimum after resize"": 19}",,
+2026-11-13T16:15:30Z,dry_run,ok,0,0,31,16,1,31.72,0.75,0,0,"{""edge below minimum after resize"": 15}",,
+2026-11-13T16:20:36Z,dry_run,ok,0,0,32,15,1,38.66,0.75,0,0,"{""edge below minimum after resize"": 16, ""too few contracts after caps"": 1}",,
+2026-11-13T16:25:32Z,dry_run,ok,0,0,29,15,1,34.31,0.75,0,0,"{""edge below minimum after resize"": 14}",,
+2026-11-13T16:30:38Z,dry_run,ok,0,0,22,9,1,28.22,0.75,0,0,"{""edge below minimum after resize"": 13}",,
+2026-11-13T16:35:34Z,dry_run,ok,0,0,21,11,1,37.63,0.75,0,0,"{""edge below minimum after resize"": 8, ""too few contracts after caps"": 2}",,
+2026-11-13T16:40:34Z,dry_run,ok,0,0,26,10,1,30.7,0.75,0,0,"{""edge below minimum after resize"": 16}",,
+2026-11-13T16:45:36Z,dry_run,ok,0,0,29,12,1,32.16,0.75,0,0,"{""edge below minimum after resize"": 17}",,
+2026-11-13T16:50:37Z,dry_run,ok,0,0,23,9,1,19.76,0.75,0,0,"{""edge below minimum after resize"": 14}",,
+2026-11-13T16:55:31Z,dry_run,ok,0,0,23,14,1,35.33,0.75,0.84,0.84,"{""edge below minimum after resize"": 5, ""too few contracts after caps"": 4}",98.89,0.9
