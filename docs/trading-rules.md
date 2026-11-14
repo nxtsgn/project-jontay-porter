@@ -22,6 +22,10 @@ proposal. Change any of them.
   - Taker-taker hedges (both sides bought immediately): **1¢ per contract**.
   - Resting-order hedges (Kalshi order waits, Polymarket US hedge bought when it fills): **2¢ per contract**, because the hedge
     price can move while we wait.
+- **Too good to be real = skipped.** A "profit" over **15¢ per contract** is almost always a bad or stale quote or a glitched
+  market, and exchanges usually cancel trades at obviously wrong prices. The bot skips these, never counts them as profit,
+  and the daily health check fails if one ever gets through. (Nov 12: Polymarket US briefly showed Virginia at 3¢ while
+  Kalshi had them near 69¢. The practice trader took it and was credited +$16.05, which has been removed.)
 - **The hedge can't cost more than 3¢ worse than planned.** If it would, the bot holds the unhedged leg, alerts you, and stops
   adding new trades.
 

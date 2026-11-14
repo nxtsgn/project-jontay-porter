@@ -27,7 +27,9 @@
     "min_contracts": 3,
     "min_net_edge_taker_cents": 1.0,
     "min_net_edge_maker_cents": 2.0,
-    "max_hedge_slippage_cents": 3.0
+    "max_hedge_slippage_cents": 3.0,
+    "max_plausible_edge_cents": 15.0,
+    "_plausible_note": "a 'profit' bigger than this is almost always a bad or stale quote, or a glitched market, and exchanges usually cancel trades at obviously wrong prices. The bot skips these and never counts them as profit (2026-11-12: Polymarket US showed Virginia at 3c vs ~69c on Kalshi)"
   },
 
   "portfolio": {

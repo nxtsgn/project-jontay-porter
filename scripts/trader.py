@@ -53,6 +53,9 @@ RUN_FIELDS = ["ts_utc", "mode", "status", "taker_candidates", "taker_accepted", 
               "equity", "scale"]
 MAKER_OUTCOMES, MAKER_BAGS = PAPER / "maker_outcomes.csv", PAPER / "maker_bags.csv"
 SETTLE_AFTER = timedelta(hours=4)
+# Equity recorded before this time included a +$16 "instant hedge" priced off a bad quote; the high-water mark for the
+# drawdown kill starts here so that correction isn't mistaken for a loss.
+EQUITY_RESET_TS = "2026-11-14T21:00:00Z"
 LIVE_RUNNER_BUILT = False  # the always-on process that can hedge within max_unhedged_minutes
 
 
@@ -167,7 +170,7 @@ def rules_pnl(now):
         total += v
         day += v if o.get("event_time", "")[:10] == today else 0.0
     for h in _read(LEDGER):
-        if h.get("pnl") not in ("", None):
+        if h.get("pnl") not in ("", None) and f(h.get("net_per_contract")) <= learn.MAX_PLAUSIBLE_EDGE:
             total += float(h["pnl"])
             day += float(h["pnl"]) if h["ts_utc"].startswith(today) else 0.0
     return total, day, risk
@@ -287,6 +290,9 @@ def taker(rules, book, opps, ts, now, rej):
         fees = fee(o["a_venue"], f(o.get("a_fee_coef")) or (0.07 if o["a_venue"] == "kalshi" else 0.095), pa, c) + \
             fee(o["b_venue"], f(o.get("b_fee_coef")) or (0.07 if o["b_venue"] == "kalshi" else 0.095), pb, c)
         net = 1 - pa - pb - fees / c
+        if net * 100 > rules["per_hedge"].get("max_plausible_edge_cents", 15):
+            rej.update(["edge too good to be real (bad quote?)"])
+            continue
         if net * 100 < rules["per_hedge"]["min_net_edge_taker_cents"]:
             rej.update(["edge below minimum after resize"])
             continue
@@ -316,6 +322,9 @@ def maker(rules, book, plans, ts, now, rej):
             rej.update(["too few contracts after caps"])
             continue
         edge = 1 - rp - hp - (fee("polymarket_us", float(o["hedge_fee_coef"]), hp, c) + kalshi_maker_fee(o["rest_id"], rp, c)) / c
+        if edge * 100 > rules["per_hedge"].get("max_plausible_edge_cents", 15):
+            rej.update(["edge too good to be real (bad quote?)"])
+            continue
         if edge * 100 < rules["per_hedge"]["min_net_edge_maker_cents"]:
             rej.update(["edge below minimum after resize"])
             continue
@@ -366,7 +375,7 @@ def cycle(taker_opps, maker_plans, ts, rules=None):
     book = Book(rules, now)
     rej, status = Counter(), "ok"
     ll = rules["loss_limits"]
-    peak = max([start, equity] + [f(r.get("equity")) for r in _read(RUNS) if r.get("equity")])
+    peak = max([start, equity] + [f(r.get("equity")) for r in _read(RUNS) if r.get("equity") and r["ts_utc"] >= EQUITY_RESET_TS])
     if kill_switch_off():
         status = "KILLED (TRADING_ENABLED=false): would cancel all open orders on both venues"
     elif peak - equity >= ll["total_drawdown_kill"]:

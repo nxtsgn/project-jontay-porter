@@ -119,7 +119,8 @@ def taker_section():
     samples = learn.taker_samples()
     real = sum(1 for _, _, ok in samples if ok)
     graded = _read("graded.csv")
-    led = [h for h in _read("trader_ledger.csv") if h.get("pnl") not in ("", None)]
+    led = [h for h in _read("trader_ledger.csv") if h.get("pnl") not in ("", None)
+           and _f(h.get("net_per_contract")) <= learn.MAX_PLAUSIBLE_EDGE]  # bad-quote "hedges" don't count
     pnl = sum(_f(h["pnl"]) for h in led)
     return [
         "### Instant hedges (buy both sides at once)",

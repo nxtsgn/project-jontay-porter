@@ -134,7 +134,8 @@ def main():
     k = _f(last.get("scale")) or 1.0  # the trader's bet-size multiplier (grows with settled profit)
     in_use = {"kalshi": _f(last.get("deployed_kalshi")), "polymarket_us": _f(last.get("deployed_pmus"))}
     led = _read(d, "trader_ledger.csv")
-    taker_real = sum(_f(h["pnl"]) for h in led if h.get("pnl") not in ("", None))
+    # instant hedges priced off an obviously bad quote (edge > 15c) aren't counted: see trading_rules.json max_plausible_edge_cents
+    taker_real = sum(_f(h["pnl"]) for h in led if h.get("pnl") not in ("", None) and _f(h.get("net_per_contract")) <= 0.15)
     # within rules = only what the practice trader chose, at the size it chose (share of the full-size fill)
     rules = dict(realized=sum(p["_realized"] * p["_share"] for p in pos) + taker_real,
                  unrealized=sum(p["_unrealized"] * p["_share"] for p in pos),
@@ -206,7 +207,7 @@ def main():
     per = defaultdict(lambda: [0, 0])
     for c in cands:
         per[c["ts_utc"]][0] += 1
-        per[c["ts_utc"]][1] += _f(c["contracts"]) >= 1 and _f(c["net_per_contract"]) > 0
+        per[c["ts_utc"]][1] += _f(c["contracts"]) >= 1 and 0 < _f(c["net_per_contract"]) <= 0.15
     _write(out, "instant.csv", [dict(time=t, gaps_checked=v[0], tradable=v[1]) for t, v in sorted(per.items())],
            ["time", "gaps_checked", "tradable"])
     print(f"wrote {', '.join(sorted(p.name for p in out.glob('*.csv')))} to {out}")

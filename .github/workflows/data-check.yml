@@ -1,6 +1,7 @@
 name: data-check
-# Daily (triggered 9:00 Arizona by cron-job.org): opens a GitHub issue (GitHub then notifies you) if the price collector
-# has stopped, a weekly progress issue every Monday, and the full report once there's enough live data. Read-only on the data.
+# Daily (triggered 9:00 Arizona by cron-job.org): a health check of every part of the bot (opens "Bot health check
+# failed" if anything is off, closes it when all passes), a ping if the price collector has stopped, a weekly progress
+# issue every Monday (with the health table), and the full report once there's enough live data. Read-only on the data.
 on:
   schedule:
     - cron: "0 16 * * *"   # 9:00 Arizona time
@@ -14,6 +15,7 @@ on:
 permissions:
   contents: read
   issues: write
+  actions: read
 
 jobs:
   check:
@@ -33,6 +35,23 @@ jobs:
           out=$(python scripts/check_data.py)
           echo "$out"
           for kv in $out; do echo "$kv" >> "$GITHUB_OUTPUT"; done
+      - name: Daily health check (every part of the bot)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          since=$(date -u -d '24 hours ago' +%FT%TZ)
+          runs=$(gh run list --workflow collect-prices.yml --created ">$since" --limit 1000 --json conclusion)
+          total=$(echo "$runs" | jq length)
+          failed=$(echo "$runs" | jq '[.[] | select(.conclusion == "failure")] | length')
+          set +e; python scripts/health_check.py --runs-total "$total" --runs-failed "$failed" > health.md; rc=$?; set -e
+          cat health.md
+          title="Bot health check failed"
+          open=$(gh issue list --state open --search "in:title \"$title\"" --json number -q '.[0].number')
+          if [ "$rc" -ne 0 ]; then
+            if [ -n "$open" ]; then gh issue comment "$open" --body-file health.md; else gh issue create --title "$title" --body-file health.md; fi
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "All checks passed again on $(date -u +%F). $(sed -n 1p health.md)"
+          fi
       - name: Ping if the collector stopped
         if: steps.check.outputs.status == 'stale'
         env:
@@ -50,6 +69,7 @@ jobs:
           title="Weekly progress $(TZ=America/Phoenix date +%F)"
           gh issue list --state all --search "in:title \"$title\"" --json number -q '.[0].number' | grep -q . && exit 0
           python scripts/progress_report.py "$title" > report.md
+          [ -f health.md ] && { echo; cat health.md; } >> report.md
           gh issue create --title "$title" --body-file report.md
       - name: Ping when there's enough data
         if: steps.check.outputs.status == 'ready'

@@ -29,6 +29,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
+MAX_PLAUSIBLE_EDGE = 0.15  # $/contract; bigger 'profits' are bad quotes (see trading_rules.json per_hedge)
 OUT = PAPER / "learning"
 MODEL, CHANGES = OUT / "model.json", OUT / "changes.csv"
 CHANGE_FIELDS = ["ts_utc", "group", "old_action", "new_action", "n", "value_per_contract", "low", "high"]
@@ -121,6 +122,8 @@ def taker_samples():
         later = nxt[r["ts_utc"]]
         if later is None:
             continue  # newest run: persistence not known yet
+        if _f(r["net_per_contract"]) > MAX_PLAUSIBLE_EDGE:
+            continue  # a bad quote, not an opportunity: don't learn from it
         ok = _f(r["contracts"]) >= 1 and _f(r["net_per_contract"]) > 0 and (r["a_id"], r["b_id"]) in later
         out.append((taker_groups(r), _f(r["net_per_contract"]) if ok else 0.0, ok))
     return out
