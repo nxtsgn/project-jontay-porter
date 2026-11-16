@@ -1,9 +1,9 @@
 {
- "updated": "2026-11-16T00:31:35Z",
+ "updated": "2026-11-16T00:36:34Z",
  "min_samples": 30,
  "groups": {
   "maker": {
-   "n": 33049,
+   "n": 33060,
    "hit_rate": 0.0018,
    "raw_value_per_contract": 2e-05,
    "value_per_contract": 2e-05,
@@ -12,7 +12,7 @@
    "action": "normal"
   },
   "taker": {
-   "n": 40546,
+   "n": 40586,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -0.0,
@@ -21,7 +21,7 @@
    "action": "normal"
   },
   "maker|prop": {
-   "n": 21501,
+   "n": 21502,
    "hit_rate": 0.0015,
    "raw_value_per_contract": -4e-05,
    "value_per_contract": -4e-05,
@@ -39,7 +39,7 @@
    "action": "normal"
   },
   "maker|spread": {
-   "n": 4533,
+   "n": 4542,
    "hit_rate": 0.0035,
    "raw_value_per_contract": 0.00035,
    "value_per_contract": 0.00035,
@@ -48,7 +48,7 @@
    "action": "normal"
   },
   "maker|moneyline": {
-   "n": 1395,
+   "n": 1396,
    "hit_rate": 0.005,
    "raw_value_per_contract": 1e-05,
    "value_per_contract": 1e-05,
@@ -57,7 +57,7 @@
    "action": "normal"
   },
   "taker|prop": {
-   "n": 28856,
+   "n": 28890,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -66,7 +66,7 @@
    "action": "normal"
   },
   "taker|moneyline": {
-   "n": 5364,
+   "n": 5367,
    "hit_rate": 0.0002,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -75,7 +75,7 @@
    "action": "normal"
   },
   "taker|spread": {
-   "n": 4529,
+   "n": 4532,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -93,7 +93,7 @@
    "action": "normal"
   },
   "maker|prop|nba": {
-   "n": 19880,
+   "n": 19881,
    "hit_rate": 0.0013,
    "raw_value_per_contract": -3e-05,
    "value_per_contract": -3e-05,
@@ -111,21 +111,21 @@
    "action": "normal"
   },
   "maker|spread|cbb": {
-   "n": 1648,
+   "n": 1657,
    "hit_rate": 0.0024,
-   "raw_value_per_contract": 5e-05,
+   "raw_value_per_contract": 4e-05,
    "value_per_contract": 5e-05,
    "low": -0.00153,
-   "high": 0.00163,
+   "high": 0.00162,
    "action": "normal"
   },
   "maker|moneyline|cbb": {
-   "n": 196,
+   "n": 197,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
-   "low": -0.00458,
-   "high": 0.00458,
+   "low": -0.00456,
+   "high": 0.00457,
    "action": "normal"
   },
   "maker|moneyline|wcbb": {
@@ -210,7 +210,7 @@
    "action": "normal"
   },
   "taker|prop|nba": {
-   "n": 17956,
+   "n": 17983,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -219,7 +219,7 @@
    "action": "normal"
   },
   "taker|prop|nfl": {
-   "n": 10900,
+   "n": 10907,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -228,7 +228,7 @@
    "action": "normal"
   },
   "taker|moneyline|cbb": {
-   "n": 2307,
+   "n": 2310,
    "hit_rate": 0.0004,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
@@ -291,12 +291,12 @@
    "action": "normal"
   },
   "taker|spread|nfl": {
-   "n": 171,
+   "n": 174,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": 0.0,
-   "low": -0.0049,
-   "high": 0.0049,
+   "low": -0.00486,
+   "high": 0.00486,
    "action": "normal"
   },
   "taker|spread|cfb": {
@@ -444,12 +444,12 @@
    "action": "normal"
   },
   "maker|prop|nba|20-50c|<3h": {
-   "n": 167,
-   "hit_rate": 0.012,
-   "raw_value_per_contract": -0.00163,
-   "value_per_contract": -0.00199,
-   "low": -0.00695,
-   "high": 0.00297,
+   "n": 168,
+   "hit_rate": 0.0119,
+   "raw_value_per_contract": -0.00162,
+   "value_per_contract": -0.00198,
+   "low": -0.00692,
+   "high": 0.00296,
    "action": "normal"
   },
   "maker|prop|nba|>80c|<3h": {
@@ -462,12 +462,12 @@
    "action": "normal"
   },
   "maker|moneyline|cbb|>80c|>12h": {
-   "n": 96,
+   "n": 97,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.00086,
-   "low": -0.0074,
-   "high": 0.00568,
+   "value_per_contract": -0.00085,
+   "low": -0.00736,
+   "high": 0.00565,
    "action": "normal"
   },
   "maker|total|cbb|<20c|<3h": {
@@ -489,12 +489,12 @@
    "action": "normal"
   },
   "maker|spread|cbb|20-50c|>12h": {
-   "n": 195,
-   "hit_rate": 0.0154,
+   "n": 196,
+   "hit_rate": 0.0153,
    "raw_value_per_contract": 0.00038,
    "value_per_contract": -0.00012,
-   "low": -0.00471,
-   "high": 0.00447,
+   "low": -0.00469,
+   "high": 0.00446,
    "action": "normal"
   },
   "maker|moneyline|wcbb|50-80c|>12h": {
@@ -678,11 +678,11 @@
    "action": "normal"
   },
   "maker|spread|cbb|>80c|>12h": {
-   "n": 701,
+   "n": 705,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -0.00014,
-   "low": -0.00256,
+   "low": -0.00255,
    "high": 0.00228,
    "action": "normal"
   },
@@ -858,12 +858,12 @@
    "action": "normal"
   },
   "maker|spread|cbb|50-80c|>12h": {
-   "n": 185,
+   "n": 189,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.00049,
-   "low": -0.0052,
-   "high": 0.00422,
+   "value_per_contract": -0.00048,
+   "low": -0.00514,
+   "high": 0.00418,
    "action": "normal"
   },
   "maker|moneyline|cbb|50-80c|>12h": {
@@ -1236,7 +1236,7 @@
    "action": "normal"
   },
   "taker|prop|nfl|<20c|>12h": {
-   "n": 9073,
+   "n": 9075,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -1e-05,
@@ -1272,12 +1272,12 @@
    "action": "normal"
   },
   "taker|moneyline|cbb|>80c|>12h": {
-   "n": 1704,
+   "n": 1707,
    "hit_rate": 0.0006,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -6e-05,
    "low": -0.00161,
-   "high": 0.0015,
+   "high": 0.00149,
    "action": "normal"
   },
   "taker|moneyline|wcbb|<20c|>12h": {
@@ -1308,7 +1308,7 @@
    "action": "normal"
   },
   "taker|prop|nba|>80c|<3h": {
-   "n": 2232,
+   "n": 2245,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -4e-05,
@@ -1317,21 +1317,21 @@
    "action": "normal"
   },
   "taker|prop|nba|<20c|<3h": {
-   "n": 2597,
+   "n": 2608,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -4e-05,
-   "low": -0.0013,
+   "low": -0.00129,
    "high": 0.00122,
    "action": "normal"
   },
   "taker|prop|nba|50-80c|<3h": {
-   "n": 422,
+   "n": 425,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.00023,
-   "low": -0.00335,
-   "high": 0.00289,
+   "value_per_contract": -0.00022,
+   "low": -0.00333,
+   "high": 0.00288,
    "action": "normal"
   },
   "taker|prop|nba|20-50c|<3h": {
@@ -1650,12 +1650,12 @@
    "action": "normal"
   },
   "taker|prop|nfl|<20c|<3h": {
-   "n": 508,
+   "n": 512,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
    "value_per_contract": -0.00019,
-   "low": -0.00303,
-   "high": 0.00265,
+   "low": -0.00302,
+   "high": 0.00264,
    "action": "normal"
   },
   "taker|total|nba|>80c|3-12h": {
@@ -1731,21 +1731,21 @@
    "action": "normal"
   },
   "taker|spread|nfl|>80c|<3h": {
-   "n": 20,
+   "n": 21,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.0025,
-   "low": -0.01683,
-   "high": 0.01183,
+   "value_per_contract": -0.00244,
+   "low": -0.01642,
+   "high": 0.01154,
    "action": "normal"
   },
   "taker|spread|nfl|<20c|<3h": {
-   "n": 53,
+   "n": 55,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.00137,
-   "low": -0.01017,
-   "high": 0.00743,
+   "value_per_contract": -0.00133,
+   "low": -0.00997,
+   "high": 0.00731,
    "action": "normal"
   },
   "taker|prop|nfl|>80c|<3h": {
@@ -2082,12 +2082,12 @@
    "action": "normal"
   },
   "taker|prop|nfl|50-80c|<3h": {
-   "n": 31,
+   "n": 32,
    "hit_rate": 0.0,
    "raw_value_per_contract": 0.0,
-   "value_per_contract": -0.00196,
-   "low": -0.01347,
-   "high": 0.00955,
+   "value_per_contract": -0.00192,
+   "low": -0.01325,
+   "high": 0.0094,
    "action": "normal"
   },
   "taker|spread|nfl|<20c|3-12h": {
