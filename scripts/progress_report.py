@@ -111,6 +111,19 @@ def maker_section():
     if legacy:
         lines.append(f"- Includes {len(legacy)} fills from before the practice trader existed: "
                      f"${sum(value(r) for r in legacy):+.2f} (in the full-size line above, not the within-rules line).")
+    # unhedged-fill fixes (from 2026-11-16): one-sided fills before vs after, and orders pulled because the hedge moved
+    fix = "2026-11-16T23:00:00Z"
+    for label, rows in (("before", [o for o in outcomes if o.get("resolved_ts", "") < fix]),
+                        ("since", [o for o in outcomes if o.get("resolved_ts", "") >= fix])):
+        fl = [o for o in rows if _f(o.get("filled")) > 0]
+        if fl:
+            one = sum(_f(o.get("unhedged_qty")) for o in fl) / max(sum(_f(o.get("filled")) for o in fl), 1e-9)
+            lines.append(f"- Share of filled contracts left unhedged, {label} the Nov 16 fixes: **{one:.0%}** ({len(fl)} fills).")
+    cancels = _read("maker_cancels.csv")
+    if cancels:
+        kept = sum(_f(c["filled_without_cancel"]) - _f(c["filled_with_cancel"]) for c in cancels)
+        lines.append(f"- Orders pulled because the Polymarket US hedge moved: {len(cancels)}, keeping {kept:.0f} contracts "
+                     "of risky fills off the books.")
     return lines, trader_pnl, trader_fills, all_pnl
 
 

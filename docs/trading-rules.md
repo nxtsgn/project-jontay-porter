@@ -28,6 +28,12 @@ proposal. Change any of them.
   Kalshi had them near 69¢. The practice trader took it and was credited +$16.05, which has been removed.)
 - **The hedge can't cost more than 3¢ worse than planned.** If it would, the bot holds the unhedged leg, alerts you, and stops
   adding new trades.
+- **Pull the order if the hedge moves.** While a Kalshi order waits, the bot watches the Polymarket US price it would hedge
+  at. As soon as that price makes the trade lose money after fees, the Kalshi order is cancelled, so it can't fill into a
+  one-sided bet. The next run places a fresh order at the new prices if there's still a profit.
+- **Only order half of what's there to hedge.** An order is only as big as half the contracts Polymarket US has at a
+  profitable price (2× depth), so a fill can still be hedged if other traders take some of the book first.
+  (Both added Nov 16 after one-sided fills like Rashee Rice receptions, 87 contracts, and Kansas–West Virginia.)
 
 ## Across all trades
 - At most **6 hedges open** at once, and at most **2 on the same game**.

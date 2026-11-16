@@ -7,7 +7,8 @@ within seconds would have done:
   every 60 s   fetch the price-data branch and load the resting orders the practice trader chose in its latest run
                (data/paper/trader_latest.csv + maker_plans.csv). A newer run replaces (cancels) the older orders.
   every ~5 s   read Kalshi's public trade tape for each of those markets. A taker trading into our side at or through
-               our price is a fill (same rule as maker_sim). On a fill, immediately read the Polymarket US book and buy
+               our price is a fill (same rule as maker_sim). If the Polymarket US hedge price moves far enough that
+               the trade would lose money, the order is pulled (cancel_if_hedge_moves). On a fill, immediately read the Polymarket US book and buy
                the hedge at no worse than plan price + max_hedge_slippage_cents (walking the book), then log the result.
   every 10 min commit the log to the hedger-data branch.
 
@@ -60,11 +61,15 @@ def branch_csv(path):
     return list(csv.DictReader(io.StringIO(r.stdout))) if r.returncode == 0 else []
 
 
-def slippage():
+def rule(key, default):
     try:
-        return json.loads((ROOT / "config" / "trading_rules.json").read_text())["per_hedge"]["max_hedge_slippage_cents"] / 100
+        return json.loads((ROOT / "config" / "trading_rules.json").read_text())["per_hedge"].get(key, default)
     except Exception:  # noqa: BLE001
-        return 0.03
+        return default
+
+
+def slippage():
+    return float(rule("max_hedge_slippage_cents", 3.0)) / 100
 
 
 class Hedger:
@@ -137,6 +142,19 @@ class Hedger:
                 o["filled"] += qty
                 self.record(o, tr, qty)
             time.sleep(0.15)  # stay well under Kalshi's read rate limit
+            if rule("cancel_if_hedge_moves", False) and o["filled"] < o["order_qty"] - 1e-9 and o["until"] > t:
+                self.check_hedge(o, t)
+
+    def check_hedge(self, o, t):
+        """Pull the Kalshi order once the Polymarket US hedge price makes the trade lose money (same rule as maker_sim)."""
+        lv = hedge_levels(o)
+        if not lv:
+            return
+        px, rest, n = lv[0][0], o["rest_px"], max(1, int(o["order_qty"]))
+        edge = 1 - rest - px - float(o["hedge_fee_coef"]) * px * (1 - px) - kalshi_maker_fee(o["rest_id"], rest, n) / n
+        if edge < float(rule("cancel_below_edge_cents", 0.0)) / 100:
+            o["until"] = t
+            print(f"{now_iso()} pulled {o['rest_id']} {o['rest_raw_side']} @ {rest}: hedge now {px} (edge {edge * 100:+.1f}c)")
 
     def record(self, o, tr, qty):
         seen = now_iso()

@@ -29,7 +29,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -58,6 +58,27 @@ PLAN_FIELDS = ["placed_ts", "sport", "game_date", "teams", "market_type", "playe
 FILL_FIELDS = PLAN_FIELDS + ["resolved_ts", "filled", "first_fill_ts", "hedge_px_at_fill", "hedge_status",
                              "hedged_qty", "unhedged_qty", "cost", "hedge_fee", "locked_pnl", "locked_per_contract"]
 RUN_FIELDS = ["ts_utc", "plans_resolved", "plans_filled", "contracts_filled", "locked_pnl", "new_plans"]
+# Unhedged-fill fixes (2026-11-16), both set in config/trading_rules.json -> per_hedge:
+#  1. cancel_if_hedge_moves: a live bot watches the Polymarket US hedge and pulls the Kalshi order the moment the hedge
+#     price makes the trade a loser. Simulated with Polymarket US's minute-by-minute price history: the order counts as
+#     cancelled CANCEL_DELAY_S after the first minute the hedge crossed that line, and fills after that don't count.
+#     Logged to maker_cancels.csv (how many contracts each cancel kept off our books).
+#  2. min_hedge_depth_multiple: only plan as many contracts as half (for 2x) of what Polymarket US has at a profitable
+#     price, so a fill can still be hedged after other traders take some of the book.
+UNHEDGED_FIX_TS = "2026-11-16T23:00:00Z"  # plans resolved from here on use both fixes (for before/after comparisons)
+CANCEL_DELAY_S = 60  # price history is per minute; the live bot reacts within seconds, so this is conservative
+CANCELS = PAPER / "maker_cancels.csv"
+CANCEL_FIELDS = ["resolved_ts", "placed_ts", "sport", "market_type", "player", "rest_id", "rest_raw_side", "rest_px",
+                 "hedge_id", "hedge_px_at_plan", "hedge_px_at_cancel", "cancel_ts", "contracts", "filled_with_cancel",
+                 "filled_without_cancel"]
+RULES = ROOT / "config" / "trading_rules.json"
+
+
+def rule(key, default):
+    try:
+        return json.loads(RULES.read_text())["per_hedge"].get(key, default)
+    except Exception:  # noqa: BLE001
+        return default
 
 
 def epoch(s):
@@ -119,18 +140,25 @@ def plan(rows, ts, min_edge=0.01, budget=50.0, max_spread=0.25, max_plans=150, m
                         best[slot] = o
     # Top-of-book quotes on Polymarket US are often dust (e.g. 0.07 contracts), so re-price the hedge against the real
     # book for the planned size before keeping a plan: average price for `contracts`, shrinking size to what's there.
-    checked = []
+    checked, mult = [], max(1.0, float(rule("min_hedge_depth_multiple", 1.0)))
     for o in sorted(best.values(), key=lambda o: -o["edge_at_plan"])[:max_book_checks]:
-        lv, need, got, spend = hedge_levels(o), o["contracts"], 0.0, 0.0
+        lv, need, depth, usable = hedge_levels(o), o["contracts"], 0.0, []
         mk = kalshi_maker_fee(o["rest_id"], o["rest_px"], need) / need  # Kalshi maker fee per contract
-        for px, qty in lv:
-            if 1 - o["rest_px"] - px - o["hedge_fee_coef"] * px * (1 - px) - mk < min_edge or got >= need:
+        for px, qty in lv:  # profitable depth, up to mult x what we'd order
+            if 1 - o["rest_px"] - px - o["hedge_fee_coef"] * px * (1 - px) - mk < min_edge or depth >= need * mult:
                 break
-            take = min(need - got, qty)
-            got, spend = got + take, spend + take * px
-        c = math.floor(got)
+            take = min(need * mult - depth, qty)
+            usable.append((px, take))
+            depth += take
+        c = math.floor(min(need, depth / mult))  # order at most 1/mult of the profitable depth
         if c < min_contracts:
             continue
+        got, spend = 0.0, 0.0
+        for px, qty in usable:  # hedge price = average of the cheapest c contracts
+            take = min(c - got, qty)
+            got, spend = got + take, spend + take * px
+            if got >= c:
+                break
         hp = spend / got
         edge = 1 - o["rest_px"] - hp - (fee("polymarket_us", o["hedge_fee_coef"], hp, c) + kalshi_maker_fee(o["rest_id"], o["rest_px"], c)) / c
         if edge >= min_edge:
@@ -169,16 +197,28 @@ def fills_since(ticker, raw_side, px, since_ts, until_ts):
 
 
 def resolve(prev, rows, ts):
-    out, unknown = [], 0
+    out, unknown, cancels = [], 0, []
+    cancel_on = bool(rule("cancel_if_hedge_moves", False))
     for o in prev:
         until = min(epoch(ts), epoch(o["placed_ts"]) + ORDER_LIFETIME_S)
         if o.get("event_time"):
             until = min(until, epoch(o["event_time"]))
-        qty, first = fills_since(o["rest_id"], o["rest_raw_side"], float(o["rest_px"]), epoch(o["placed_ts"]), until)
+        start = epoch(o["placed_ts"])
+        qty, first = fills_since(o["rest_id"], o["rest_raw_side"], float(o["rest_px"]), start, until)
         if qty is None:
             unknown += 1
             continue  # left out of results and learning rather than guessed
         time.sleep(0.1)
+        if qty > 0 and cancel_on:  # would we have pulled the order before these fills?
+            pulled = cancel_time(o, start, until)
+            if pulled:
+                q2, f2 = fills_since(o["rest_id"], o["rest_raw_side"], float(o["rest_px"]), start, pulled[0])
+                if q2 is not None:
+                    c = float(o["contracts"])
+                    cancels.append(dict(o, resolved_ts=ts, hedge_px_at_cancel=pulled[1],
+                                        cancel_ts=datetime.fromtimestamp(pulled[0], timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                        filled_with_cancel=round(min(q2, c), 2), filled_without_cancel=round(min(qty, c), 2)))
+                    qty, first = q2, f2
         filled = min(qty, float(o["contracts"]))
         r = dict(o, resolved_ts=ts, filled=round(filled, 2), first_fill_ts=first or "")
         if filled <= 0:
@@ -189,7 +229,38 @@ def resolve(prev, rows, ts):
         out.append(r)
     if unknown:
         print(f"WARN resting-order test: {unknown} plans skipped (Kalshi trade tape unavailable)", file=sys.stderr)
+    if cancels:
+        _write(CANCELS, CANCEL_FIELDS, cancels, "a")
+        kept = sum(c["filled_without_cancel"] - c["filled_with_cancel"] for c in cancels)
+        print(f"resting-order test: {len(cancels)} orders pulled because the hedge moved ({kept:g} contracts not filled)")
     return out
+
+
+def hedge_history(o, start, end):
+    """Polymarket US price for the hedge side, minute by minute: [(epoch, price)]. Empty if unavailable."""
+    raw_yes = (o["hedge_norm_side"] == "yes") != bool(int(o.get("hedge_flipped") or 0))
+    d = get("https://gateway.polymarket.us/v1/price-history", {"symbol": o["hedge_id"], "timestamp.startTimestamp": start - 60,
+                                                                 "timestamp.endTimestamp": end, "fidelity": 1})
+    out = []
+    for p in (d or {}).get("history") or []:
+        v = p.get("longPrice" if raw_yes else "shortPrice")
+        if p.get("timestamp") and v not in (None, 0):
+            out.append((int(p["timestamp"]), float(v)))
+    return sorted(out)
+
+
+def cancel_time(o, start, end):
+    """(when, price) a bot watching Polymarket US would have pulled the Kalshi order: the first minute the hedge price
+    made the trade lose money after both fees, plus CANCEL_DELAY_S to react. None if the hedge never moved that far
+    (or the history is unavailable, in which case no cancel is assumed: no credit for a fix we can't check)."""
+    rest, coef, n = float(o["rest_px"]), float(o["hedge_fee_coef"]), max(1, int(float(o["contracts"])))
+    mk = kalshi_maker_fee(o["rest_id"], rest, n) / n
+    line = float(rule("cancel_below_edge_cents", 0.0)) / 100
+    for t, px in hedge_history(o, start, end):
+        if 1 - rest - px - coef * px * (1 - px) - mk < line:
+            when = max(t, start) + CANCEL_DELAY_S
+            return (when, px) if when < end else None
+    return None
 
 
 def hedge_levels(o):
