@@ -39,4 +39,12 @@ jobs:
           git config user.email "price-bot@users.noreply.github.com"
           git reset -q scripts config requirements.txt   # don't copy code into the data branch
           git add data/prices data/paper 2>/dev/null || git add data/prices
-          git diff --cached --quiet || (git commit -m "prices $(date -u +%FT%TZ)" && git push)
+          git diff --cached --quiet && exit 0
+          git commit -m "prices $(date -u +%FT%TZ)"
+          # retry: a brief GitHub hiccup on push used to fail the run and lose that snapshot (2026-11-16 03:40 UTC)
+          for i in 1 2 3 4; do
+            git push && exit 0
+            echo "push failed (try $i); retrying"; sleep $((i * 10))
+            git pull -q --rebase origin price-data || true
+          done
+          exit 1
