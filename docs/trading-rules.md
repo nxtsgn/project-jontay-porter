@@ -5,8 +5,10 @@ order until you change `"approved"` to `true`, add your name and date, and set `
 proposal. Change any of them.
 
 ## Money
-- **$50 on Kalshi, $50 on Polymarket US.** $10 stays untouched on each venue so a hedge or fee can always be paid. That leaves
-  **$40 per venue to trade with.**
+- **$50 on Kalshi, $50 on Polymarket US, all of it available to trade.** (Until Nov 17, $10 per venue was held back so a hedge
+  or fee could always be paid. You chose to use it: Kalshi's money was fully tied up in waiting orders about half the time.)
+  Trade-off: with nothing held back, a hedge or fee can occasionally find no cash on that venue. The unhedged-exposure cap and
+  the "hold the leg, alert, stop new trades" rule still apply if that happens.
 - **Bets grow with the balance.** Every dollar amount in these rules (bankroll, reserve, per-leg caps, unhedged cap, loss
   limits) and the 25-contract cap is multiplied by *equity ÷ $100*, rounded down to the nearest 10%. So at $110 every limit
   is 1.1× what's written here, at $150 it's 1.5×, and at $90 it shrinks to 0.9×. Two safeguards:

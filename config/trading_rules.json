@@ -9,8 +9,8 @@
   "bankroll": {
     "kalshi_start": 50.0,
     "polymarket_us_start": 50.0,
-    "reserve_per_venue": 10.0,
-    "_reserve_note": "kept back on each venue so a hedge or fee can always be paid"
+    "reserve_per_venue": 0.0,
+    "_reserve_note": "money kept back on each venue. Was $10 so a hedge or fee could always be paid; set to 0 on 2026-11-17 (your call) so all $50 per venue can trade. Kalshi capital was full in ~45% of runs"
   },
 
   "scale_with_balance": {

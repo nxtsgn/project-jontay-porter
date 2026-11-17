@@ -21,7 +21,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 START = {"kalshi": 50.0, "polymarket_us": 50.0}
-RESERVE = 10.0
+try:  # money held back per venue, from the rules (0 since 2026-11-17)
+    RESERVE = float(json.loads((Path(__file__).resolve().parent.parent / "config" / "trading_rules.json").read_text())
+                    ["bankroll"]["reserve_per_venue"])
+except Exception:  # noqa: BLE001
+    RESERVE = 0.0
 
 
 _EVENTS = {}
