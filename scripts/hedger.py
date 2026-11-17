@@ -208,7 +208,8 @@ class Hedger:
 def code_changed():
     """Pull the latest code from main; True if it changed (systemd then restarts us on the new code)."""
     before = git("rev-parse", "HEAD").stdout.strip()
-    git("pull", "-q", "--ff-only", "--depth", "1", "origin", "main")
+    if git("fetch", "-q", "--depth", "1", "origin", "+main:refs/remotes/origin/main").returncode == 0:
+        git("reset", "-q", "--hard", "origin/main")  # shallow clone: a pull can't fast-forward, so jump to main
     return git("rev-parse", "HEAD").stdout.strip() != before
 
 
