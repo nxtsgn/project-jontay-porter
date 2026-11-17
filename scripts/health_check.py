@@ -24,8 +24,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
-EXPECTED_PER_DAY = 288  # cron-job.org fires every 5 minutes
-MIN_PER_DAY = 200       # below this, runs are being missed
+EXPECTED_PER_DAY = 480  # cron-job.org fires every 3 minutes (every 5 until 2026-11-17)
+MIN_PER_DAY = 300       # below this, runs are being missed (a run takes ~3 min, so some queue up)
 MAX_AGE_MIN = 30        # newest run/snapshot must be younger than this
 GRADE_AFTER = timedelta(hours=36)
 
