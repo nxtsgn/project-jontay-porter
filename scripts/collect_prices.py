@@ -355,6 +355,11 @@ def main():
         opps = find_arbs.detect_and_log(rows, ts, fetch_depth=True, min_net=-0.01)
         plans = maker_sim.step(rows, ts)  # paper test of resting Kalshi orders hedged on Polymarket US
         try:
+            import gap_scanner
+            gap_scanner.write_watchlist(rows, ts)  # closest pairs, re-priced every few seconds by the Oracle server
+        except Exception as e:  # noqa: BLE001
+            print(f"WARN gap watch list: {e}", file=sys.stderr)
+        try:
             import learn
             learn.update(ts)  # re-learn from every outcome so far, before the trader decides
         except Exception as e:  # noqa: BLE001

@@ -10,7 +10,9 @@ within seconds would have done:
                our price is a fill (same rule as maker_sim). If the Polymarket US hedge price moves far enough that
                the trade would lose money, the order is pulled (cancel_if_hedge_moves). On a fill, immediately read the Polymarket US book and buy
                the hedge at no worse than plan price + max_hedge_slippage_cents (walking the book), then log the result.
-  every 10 min commit the log to the hedger-data branch.
+  every ~5 s   also re-price the pairs closest to an instant-hedge gap and log how long each gap lasts
+               (scripts/gap_scanner.py, gap_episodes.csv).
+  every 10 min commit the logs to the hedger-data branch.
 
 Log: fast_hedges.csv in the hedger-data worktree, one row per fill: when it happened, when we saw it, how long the hedge
 took, how much got hedged and at what price, how much was left unhedged, and the locked profit (after both venues' fees).
@@ -38,6 +40,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from find_arbs import fee, kalshi_maker_fee  # noqa: E402
 from maker_sim import KALSHI, epoch, get, hedge_levels  # noqa: E402
+from gap_scanner import GapScanner  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SYNC_S, POLL_S, PUSH_S, UPDATE_S = 60, 5, 600, 1800
@@ -195,9 +198,10 @@ class Hedger:
     # ------------------------------------------------------------------ housekeeping
     def push(self):
         d = self.data_dir
-        if not (d / ".git").exists() or not self.log.exists():
+        logs = [n for n in ("fast_hedges.csv", "gap_episodes.csv") if (d / n).exists()]
+        if not (d / ".git").exists() or not logs:
             return
-        git("add", "fast_hedges.csv", cwd=d)
+        git("add", *logs, cwd=d)
         if git("diff", "--cached", "--quiet", cwd=d).returncode != 0:
             git("commit", "-qm", f"hedger {now_iso()}", cwd=d)
             r = git("push", "-q", "origin", "HEAD:hedger-data", cwd=d)
@@ -219,14 +223,20 @@ def main():
     ap.add_argument("--once", action="store_true", help="one sync and one poll, then exit (testing)")
     a = ap.parse_args()
     h = Hedger(a.data_dir)
+    gaps = GapScanner(a.data_dir)  # how long instant-hedge gaps last (see scripts/gap_scanner.py)
     last = dict(sync=0.0, push=time.time(), update=time.time())
     print(f"{now_iso()} hedger started (practice mode, sends no orders)")
     while True:
         t = time.time()
         if t - last["sync"] >= SYNC_S:
             h.sync()
+            gaps.sync(branch_csv)
             last["sync"] = t
         h.poll()
+        try:
+            gaps.poll()
+        except Exception as e:  # noqa: BLE001  (the scanner must never stop the hedger)
+            print(f"WARN gap scanner: {e}", file=sys.stderr)
         if a.once:
             return
         if t - last["push"] >= PUSH_S:
