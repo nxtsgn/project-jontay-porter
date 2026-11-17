@@ -3,7 +3,7 @@ name: collect-prices
 # logs any guaranteed-payout gaps with order-book depth, and grades past gaps once their games settle.
 on:
   schedule:
-    - cron: "*/15 * * * *"   # backup only; GitHub's scheduler is unreliable. cron-job.org triggers this every 5 min
+    - cron: "*/15 * * * *"   # backup only; GitHub's scheduler is unreliable. cron-job.org triggers this every 3 min (since 2026-11-17)
   workflow_dispatch:
 
 permissions:
