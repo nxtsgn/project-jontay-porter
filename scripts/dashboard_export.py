@@ -25,12 +25,55 @@ RESERVE = 10.0
 
 
 _EVENTS = {}
+NAMES_FILE = "event_names.csv"  # event -> names, saved by the collector (GitHub Actions can reach Kalshi; the cloud
+                                # job that refreshes the dashboard may not), so the dashboard never has to look them up
+
+
+def _event(ticker):
+    return "-".join((ticker or "").split("-")[:2])
+
+
+def load_names(paper_dir):
+    p = Path(paper_dir) / NAMES_FILE
+    if p.exists():
+        for r in csv.DictReader(p.open()):
+            if r["full"] or r["short"]:
+                _EVENTS[r["event"]] = (r["full"], r["short"])
+
+
+def remember_names(paper_dir, max_new=40):
+    """Called by the collector every run: look up names for any filled or resting market not yet in event_names.csv."""
+    paper_dir = Path(paper_dir)
+    load_names(paper_dir)
+    tickers = set()
+    for name in ("maker_outcomes.csv", "maker_fills.csv"):
+        f = paper_dir / name
+        if f.exists():
+            tickers |= {r["rest_id"] for r in csv.DictReader(f.open()) if _f(r.get("filled")) > 0}
+    f = paper_dir / "trader_latest.csv"
+    if f.exists():
+        tickers |= {r["hedge_key"].split("|")[1] for r in csv.DictReader(f.open())
+                    if r.get("strategy") == "maker" and r.get("hedge_key", "").count("|") == 3}
+    new = []
+    for ev in sorted({_event(t) for t in tickers} - set(_EVENTS))[:max_new]:
+        full, short = game_names(ev + "-x")
+        if full or short:
+            new.append(dict(event=ev, full=full, short=short))
+    if new:
+        out = paper_dir / NAMES_FILE
+        first = not out.exists()
+        with out.open("a", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=["event", "full", "short"])
+            if first:
+                w.writeheader()
+            w.writerows(new)
+    return len(new)
 
 
 def game_names(ticker):
     """(full game name, short "AAA|BBB") for a Kalshi market, from its event, e.g. ("Northwestern vs West Virginia",
     "NW|WVU"). The paper files don't keep team names for every row, so game lines would otherwise show no name."""
-    ev = "-".join((ticker or "").split("-")[:2])  # series-date+teams, e.g. KXNBAPTS-26NOV13NYKIND
+    ev = _event(ticker)  # series-date+teams, e.g. KXNBAPTS-26NOV13NYKIND
     if ev and ev not in _EVENTS:
         try:
             req = urllib.request.Request(f"https://api.elections.kalshi.com/trade-api/v2/events/{ev}",
@@ -70,6 +113,7 @@ def main():
     a = ap.parse_args()
     d, out = Path(a.data), Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
+    load_names(d / "paper")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     stamps = set()

@@ -364,6 +364,11 @@ def main():
             trader.cycle(opps, plans, ts)  # practice mode: applies config/trading_rules.json, builds orders, sends nothing
         except Exception as e:  # noqa: BLE001  (the trader must never break price collection)
             print(f"WARN trader: {e}", file=sys.stderr)
+        try:
+            import dashboard_export
+            dashboard_export.remember_names(ROOT / "data" / "paper")  # game/player names for the dashboard
+        except Exception as e:  # noqa: BLE001
+            print(f"WARN names: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
