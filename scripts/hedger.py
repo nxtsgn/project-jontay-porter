@@ -84,7 +84,8 @@ class Hedger:
 
     # ------------------------------------------------------------------ orders
     def sync(self):
-        if git("fetch", "-q", "origin", "price-data").returncode != 0:
+        # shallow: only the newest price-data commit (the server keeps no history)
+        if git("fetch", "-q", "--depth", "1", "origin", "+price-data:refs/remotes/origin/price-data").returncode != 0:
             print("WARN fetch failed; keeping current orders", file=sys.stderr)
             return
         latest = branch_csv("data/paper/trader_latest.csv")
@@ -207,7 +208,7 @@ class Hedger:
 def code_changed():
     """Pull the latest code from main; True if it changed (systemd then restarts us on the new code)."""
     before = git("rev-parse", "HEAD").stdout.strip()
-    git("pull", "-q", "--ff-only", "origin", "main")
+    git("pull", "-q", "--ff-only", "--depth", "1", "origin", "main")
     return git("rev-parse", "HEAD").stdout.strip() != before
 
 

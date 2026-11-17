@@ -20,8 +20,9 @@ if ! swapon --show | grep -q /swapfile; then
 fi
 
 # code (read-only clone of main; the hedger pulls updates itself every 30 min)
-[ -d "$APP/.git" ] || git clone -q "$REPO" "$APP"
-git -C "$APP" pull -q --ff-only origin main
+# shallow: only the latest main (the full history with price data is ~500 MB, too much for a 1 GB VM)
+[ -d "$APP/.git" ] || git clone -q --depth 1 --single-branch -b main "$REPO" "$APP"
+git -C "$APP" pull -q --ff-only --depth 1 origin main
 
 # a key that lets this server push ONLY to this repo (GitHub "deploy key"); it never leaves the server
 [ -f "$HOME/.ssh/hedger_deploy" ] || ssh-keygen -q -t ed25519 -N "" -C "jontay-hedger@oracle" -f "$HOME/.ssh/hedger_deploy"
