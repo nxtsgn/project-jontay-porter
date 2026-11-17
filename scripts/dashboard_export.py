@@ -21,11 +21,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 START = {"kalshi": 50.0, "polymarket_us": 50.0}
-try:  # money held back per venue, from the rules (0 since 2026-11-17)
-    RESERVE = float(json.loads((Path(__file__).resolve().parent.parent / "config" / "trading_rules.json").read_text())
-                    ["bankroll"]["reserve_per_venue"])
+try:  # money held back per venue, from the rules ($1 on Kalshi for fees, $0 on Polymarket US since 2026-11-17)
+    _B = json.loads((Path(__file__).resolve().parent.parent / "config" / "trading_rules.json").read_text())["bankroll"]
+    RESERVE = {v: float(_B.get(f"reserve_{v}", _B["reserve_per_venue"])) for v in ("kalshi", "polymarket_us")}
 except Exception:  # noqa: BLE001
-    RESERVE = 0.0
+    RESERVE = {"kalshi": 0.0, "polymarket_us": 0.0}
 
 
 _EVENTS = {}
@@ -202,8 +202,8 @@ def main():
             unrealized=round(m["unrealized"], 2), open_risk=round(m["open_risk"], 2), conservative_total=round(total, 2),
             return_pct=round(total, 2), plans_checked=len(outcomes), fills=sum(1 for p in pos if (p["in_rules"] == "yes") or view == "full_size"),
             kalshi_in_use=round(in_use["kalshi"], 2), pmus_in_use=round(in_use["polymarket_us"], 2),
-            kalshi_free=round(max(0, (START["kalshi"] - RESERVE) * k - in_use["kalshi"]), 2),
-            pmus_free=round(max(0, (START["polymarket_us"] - RESERVE) * k - in_use["polymarket_us"]), 2),
+            kalshi_free=round(max(0, (START["kalshi"] - RESERVE["kalshi"]) * k - in_use["kalshi"]), 2),
+            pmus_free=round(max(0, (START["polymarket_us"] - RESERVE["polymarket_us"]) * k - in_use["polymarket_us"]), 2),
             last_run=last.get("ts_utc", ""), trader_status=last.get("status", ""), mode=last.get("mode", ""), bet_scale=k))
     _write(out, "summary.csv", summary, list(summary[0]))
 

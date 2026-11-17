@@ -10,7 +10,8 @@
     "kalshi_start": 50.0,
     "polymarket_us_start": 50.0,
     "reserve_per_venue": 0.0,
-    "_reserve_note": "money kept back on each venue. Was $10 so a hedge or fee could always be paid; set to 0 on 2026-11-17 (your call) so all $50 per venue can trade. Kalshi capital was full in ~45% of runs"
+    "reserve_kalshi": 1.0,
+    "_reserve_note": "money kept back. Was $10 per venue; since 2026-11-17 only $1 on Kalshi, for fees (a Kalshi maker fee is at most ~11c per fill at today's sizes and Kalshi refuses orders it can't cover). Polymarket US keeps nothing back: it only pays for hedges, and each resting order is already sized so its hedge fits in Polymarket US's free cash"
   },
 
   "scale_with_balance": {

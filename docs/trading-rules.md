@@ -5,10 +5,10 @@ order until you change `"approved"` to `true`, add your name and date, and set `
 proposal. Change any of them.
 
 ## Money
-- **$50 on Kalshi, $50 on Polymarket US, all of it available to trade.** (Until Nov 17, $10 per venue was held back so a hedge
-  or fee could always be paid. You chose to use it: Kalshi's money was fully tied up in waiting orders about half the time.)
-  Trade-off: with nothing held back, a hedge or fee can occasionally find no cash on that venue. The unhedged-exposure cap and
-  the "hold the leg, alert, stop new trades" rule still apply if that happens.
+- **$50 on Kalshi, $50 on Polymarket US.** Only **$1 is held back, on Kalshi**, for fees (a Kalshi fee on a resting-order
+  fill is at most ~11¢ at today's sizes, and Kalshi refuses an order it can't cover). Nothing is held back on Polymarket US:
+  it only pays for hedges, and every waiting Kalshi order is already sized so its hedge fits in Polymarket US's free cash.
+  So **$49 on Kalshi and $50 on Polymarket US can trade.** (Until Nov 17, $10 per venue was held back.)
 - **Bets grow with the balance.** Every dollar amount in these rules (bankroll, reserve, per-leg caps, unhedged cap, loss
   limits) and the 25-contract cap is multiplied by *equity ÷ $100*, rounded down to the nearest 10%. So at $110 every limit
   is 1.1× what's written here, at $150 it's 1.5×, and at $90 it shrinks to 0.9×. Two safeguards:

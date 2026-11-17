@@ -194,7 +194,8 @@ def scaled(rules, k):
     r = json.loads(json.dumps(rules))
     if k == 1.0:
         return r
-    for sec, keys in (("bankroll", ("kalshi_start", "polymarket_us_start", "reserve_per_venue")),
+    for sec, keys in (("bankroll", tuple(k for k in ("kalshi_start", "polymarket_us_start", "reserve_per_venue",
+                                                      "reserve_kalshi", "reserve_polymarket_us") if k in r["bankroll"])),
                       ("per_hedge", ("max_cost_per_leg",)),
                       ("portfolio", ("max_unhedged_exposure", "max_cost_per_prop_leg")),
                       ("loss_limits", ("daily_loss_stop", "total_drawdown_kill"))):
@@ -227,7 +228,8 @@ class Book:
     def room(self, venue):
         b = self.rules["bankroll"]
         start = b["kalshi_start"] if venue == "kalshi" else b["polymarket_us_start"]
-        return max(0.0, start - b["reserve_per_venue"] - self.deployed[venue])
+        reserve = b.get(f"reserve_{venue}", b["reserve_per_venue"])  # a per-venue reserve overrides the shared one
+        return max(0.0, start - reserve - self.deployed[venue])
 
     def add(self, venue_costs, game, prop, key):
         for v, c in venue_costs:
