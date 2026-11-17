@@ -31,7 +31,7 @@ Host github.com
   IdentityFile ~/.ssh/hedger_deploy
   IdentitiesOnly yes
 CFG
-ssh-keyscan -q github.com >> "$HOME/.ssh/known_hosts" 2>/dev/null || true
+grep -q "^github.com" "$HOME/.ssh/known_hosts" 2>/dev/null || ssh-keyscan -t ed25519,rsa,ecdsa github.com 2>/dev/null >> "$HOME/.ssh/known_hosts"
 
 # where the hedger's log is committed: its own branch, so it never collides with the price collector
 if [ ! -d "$DATA/.git" ]; then
