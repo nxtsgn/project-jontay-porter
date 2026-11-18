@@ -21,9 +21,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: price-data   # data lives here; code always comes from main (next step)
-          fetch-depth: 0
+          fetch-depth: 1    # latest snapshot only: the full history (~470 MB) took 2-2.5 min of every run
       - name: Use the latest code from main
-        run: git checkout origin/main -- scripts config requirements.txt
+        run: git fetch -q --depth 1 origin main && git checkout FETCH_HEAD -- scripts config requirements.txt
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -45,6 +45,6 @@ jobs:
           for i in 1 2 3 4; do
             git push && exit 0
             echo "push failed (try $i); retrying"; sleep $((i * 10))
-            git pull -q --rebase origin price-data || true
+            git fetch -q --depth 50 origin price-data && git rebase -q origin/price-data || true
           done
           exit 1
