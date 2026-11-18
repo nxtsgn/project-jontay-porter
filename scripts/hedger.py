@@ -4,9 +4,10 @@ The 5-minute collector only notices a resting Kalshi fill minutes after it happe
 process runs all the time (on the free Oracle Cloud server, see deploy/oracle/README.md) and measures what hedging
 within seconds would have done:
 
-  every 60 s   fetch the price-data branch and load the resting orders the practice trader chose in its latest run
-               (data/paper/trader_latest.csv + maker_plans.csv). A newer run replaces (cancels) the older orders.
-  every ~5 s   read Kalshi's public trade tape for each of those markets. A taker trading into our side at or through
+  every 60 s   fetch the price-data branch and load EVERY resting order the planner made in its latest run
+               (data/paper/maker_plans.csv), marking the ones the practice trader chose (trader_latest.csv, chosen=1).
+               A newer run replaces (cancels) the older orders.
+  every ~5 s   read Kalshi's public trade tape (one call, all markets) and match it to the watched markets. A taker trading into our side at or through
                our price is a fill (same rule as maker_sim). If the Polymarket US hedge price moves far enough that
                the trade would lose money, the order is pulled (cancel_if_hedge_moves). On a fill, immediately read the Polymarket US book and buy
                the hedge at no worse than plan price + max_hedge_slippage_cents (walking the book), then log the result.
@@ -34,18 +35,19 @@ import math
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from find_arbs import fee, kalshi_maker_fee  # noqa: E402
-from maker_sim import KALSHI, epoch, get, hedge_levels  # noqa: E402
+from maker_sim import KALSHI, ORDER_LIFETIME_S, epoch, get, hedge_levels  # noqa: E402
 from gap_scanner import GapScanner  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SYNC_S, POLL_S, PUSH_S, UPDATE_S = 60, 5, 600, 1800
 STOP_BEFORE_START_S = 10 * 60
-FIELDS = ["placed_ts", "sport", "market_type", "player", "event_time", "rest_id", "rest_raw_side", "rest_px", "order_qty",
+FIELDS = ["placed_ts", "chosen", "sport", "market_type", "player", "event_time", "rest_id", "rest_raw_side", "rest_px", "order_qty",
           "hedge_id", "hedge_norm_side", "hedge_plan_px", "hedge_limit_px", "trade_id", "fill_ts", "seen_ts", "hedged_ts",
           "seconds_fill_to_hedge", "late", "fill_qty", "hedged_qty", "hedge_avg_px", "unhedged_qty", "kalshi_fee",
           "pmus_fee", "locked_pnl", "status"]
@@ -76,14 +78,28 @@ def slippage():
 
 
 class Hedger:
+    """Watches EVERY resting order the planner made each run (maker_plans.csv), not only the ones the practice trader
+    picked (chosen=1, at the trader's size; others at the plan's size), so there are ~3x more fills to measure. Fills come
+    from one call to Kalshi's public trade tape across all markets per poll, matched to the watched markets."""
+
     def __init__(self, data_dir):
         self.data_dir = Path(data_dir)
         self.log = self.data_dir / "fast_hedges.csv"
         self.run_ts = None
         self.orders = {}  # key -> order dict
-        self.seen = set()  # trade ids already counted
+        self.seen = {}  # trade id -> epoch seen (pruned after an hour)
+        self.tape_t = None  # tape read up to here
+        self.rr = 0  # round-robin position for hedge-price checks
+        self.pool = ThreadPoolExecutor(max_workers=4)
         if self.log.exists():
-            self.seen = {r["trade_id"] for r in csv.DictReader(self.log.open())}
+            rows = list(csv.DictReader(self.log.open()))
+            if rows and list(rows[0]) != FIELDS:  # columns changed: rewrite the log with the new header
+                with self.log.open("w", newline="") as fh:
+                    w = csv.DictWriter(fh, fieldnames=FIELDS, extrasaction="ignore")
+                    w.writeheader()
+                    w.writerows(rows)
+            now = time.time()
+            self.seen = {r["trade_id"]: now for r in rows}
 
     # ------------------------------------------------------------------ orders
     def sync(self):
@@ -91,74 +107,103 @@ class Hedger:
         if git("fetch", "-q", "--depth", "1", "origin", "+price-data:refs/remotes/origin/price-data").returncode != 0:
             print("WARN fetch failed; keeping current orders", file=sys.stderr)
             return
-        latest = branch_csv("data/paper/trader_latest.csv")
-        rest = [r for r in latest if r["strategy"] == "maker" and r["leg"] == "rest"]
-        if not rest:
+        plans = branch_csv("data/paper/maker_plans.csv")
+        if not plans:
             return
-        ts = rest[0]["ts_utc"]
+        ts = plans[0]["placed_ts"]
         if ts == self.run_ts:
             return
-        plans = {(p["rest_id"], p["rest_norm_side"], p["hedge_id"]): p for p in branch_csv("data/paper/maker_plans.csv")}
+        chosen = {}
+        for r in branch_csv("data/paper/trader_latest.csv"):
+            if r.get("strategy") == "maker" and r.get("leg") == "rest" and r.get("ts_utc") == ts:
+                _, rid, side, hid = r["hedge_key"].split("|")
+                chosen[(rid, side, hid)] = float(json.loads(r["payload"])["count"])
         watch_from = epoch(now_iso())
         for o in self.orders.values():  # the new run replaces the old orders
             o["until"] = min(o["until"], watch_from)
-        slip = slippage()
-        for r in rest:
-            _, rid, side, hid = r["hedge_key"].split("|")
-            p = plans.get((rid, side, hid))
-            if not p:
-                continue
-            body = json.loads(r["payload"])
-            placed = epoch(ts)
-            until = int(body.get("expiration_time") or placed + 6 * 60)
+        slip, placed = slippage(), epoch(ts)
+        for p in plans:
+            k = (p["rest_id"], p["rest_norm_side"], p["hedge_id"])
+            until = placed + ORDER_LIFETIME_S  # same window maker_sim counts fills in; the next run replaces them sooner
             if p.get("event_time"):
                 until = min(until, epoch(p["event_time"]) - STOP_BEFORE_START_S)
-            self.orders[(ts, r["hedge_key"])] = dict(
-                p, placed_ts=ts, placed=placed, watch_from=watch_from, until=until, order_qty=float(body["count"]),
-                filled=0.0, rest_px=float(p["rest_px"]), hedge_limit=round(min(0.99, float(p["hedge_px_at_plan"]) + slip), 4))
+            self.orders[(ts, *k)] = dict(
+                p, placed_ts=ts, placed=placed, watch_from=watch_from, until=until, chosen=int(k in chosen),
+                order_qty=chosen.get(k) or float(p["contracts"]), filled=0.0, rest_px=float(p["rest_px"]),
+                hedge_limit=round(min(0.99, float(p["hedge_px_at_plan"]) + slip), 4))
         self.run_ts = ts
-        print(f"{now_iso()} watching {sum(o['until'] > watch_from for o in self.orders.values())} resting orders from run {ts}")
+        live = [o for o in self.orders.values() if o["until"] > watch_from]
+        print(f"{now_iso()} watching {len(live)} planned orders ({sum(o['chosen'] for o in live)} picked by the trader) "
+              f"from run {ts}")
 
     # ------------------------------------------------------------------ fills
+    def tape(self, t):
+        """Kalshi's public trades across ALL markets since the last read (a few seconds of overlap; ids dedupe)."""
+        since, out, cursor = (self.tape_t or t - 30) - 5, [], None
+        for _ in range(10):
+            params = {"min_ts": since, "max_ts": t, "limit": 1000}
+            if cursor:
+                params["cursor"] = cursor
+            d = get(f"{KALSHI}/markets/trades", params)
+            if d is None:
+                return None
+            out += d.get("trades", [])
+            cursor = d.get("cursor")
+            if not cursor:
+                break
+        self.tape_t = t
+        return out
+
     def poll(self):
         t = epoch(now_iso())
         for key, o in list(self.orders.items()):
             if o["until"] + 120 < t:  # done, with a little slack for the tape to catch up
                 del self.orders[key]
-                continue
-            if o["filled"] >= o["order_qty"] - 1e-9:
-                continue
-            d = get(f"{KALSHI}/markets/trades", {"ticker": o["rest_id"], "min_ts": o["placed"], "max_ts": min(t, o["until"]),
-                                                  "limit": 200})
-            if d is None:
-                continue
-            side = o["rest_raw_side"]
-            for tr in sorted(d.get("trades", []), key=lambda x: x["created_time"]):
+        open_ = [o for o in self.orders.values() if o["filled"] < o["order_qty"] - 1e-9]
+        if not open_:
+            return
+        trades = self.tape(t)
+        if trades:
+            by = {}
+            for o in open_:
+                by.setdefault(o["rest_id"], []).append(o)
+            for tr in sorted((x for x in trades if x["ticker"] in by), key=lambda x: x["created_time"]):
                 if tr["trade_id"] in self.seen:
                     continue
-                price = float(tr["yes_price_dollars"] if side == "yes" else tr["no_price_dollars"])
-                if tr.get("taker_side") == side or price > o["rest_px"] + 1e-9:
-                    continue
-                self.seen.add(tr["trade_id"])
-                qty = min(float(tr.get("count_fp") or 0), o["order_qty"] - o["filled"])
-                if qty <= 0:
-                    continue
-                o["filled"] += qty
-                self.record(o, tr, qty)
-            time.sleep(0.15)  # stay well under Kalshi's read rate limit
-            if rule("cancel_if_hedge_moves", False) and o["filled"] < o["order_qty"] - 1e-9 and o["until"] > t:
-                self.check_hedge(o, t)
+                tt = epoch(tr["created_time"][:19] + "Z")
+                for o in by[tr["ticker"]]:
+                    side = o["rest_raw_side"]
+                    price = float(tr["yes_price_dollars"] if side == "yes" else tr["no_price_dollars"])
+                    if not (o["placed"] <= tt <= o["until"]) or tr.get("taker_side") == side or price > o["rest_px"] + 1e-9:
+                        continue
+                    qty = min(float(tr.get("count_fp") or 0), o["order_qty"] - o["filled"])
+                    if qty <= 0:
+                        continue
+                    self.seen[tr["trade_id"]] = time.time()
+                    o["filled"] += qty
+                    self.record(o, tr, qty)
+                    break
+        cut = time.time() - 3600
+        self.seen = {k: v for k, v in self.seen.items() if v > cut}
+        # pull orders whose hedge moved: up to 30 per poll, round robin, books read in parallel
+        if rule("cancel_if_hedge_moves", False):
+            live = [o for o in open_ if o["until"] > t]
+            if live:
+                batch = [live[(self.rr + i) % len(live)] for i in range(min(30, len(live)))]
+                self.rr = (self.rr + len(batch)) % max(1, len(live))
+                for o, lv in zip(batch, self.pool.map(hedge_levels, batch)):
+                    self.check_hedge(o, t, lv)
 
-    def check_hedge(self, o, t):
+    def check_hedge(self, o, t, lv):
         """Pull the Kalshi order once the Polymarket US hedge price makes the trade lose money (same rule as maker_sim)."""
-        lv = hedge_levels(o)
         if not lv:
             return
         px, rest, n = lv[0][0], o["rest_px"], max(1, int(o["order_qty"]))
         edge = 1 - rest - px - float(o["hedge_fee_coef"]) * px * (1 - px) - kalshi_maker_fee(o["rest_id"], rest, n) / n
         if edge < float(rule("cancel_below_edge_cents", 0.0)) / 100:
             o["until"] = t
-            print(f"{now_iso()} pulled {o['rest_id']} {o['rest_raw_side']} @ {rest}: hedge now {px} (edge {edge * 100:+.1f}c)")
+            if o["chosen"]:
+                print(f"{now_iso()} pulled {o['rest_id']} {o['rest_raw_side']} @ {rest}: hedge now {px} (edge {edge * 100:+.1f}c)")
 
     def record(self, o, tr, qty):
         seen = now_iso()
@@ -175,7 +220,7 @@ class Hedger:
         pfee = fee("polymarket_us", float(o["hedge_fee_coef"]), avg, max(1, math.ceil(got))) if got else 0.0
         locked = (1 - o["rest_px"] - avg) * got - pfee - kfee * (got / qty) if got else -kfee
         fill_ts = tr["created_time"]
-        row = dict(placed_ts=o["placed_ts"], sport=o["sport"], market_type=o["market_type"], player=o.get("player", ""),
+        row = dict(placed_ts=o["placed_ts"], chosen=o.get("chosen", 1), sport=o["sport"], market_type=o["market_type"], player=o.get("player", ""),
                    event_time=o.get("event_time", ""), rest_id=o["rest_id"], rest_raw_side=o["rest_raw_side"],
                    rest_px=o["rest_px"], order_qty=o["order_qty"], hedge_id=o["hedge_id"],
                    hedge_norm_side=o["hedge_norm_side"], hedge_plan_px=o["hedge_px_at_plan"], hedge_limit_px=o["hedge_limit"],
