@@ -22,8 +22,14 @@ jobs:
         with:
           ref: price-data   # data lives here; code always comes from main (next step)
           fetch-depth: 1    # latest snapshot only: the full history (~470 MB) took 2-2.5 min of every run
-      - name: Use the latest code from main
-        run: git fetch -q --depth 1 origin main && git checkout FETCH_HEAD -- scripts config requirements.txt
+          filter: blob:none # and only the files this run touches (next lines + today's price file below)
+          sparse-checkout: |
+            /data/paper/
+          sparse-checkout-cone-mode: false
+      - name: Today's price file, and the latest code from main
+        run: |
+          git sparse-checkout add "/data/prices/prices_us_$(date -u +%F)*"
+          git fetch -q --depth 1 origin main && git archive FETCH_HEAD scripts config requirements.txt | tar -x
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -37,8 +43,7 @@ jobs:
         run: |
           git config user.name "price-bot"
           git config user.email "price-bot@users.noreply.github.com"
-          git reset -q scripts config requirements.txt   # don't copy code into the data branch
-          git add data/prices data/paper 2>/dev/null || git add data/prices
+          git add --sparse data/prices data/paper   # code from main is never staged (it was unpacked, not checked out)
           git diff --cached --quiet && exit 0
           git commit -m "prices $(date -u +%FT%TZ)"
           # retry: a brief GitHub hiccup on push used to fail the run and lose that snapshot (2026-11-16 03:40 UTC)
