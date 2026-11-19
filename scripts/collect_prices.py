@@ -38,6 +38,8 @@ KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
 PMUS = "https://gateway.polymarket.us"
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "data" / "prices"
+SNAP_STATE = ROOT / "data" / "paper" / "last_price_snapshot.txt"
+SAVE_SNAPSHOT_EVERY = timedelta(minutes=4, seconds=30)
 UA = {"User-Agent": "project-jontay-porter/0.3 (read-only research)"}
 
 KALSHI_FEE = 0.07  # taker coefficient, fee rounds up to the cent per order
@@ -384,19 +386,30 @@ def main():
     print(f"total rows: {len(rows)}")
     if a.dry_run or not rows:
         return
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    path = OUT_DIR / f"prices_us_{now:%Y-%m-%d}.csv.gz"  # Kalshi + Polymarket US (older prices_<date> files are Kalshi + international)
-    n = 1
-    while path.exists() and gzip.open(path, "rt").readline().strip() != ",".join(FIELDS):
-        n += 1  # columns changed since this file was started: begin a new file rather than mixing layouts
-        path = OUT_DIR / f"prices_us_{now:%Y-%m-%d}_{n}.csv.gz"
-    new = not path.exists()
-    with gzip.open(path, "at", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        if new:
-            w.writeheader()
-        w.writerows(rows)
-    print(f"appended to {path}")
+    # The trader runs every ~2 min, but the full price snapshot is saved only every ~5 min: the research doesn't need
+    # finer detail, and each saved snapshot (~110 KB) grows the repo (it was ~65 MB/day at one per 5 min).
+    try:
+        last_saved = datetime.fromisoformat(SNAP_STATE.read_text().strip().replace("Z", "+00:00"))
+    except Exception:  # noqa: BLE001
+        last_saved = None
+    if last_saved is None or now - last_saved >= SAVE_SNAPSHOT_EVERY or last_saved.date() != now.date():
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        path = OUT_DIR / f"prices_us_{now:%Y-%m-%d}.csv.gz"  # Kalshi + Polymarket US (older prices_<date> files are Kalshi + international)
+        n = 1
+        while path.exists() and gzip.open(path, "rt").readline().strip() != ",".join(FIELDS):
+            n += 1  # columns changed since this file was started: begin a new file rather than mixing layouts
+            path = OUT_DIR / f"prices_us_{now:%Y-%m-%d}_{n}.csv.gz"
+        new = not path.exists()
+        with gzip.open(path, "at", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=FIELDS)
+            if new:
+                w.writeheader()
+            w.writerows(rows)
+        SNAP_STATE.parent.mkdir(parents=True, exist_ok=True)
+        SNAP_STATE.write_text(ts)
+        print(f"appended to {path}")
+    else:
+        print(f"price snapshot not saved this run (last saved {last_saved:%H:%M:%S}Z; saved every ~5 min)")
     if not a.no_detect:
         import find_arbs
         import maker_sim

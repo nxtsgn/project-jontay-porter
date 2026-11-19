@@ -24,8 +24,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
-EXPECTED_PER_DAY = 480  # cron-job.org fires every 3 minutes (every 5 until 2026-11-17)
-MIN_PER_DAY = 300       # below this, runs are being missed (a run takes ~3 min, so some queue up)
+EXPECTED_PER_DAY = 720  # runs: cron-job.org fires every 2 minutes (every 5 until 2026-11-17, every 3 until 2026-11-19)
+MIN_PER_DAY = 450       # below this, runs are being missed (a run takes ~1.5 min, so a few queue up)
+EXPECTED_SNAPS = 288    # price snapshots are saved every ~5 min even though runs are every 2
+MIN_SNAPS = 200
 MAX_AGE_MIN = 30        # newest run/snapshot must be younger than this
 GRADE_AFTER = timedelta(hours=36)
 
@@ -70,7 +72,7 @@ def checks(now, runs_total=None, runs_failed=None):
     venues_newest = venues_at.get(newest, set())
     add("Prices: fresh", bool(newest) and age_min(now, newest) <= MAX_AGE_MIN,
         f"newest snapshot {newest or 'none'}" + (f" ({age_min(now, newest):.0f} min old)" if newest else ""))
-    add("Prices: on schedule", len(stamps) >= MIN_PER_DAY, f"{len(stamps)} snapshots in 24 h (expect ~{EXPECTED_PER_DAY})")
+    add("Prices: on schedule", len(stamps) >= MIN_SNAPS, f"{len(stamps)} snapshots in 24 h (expect ~{EXPECTED_SNAPS})")
     add("Prices: both venues", {"kalshi", "polymarket_us"} <= venues_newest,
         f"venues in newest snapshot: {', '.join(sorted(venues_newest)) or 'none'}")
 
