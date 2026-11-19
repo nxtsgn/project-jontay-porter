@@ -202,19 +202,68 @@ def kalshi_rows(sport, ts):
 
 
 # ---------------------------------------------------------------- Polymarket US
-def pmus_all(now):
-    """Open sports markets that end within 3 weeks (game markets end ~2 weeks after the game; excludes season futures)."""
+def pmus_all(now, end_min=None, end_max=None):
+    """Open sports markets that end within 3 weeks (game markets end ~2 weeks after the game; excludes season futures),
+    or only those ending between end_min and end_max."""
     fmt = "%Y-%m-%dT%H:%M:%SZ"
     out, off = [], 0
     while True:
-        d = get(f"{PMUS}/v1/markets", {"closed": "false", "categories": "sports", "endDateMin": now.strftime(fmt),
-                                       "endDateMax": (now + timedelta(days=21)).strftime(fmt), "limit": 500, "offset": off})
+        d = get(f"{PMUS}/v1/markets", {"closed": "false", "categories": "sports",
+                                       "endDateMin": (end_min or now).strftime(fmt),
+                                       "endDateMax": (end_max or now + timedelta(days=21)).strftime(fmt),
+                                       "limit": 500, "offset": off})
         ms = (d or {}).get("markets", [])
         out += ms
         if len(ms) < 500:
             break
         off += 500
     return out
+
+
+PM_CLOSE_AFTER_GAME = timedelta(days=14)  # Polymarket US game markets close exactly 14 days after the game starts
+PM_STATE = ROOT / "data" / "paper" / "pmus_window.json"
+PM_FULL_EVERY = timedelta(hours=1)
+
+
+def pmus_markets(now, horizon_hours):
+    """Polymarket US markets for games starting within horizon_hours, the fast way: ask only for markets closing
+    14 days (+ the horizon) from now, ~9k instead of ~43k (the API ignores league/game-time filters; checked 2026-11-19).
+    Once an hour it downloads everything instead and checks the shortcut missed none of our markets; if it did, it uses
+    the full download for the next 6 hours and logs a warning (state in data/paper/pmus_window.json)."""
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+    try:
+        st = json.loads(PM_STATE.read_text())
+    except Exception:  # noqa: BLE001
+        st = {}
+    lo = now + PM_CLOSE_AFTER_GAME - timedelta(hours=1)
+    hi = now + PM_CLOSE_AFTER_GAME + timedelta(hours=horizon_hours + 1)
+    if st.get("fallback_until", "") > now.strftime(fmt):
+        print("Polymarket US: full download (shortcut missed markets recently)")
+        return pmus_all(now)
+    if st.get("last_full", "") > (now - PM_FULL_EVERY).strftime(fmt):
+        ms = pmus_all(now, lo, hi)
+        print(f"Polymarket US: {len(ms)} markets via the 14-day shortcut")
+        return ms
+    full = pmus_all(now)
+    ours = {c["pm"] for c in SPORTS.values()}
+    soon = (now + timedelta(hours=horizon_hours)).strftime(fmt)
+
+    def in_window(m):
+        e = (m.get("endDate") or "")[:19] + "Z"
+        return lo.strftime(fmt) <= e <= hi.strftime(fmt)
+    needed = [m for m in full if (SLUG.match(m.get("slug", "")) or [None, None, None])[2] in ours
+              and now.strftime(fmt) <= (m.get("gameStartTime") or "")[:19] + "Z" <= soon]
+    missed = [m["slug"] for m in needed if not in_window(m)]
+    st = {"last_full": now.strftime(fmt), "full": len(full), "window": sum(map(in_window, full)),
+          "ours_next_hours": len(needed), "missed": len(missed), "missed_examples": missed[:5]}
+    if missed:
+        st["fallback_until"] = (now + timedelta(hours=6)).strftime(fmt)
+        print(f"WARN Polymarket US 14-day shortcut missed {len(missed)} of {len(needed)} markets (e.g. {missed[:3]}); "
+              f"using the full download for 6 hours", file=sys.stderr)
+    print(f"Polymarket US: full check, {len(full)} markets; shortcut would get {st['window']} and miss {len(missed)}")
+    PM_STATE.parent.mkdir(parents=True, exist_ok=True)
+    PM_STATE.write_text(json.dumps(st, indent=1))
+    return full
 
 
 def pmus_quotes(m):
@@ -310,7 +359,7 @@ def main():
     sports = [s for s in a.sports.split(",") if s in SPORTS]
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-    pm_all = pmus_all(now)
+    pm_all = pmus_markets(now, a.horizon_hours)
     rows = []
     for sp in sports:
         rows += kalshi_rows(sp, ts) + pmus_rows(sp, ts, pm_all)
