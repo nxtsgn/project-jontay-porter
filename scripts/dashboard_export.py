@@ -258,6 +258,27 @@ def main():
         per[c["ts_utc"]][1] += _f(c["contracts"]) >= 1 and 0 < _f(c["net_per_contract"]) <= 0.15
     _write(out, "instant.csv", [dict(time=t, gaps_checked=v[0], tradable=v[1]) for t, v in sorted(per.items())],
            ["time", "gaps_checked", "tradable"])
+    # daily post-mortems (main branch, data/postmortem/postmortems.jsonl, written by the post-mortem routine)
+    pm_rows = []
+    pmj = Path(__file__).resolve().parent.parent / "data" / "postmortem" / "postmortems.jsonl"
+    for line in (pmj.read_text().splitlines() if pmj.exists() else []):
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        n = r.get("numbers", {})
+        pm_rows.append(dict(day=r["day"], taken_usd=n.get("taken_usd"), taken_fills=n.get("taken_fills"),
+                            skipped_usd=n.get("skipped_usd"), full_size_usd=n.get("full_size_usd"),
+                            best_ranking=n.get("best_ranking"), best_ranking_usd=n.get("best_ranking_usd"),
+                            hindsight_usd=n.get("hindsight_usd"), hedger_fills=n.get("hedger_fills"),
+                            hedger_median_s=n.get("hedger_median_s"), catchable_gaps=n.get("catchable_gaps"),
+                            learner_predicted_c=n.get("learner_predicted_c"), learner_actual_c=n.get("learner_actual_c"),
+                            learner_rank_corr=n.get("learner_rank_corr"), summary=r.get("summary", ""),
+                            lesson=r.get("lesson", ""),
+                            hypotheses=" | ".join(h.get("statement", "") for h in r.get("hypotheses", []))))
+    _write(out, "postmortem.csv", sorted(pm_rows, key=lambda r: r["day"], reverse=True),
+           ["day", "taken_usd", "taken_fills", "skipped_usd", "full_size_usd", "best_ranking", "best_ranking_usd",
+            "hindsight_usd", "hedger_fills", "hedger_median_s", "catchable_gaps", "learner_predicted_c",
+            "learner_actual_c", "learner_rank_corr", "summary", "lesson", "hypotheses"])
     print(f"wrote {', '.join(sorted(p.name for p in out.glob('*.csv')))} to {out}")
 
 
