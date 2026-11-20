@@ -1,195 +1,195 @@
 {
- "day": "2026-11-18",
+ "day": "2026-11-19",
  "utc_window": [
-  "2026-11-18T07:00:00Z",
-  "2026-11-19T07:00:00Z"
+  "2026-11-19T07:00:00Z",
+  "2026-11-20T07:00:00Z"
  ],
- "as_of": "2026-11-20T05:44:29Z",
+ "as_of": "2026-11-20T16:39:41Z",
  "take_vs_skip": {
   "taken": {
-   "plans": 2099,
-   "fills": 1,
-   "unhedged_fills": 0,
-   "open_leftovers": 0,
-   "value_usd": 0.21
-  },
-  "skipped_at_trader_size": {
-   "plans": 2858,
+   "plans": 3110,
    "fills": 4,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 0.16
+   "value_usd": 1.21
+  },
+  "skipped_at_trader_size": {
+   "plans": 14943,
+   "fills": 4,
+   "unhedged_fills": 0,
+   "open_leftovers": 0,
+   "value_usd": 0.19
   },
   "skipped_too_small_to_size": 0,
-  "full_size_all_plans_usd": 2.15,
-  "skipping_saved_usd": -0.16,
+  "full_size_all_plans_usd": 7.95,
+  "skipping_saved_usd": -0.19,
   "by_kind": {
    "moneyline": {
-    "taken_usd": 0.21,
-    "skipped_usd": 0.0,
-    "fills": 1
-   },
-   "prop": {
-    "taken_usd": 0.0,
-    "skipped_usd": 0.09,
-    "fills": 2
-   },
-   "spread": {
-    "taken_usd": 0.0,
-    "skipped_usd": 0.07,
-    "fills": 2
-   },
-   "total": {
     "taken_usd": 0.0,
     "skipped_usd": 0.0,
     "fills": 0
+   },
+   "prop": {
+    "taken_usd": 0.0,
+    "skipped_usd": 0.03,
+    "fills": 1
+   },
+   "spread": {
+    "taken_usd": 0.0,
+    "skipped_usd": 0.0,
+    "fills": 0
+   },
+   "total": {
+    "taken_usd": 1.21,
+    "skipped_usd": 0.16,
+    "fills": 7
    }
   }
  },
  "ranking": {
   "used (the trader's actual picks)": {
-   "value_usd": 0.21,
-   "picks": 2099,
-   "fills": 1
+   "value_usd": 1.21,
+   "picks": 3110,
+   "fills": 4
   },
   "biggest edge first": {
-   "value_usd": 0.37,
-   "picks": 2193,
-   "fills": 2
+   "value_usd": 1.21,
+   "picks": 3177,
+   "fills": 4
   },
   "edge per dollar tied up": {
-   "value_usd": 0.37,
-   "picks": 2425,
-   "fills": 2
+   "value_usd": 1.21,
+   "picks": 5778,
+   "fills": 4
   },
   "edge + learner score (the trader's formula)": {
-   "value_usd": 0.37,
-   "picks": 2205,
-   "fills": 2
+   "value_usd": 1.21,
+   "picks": 3135,
+   "fills": 4
   },
   "perfect hindsight (ceiling)": {
-   "value_usd": 0.37,
-   "picks": 2193,
-   "fills": 2
+   "value_usd": 1.21,
+   "picks": 3177,
+   "fills": 4
   }
  },
  "hedger": {
-  "fills_seen": 4,
+  "fills_seen": 10,
   "picked_by_trader": 3,
-  "median_seconds_fill_to_hedge": 3.0,
+  "median_seconds_fill_to_hedge": 6.0,
   "late_fills_excluded_from_speed": 0,
-  "fully_hedged_share": 0.25,
-  "locked_usd": 0.01,
+  "fully_hedged_share": 1.0,
+  "locked_usd": 2.31,
   "same_fill_vs_5min_sim": {
-   "pairs": 1,
+   "pairs": 3,
    "fast_hedged_share": 1.0,
    "sim_hedged_share": 1.0
   }
  },
  "gaps": {
-  "gaps": 1176,
-  "too_good_to_be_real": 1,
-  "median_seconds": 190,
-  "lasted_30s_plus": 987,
-  "catchable": 0,
-  "catchable_value_usd": 0
+  "gaps": 168,
+  "too_good_to_be_real": 0,
+  "median_seconds": 238,
+  "lasted_30s_plus": 135,
+  "catchable": 1,
+  "catchable_value_usd": 0.0
  },
  "learner": {
-  "model_trained_on_outcomes_before": "2026-11-18T07:00:00Z",
-  "groups": 116,
-  "predicted_c_per_contract": -0.017,
+  "model_trained_on_outcomes_before": "2026-11-19T07:00:00Z",
+  "groups": 117,
+  "predicted_c_per_contract": -0.021,
   "actual_c_per_contract": 0.001,
-  "rank_correlation": -0.024,
+  "rank_correlation": -0.028,
   "bins_low_to_high": [
    {
-    "predicted_c": -0.073,
-    "actual_c": 0.006,
-    "plans": 991,
-    "fills": 2
+    "predicted_c": -0.084,
+    "actual_c": 0.002,
+    "plans": 3610,
+    "fills": 7
    },
    {
-    "predicted_c": -0.014,
+    "predicted_c": -0.011,
     "actual_c": 0.0,
-    "plans": 991,
+    "plans": 3611,
     "fills": 0
    },
    {
     "predicted_c": -0.007,
-    "actual_c": -0.001,
-    "plans": 992,
-    "fills": 3
+    "actual_c": 0.0,
+    "plans": 3610,
+    "fills": 1
    },
    {
-    "predicted_c": -0.002,
+    "predicted_c": -0.004,
     "actual_c": 0.0,
-    "plans": 991,
+    "plans": 3611,
     "fills": 0
    },
    {
-    "predicted_c": 0.009,
+    "predicted_c": 0.001,
     "actual_c": 0.0,
-    "plans": 992,
+    "plans": 3611,
     "fills": 0
    }
   ],
   "plans_in_skip_groups": 0,
   "skip_groups_actual_usd": 0
  },
- "orders_pulled_hedge_moved": 1,
+ "orders_pulled_hedge_moved": 0,
  "notable_fills": [
   {
-   "player_or_game": "Caleb Martin",
-   "market": "assists",
+   "player_or_game": "Charlotte vs Atlanta",
+   "market": "totals",
    "sport": "nba",
    "taken": false,
    "status": "hedged",
-   "contracts": 5,
-   "value_usd": -0.07
-  },
-  {
-   "player_or_game": "Houston vs Kansas",
-   "market": "margin",
-   "sport": "cbb",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 18,
+   "contracts": 17,
    "value_usd": 0.0
   },
   {
-   "player_or_game": "Houston vs Kansas",
-   "market": "margin",
-   "sport": "cbb",
+   "player_or_game": "Northwestern St. vs Oklahoma",
+   "market": "totals",
+   "sport": "wcbb",
    "taken": false,
    "status": "hedged",
-   "contracts": 18,
-   "value_usd": 0.07
+   "contracts": 15,
+   "value_usd": 0.01
   },
   {
-   "player_or_game": "Houston vs Kansas",
-   "market": "margin",
-   "sport": "cbb",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 18,
-   "value_usd": 0.07
-  },
-  {
-   "player_or_game": "LeBron James",
-   "market": "assists",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 5,
-   "value_usd": 0.16
-  },
-  {
-   "player_or_game": "Bowling Green vs Penn St.",
-   "market": "margin",
+   "player_or_game": "Northwestern St. vs Oklahoma",
+   "market": "totals",
    "sport": "wcbb",
    "taken": true,
    "status": "hedged",
-   "contracts": 8.0,
-   "value_usd": 0.21
+   "contracts": 17.0,
+   "value_usd": 0.03
+  },
+  {
+   "player_or_game": "Radford vs Tennessee",
+   "market": "totals",
+   "sport": "wcbb",
+   "taken": true,
+   "status": "hedged",
+   "contracts": 17.0,
+   "value_usd": 0.31
+  },
+  {
+   "player_or_game": "Radford vs Tennessee",
+   "market": "totals",
+   "sport": "wcbb",
+   "taken": true,
+   "status": "hedged",
+   "contracts": 16.0,
+   "value_usd": 0.42
+  },
+  {
+   "player_or_game": "Northwestern St. vs Oklahoma",
+   "market": "totals",
+   "sport": "wcbb",
+   "taken": true,
+   "status": "hedged",
+   "contracts": 17.0,
+   "value_usd": 0.45
   }
  ],
  "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total losses; skipped plans valued at the size the trader would have used"
