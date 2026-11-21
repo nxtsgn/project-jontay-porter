@@ -4,7 +4,7 @@ The 5-minute collector only notices a resting Kalshi fill minutes after it happe
 process runs all the time (on the free Oracle Cloud server, see deploy/oracle/README.md) and measures what hedging
 within seconds would have done:
 
-  every 60 s   fetch the price-data branch and load EVERY resting order the planner made in its latest run
+  every 20 s   fetch the price-data branch (commits and file lists only; the few CSVs read are downloaded on demand) and load EVERY resting order the planner made in its latest run
                (data/paper/maker_plans.csv), marking the ones the practice trader chose (trader_latest.csv, chosen=1).
                A newer run replaces (cancels) the older orders.
   every ~5 s   read Kalshi's public trade tape (one call, all markets) and match it to the watched markets. A taker trading into our side at or through
@@ -104,7 +104,10 @@ class Hedger:
     # ------------------------------------------------------------------ orders
     def sync(self):
         # shallow: only the newest price-data commit (the server keeps no history)
-        if git("fetch", "-q", "--depth", "1", "origin", "+price-data:refs/remotes/origin/price-data").returncode != 0:
+        # --filter=blob:none: without it every fetch downloaded the whole branch, ~22 MB price file included, and filled
+        # the server's disk (38 GB of objects by 2026-11-21). `git show` then fetches only the CSVs it reads.
+        if git("fetch", "-q", "--depth", "1", "--filter=blob:none", "origin",
+               "+price-data:refs/remotes/origin/price-data").returncode != 0:
             print("WARN fetch failed; keeping current orders", file=sys.stderr)
             return
         plans = branch_csv("data/paper/maker_plans.csv")
@@ -277,6 +280,7 @@ def code_changed():
     before = git("rev-parse", "HEAD").stdout.strip()
     if git("fetch", "-q", "--depth", "1", "origin", "+main:refs/remotes/origin/main").returncode == 0:
         git("reset", "-q", "--hard", "origin/main")  # shallow clone: a pull can't fast-forward, so jump to main
+    git("prune", "--expire=2.hours.ago")  # objects from older syncs are unreachable once the shallow refs move on
     return git("rev-parse", "HEAD").stdout.strip() != before
 
 
