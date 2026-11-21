@@ -1,28 +1,28 @@
 {
- "day": "2026-11-19",
+ "day": "2026-11-20",
  "utc_window": [
-  "2026-11-19T07:00:00Z",
-  "2026-11-20T07:00:00Z"
+  "2026-11-20T07:00:00Z",
+  "2026-11-21T07:00:00Z"
  ],
- "as_of": "2026-11-20T16:39:41Z",
+ "as_of": "2026-11-21T16:42:51Z",
  "take_vs_skip": {
   "taken": {
-   "plans": 3110,
-   "fills": 4,
+   "plans": 3470,
+   "fills": 1,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 1.21
+   "value_usd": 0.22
   },
   "skipped_at_trader_size": {
-   "plans": 14943,
-   "fills": 4,
+   "plans": 6766,
+   "fills": 3,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 0.19
+   "value_usd": 0.06
   },
   "skipped_too_small_to_size": 0,
-  "full_size_all_plans_usd": 7.95,
-  "skipping_saved_usd": -0.19,
+  "full_size_all_plans_usd": 0.82,
+  "skipping_saved_usd": -0.06,
   "by_kind": {
    "moneyline": {
     "taken_usd": 0.0,
@@ -31,105 +31,105 @@
    },
    "prop": {
     "taken_usd": 0.0,
-    "skipped_usd": 0.03,
+    "skipped_usd": 0.0,
     "fills": 1
    },
    "spread": {
     "taken_usd": 0.0,
-    "skipped_usd": 0.0,
-    "fills": 0
+    "skipped_usd": 0.06,
+    "fills": 2
    },
    "total": {
-    "taken_usd": 1.21,
-    "skipped_usd": 0.16,
-    "fills": 7
+    "taken_usd": 0.22,
+    "skipped_usd": 0.0,
+    "fills": 1
    }
   }
  },
  "ranking": {
   "used (the trader's actual picks)": {
-   "value_usd": 1.21,
-   "picks": 3110,
-   "fills": 4
+   "value_usd": 0.22,
+   "picks": 3470,
+   "fills": 1
   },
   "biggest edge first": {
-   "value_usd": 1.21,
-   "picks": 3177,
-   "fills": 4
+   "value_usd": 0.22,
+   "picks": 3597,
+   "fills": 1
   },
   "edge per dollar tied up": {
-   "value_usd": 1.21,
-   "picks": 5778,
-   "fills": 4
+   "value_usd": 0.22,
+   "picks": 4305,
+   "fills": 1
   },
   "edge + learner score (the trader's formula)": {
-   "value_usd": 1.21,
-   "picks": 3135,
-   "fills": 4
+   "value_usd": 0.22,
+   "picks": 3594,
+   "fills": 1
   },
   "perfect hindsight (ceiling)": {
-   "value_usd": 1.21,
-   "picks": 3177,
-   "fills": 4
+   "value_usd": 0.22,
+   "picks": 3597,
+   "fills": 1
   }
  },
  "hedger": {
-  "fills_seen": 10,
-  "picked_by_trader": 3,
-  "median_seconds_fill_to_hedge": 6.0,
+  "fills_seen": 5,
+  "picked_by_trader": 1,
+  "median_seconds_fill_to_hedge": 3.0,
   "late_fills_excluded_from_speed": 0,
   "fully_hedged_share": 1.0,
-  "locked_usd": 2.31,
+  "locked_usd": 0.83,
   "same_fill_vs_5min_sim": {
-   "pairs": 3,
-   "fast_hedged_share": 1.0,
-   "sim_hedged_share": 1.0
+   "pairs": 0,
+   "fast_hedged_share": null,
+   "sim_hedged_share": null
   }
  },
  "gaps": {
-  "gaps": 168,
+  "gaps": 328,
   "too_good_to_be_real": 0,
-  "median_seconds": 238,
-  "lasted_30s_plus": 135,
+  "median_seconds": 197,
+  "lasted_30s_plus": 273,
   "catchable": 1,
-  "catchable_value_usd": 0.0
+  "catchable_value_usd": 0.07
  },
  "learner": {
-  "model_trained_on_outcomes_before": "2026-11-19T07:00:00Z",
-  "groups": 117,
-  "predicted_c_per_contract": -0.021,
-  "actual_c_per_contract": 0.001,
-  "rank_correlation": -0.028,
+  "model_trained_on_outcomes_before": "2026-11-20T07:00:00Z",
+  "groups": 121,
+  "predicted_c_per_contract": -0.013,
+  "actual_c_per_contract": 0.0,
+  "rank_correlation": -0.012,
   "bins_low_to_high": [
    {
-    "predicted_c": -0.084,
-    "actual_c": 0.002,
-    "plans": 3610,
-    "fills": 7
+    "predicted_c": -0.053,
+    "actual_c": 0.001,
+    "plans": 2047,
+    "fills": 2
    },
    {
-    "predicted_c": -0.011,
+    "predicted_c": -0.012,
     "actual_c": 0.0,
-    "plans": 3611,
+    "plans": 2047,
     "fills": 0
    },
    {
-    "predicted_c": -0.007,
+    "predicted_c": -0.005,
     "actual_c": 0.0,
-    "plans": 3610,
-    "fills": 1
-   },
-   {
-    "predicted_c": -0.004,
-    "actual_c": 0.0,
-    "plans": 3611,
+    "plans": 2047,
     "fills": 0
    },
    {
-    "predicted_c": 0.001,
+    "predicted_c": -0.003,
     "actual_c": 0.0,
-    "plans": 3611,
+    "plans": 2047,
     "fills": 0
+   },
+   {
+    "predicted_c": 0.006,
+    "actual_c": 0.0,
+    "plans": 2048,
+    "fills": 2
    }
   ],
   "plans_in_skip_groups": 0,
@@ -138,58 +138,58 @@
  "orders_pulled_hedge_moved": 0,
  "notable_fills": [
   {
-   "player_or_game": "Charlotte vs Atlanta",
-   "market": "totals",
+   "player_or_game": "Tyrese Proctor",
+   "market": "pra",
    "sport": "nba",
    "taken": false,
    "status": "hedged",
-   "contracts": 17,
+   "contracts": 6,
    "value_usd": 0.0
   },
   {
-   "player_or_game": "Northwestern St. vs Oklahoma",
-   "market": "totals",
-   "sport": "wcbb",
+   "player_or_game": "Boston vs Sacramento",
+   "market": "margin",
+   "sport": "nba",
    "taken": false,
    "status": "hedged",
-   "contracts": 15,
-   "value_usd": 0.01
+   "contracts": 19,
+   "value_usd": 0.0
   },
   {
-   "player_or_game": "Northwestern St. vs Oklahoma",
+   "player_or_game": "Boston vs Sacramento",
+   "market": "margin",
+   "sport": "nba",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 12,
+   "value_usd": 0.05
+  },
+  {
+   "player_or_game": "Boston vs Sacramento",
+   "market": "margin",
+   "sport": "nba",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 19,
+   "value_usd": 0.0
+  },
+  {
+   "player_or_game": "Boston vs Sacramento",
+   "market": "margin",
+   "sport": "nba",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 12,
+   "value_usd": 0.05
+  },
+  {
+   "player_or_game": "Little Rock vs Oklahoma St.",
    "market": "totals",
    "sport": "wcbb",
    "taken": true,
    "status": "hedged",
-   "contracts": 17.0,
-   "value_usd": 0.03
-  },
-  {
-   "player_or_game": "Radford vs Tennessee",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 17.0,
-   "value_usd": 0.31
-  },
-  {
-   "player_or_game": "Radford vs Tennessee",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 16.0,
-   "value_usd": 0.42
-  },
-  {
-   "player_or_game": "Northwestern St. vs Oklahoma",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 17.0,
-   "value_usd": 0.45
+   "contracts": 20.0,
+   "value_usd": 0.22
   }
  ],
  "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total losses; skipped plans valued at the size the trader would have used"
