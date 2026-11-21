@@ -59,5 +59,24 @@ class ReconcileTest(unittest.TestCase):
         self.assertAlmostEqual(ms.live_from({"placed_ts": "2026-11-21T08:00:00Z"}) - ms.epoch("2026-11-21T08:00:00Z"), 71.2)
 
 
+class WindowTest(unittest.TestCase):
+    def test_plan_counts_fills_while_its_orders_were_really_up(self):
+        d = Path(tempfile.mkdtemp())
+        for n in ("PLANS", "PREV_PLANS", "FILLS", "OUTCOMES", "RUNS", "DELAYS", "RECONCILED", "CANCELS"):
+            setattr(ms, n, d / f"{n}.csv")
+        seen, saved = [], (ms.fills_since, ms.plan, ms.settle_bags, ms.time.sleep)
+        try:
+            ms.fills_since = lambda tk, side, px, a, b: (seen.append((a, b)) or (0.0, None))
+            ms.plan = lambda rows, ts: [dict(placed_ts=ts, rest_id="K", rest_raw_side="yes", rest_px=0.4, contracts=5, event_time="")]
+            ms.settle_bags, ms.time.sleep = (lambda: None), (lambda s: None)
+            for ts, delay in (("2026-11-21T10:00:00Z", 100), ("2026-11-21T10:02:20Z", 110), ("2026-11-21T10:04:40Z", 90)):
+                ms.step([], ts)
+                ms.record_order_delay(ts, delay)
+        finally:
+            ms.fills_since, ms.plan, ms.settle_bags, ms.time.sleep = saved
+        # placed 10:00:00, out at 10:01:40, replaced when the 10:02:20 run's orders went out (10:04:10)
+        self.assertEqual(seen, [(ms.epoch("2026-11-21T10:01:40Z"), ms.epoch("2026-11-21T10:04:10Z"))])
+
+
 if __name__ == "__main__":
     unittest.main()

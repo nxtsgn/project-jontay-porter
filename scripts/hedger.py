@@ -141,7 +141,7 @@ class Hedger:
         # catch up on fills between the orders going out and this server hearing of them (~1 min, waiting on the
         # collector's commit). They are hedged at today's book and flagged late; the reconciliation ignores them.
         open_ = [o for o in self.orders.values() if o["filled"] < o["order_qty"] - 1e-9]
-        back = self.tape_range(live - 5, watch_from)
+        back = self.tape_range(int(live) - 5, int(watch_from))  # Kalshi rejects fractional timestamps (HTTP 400)
         if back:
             self.match(back, open_)
         live = [o for o in self.orders.values() if o["until"] > watch_from]
@@ -151,7 +151,7 @@ class Hedger:
     # ------------------------------------------------------------------ fills
     def tape(self, t):
         """Kalshi's public trades across ALL markets since the last read (a few seconds of overlap; ids dedupe)."""
-        out = self.tape_range((self.tape_t or t - 30) - 5, t)
+        out = self.tape_range(int(self.tape_t or t - 30) - 5, int(t))
         if out is not None:
             self.tape_t = t
         return out

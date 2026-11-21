@@ -10,7 +10,8 @@ Each collector run (every ~15 min):
  2. PLAN new orders from this snapshot: for every Kalshi/Polymarket US pair on the same quantity (YES on "X > L1" + NO on
     "X > L2", L1 <= L2), rest the Kalshi leg 1c above its best bid and require the plan to clear --min-edge after the
     Polymarket US taker fee. One plan per Kalshi market side, sized to the $50-per-venue budget.
-    Saved to data/paper/maker_plans.csv (replaced every run; unfilled plans are treated as cancelled).
+    Saved to data/paper/maker_plans.csv (replaced every run; unfilled plans are treated as cancelled). Each plan is
+    resolved one run later (maker_plans_prev.csv), over the time its orders were really up.
 Every run appends a line to data/paper/maker_runs.csv (plans, fills, fill rate) so fill rates can be measured.
 
 Kalshi charges a maker fee only on series with fee_type "quadratic_with_maker_fees" (most game lines; props don't):
@@ -39,6 +40,9 @@ from find_arbs import f, fee, groups, kalshi_maker_fee  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "data" / "paper"
 PLANS, FILLS, RUNS = PAPER / "maker_plans.csv", PAPER / "maker_fills.csv", PAPER / "maker_runs.csv"
+# A plan's orders stay up until the NEXT run's orders replace them (~2 min after that run's snapshot), after that run
+# has already resolved: so each plan is resolved one run later, from this file (since 2026-11-21).
+PREV_PLANS = PAPER / "maker_plans_prev.csv"
 BAGS = PAPER / "maker_bags.csv"  # unhedged leftovers, graded at settlement
 BAG_FIELDS = ["placed_ts", "sport", "rest_id", "player", "unhedged_qty", "rest_px", "payout", "bag_pnl"]
 OUTCOMES = PAPER / "maker_outcomes.csv"  # every resolved plan, filled or not (what the learner trains on)
@@ -232,12 +236,13 @@ def live_from(o, delays=None):
     return epoch(o["placed_ts"]) + d.get(o["placed_ts"], med)
 
 
-def resolve(prev, rows, ts):
+def resolve(prev, rows, ts, end=None):
+    """Count each plan's fills from when its orders went out until `end` (when the next run's replaced them)."""
     out, unknown, cancels = [], 0, []
     cancel_on = bool(rule("cancel_if_hedge_moves", False))
     delays = order_delays()
     for o in prev:
-        until = min(epoch(ts), epoch(o["placed_ts"]) + ORDER_LIFETIME_S)
+        until = min(int(end or epoch(ts)), epoch(ts), epoch(o["placed_ts"]) + ORDER_LIFETIME_S)
         if o.get("event_time"):
             until = min(until, epoch(o["event_time"]))
         start = int(live_from(o, delays))
@@ -473,8 +478,10 @@ def _write(path, fields, rows, mode):
 
 def step(rows, ts):
     """Called by collect_prices.py once per run."""
-    prev = list(csv.DictReader(PLANS.open())) if PLANS.exists() else []
-    res = resolve(prev, rows, ts) if prev else []
+    prev, nxt = _rows(PREV_PLANS), _rows(PLANS)
+    # prev = two runs ago; nxt = last run, whose orders replaced prev's once they went out
+    end = live_from(nxt[0]) if nxt else epoch(ts)
+    res = resolve(prev, rows, ts, end) if prev else []
     filled = [r for r in res if float(r["filled"]) > 0]
     if filled:
         _write(FILLS, FILL_FIELDS, filled, "a")
@@ -486,6 +493,10 @@ def step(rows, ts):
         print(f"WARN hedger reconcile: {e}", file=sys.stderr)
     settle_bags()
     new = plan(rows, ts)
+    if PLANS.exists():
+        PLANS.replace(PREV_PLANS)
+    else:
+        PREV_PLANS.unlink(missing_ok=True)
     _write(PLANS, PLAN_FIELDS, new, "w")
     locked = sum(float(r["locked_pnl"]) for r in filled)
     _write(RUNS, RUN_FIELDS, [dict(ts_utc=ts, plans_resolved=len(res), plans_filled=len(filled),
