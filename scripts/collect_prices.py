@@ -427,6 +427,10 @@ def main():
         except Exception as e:  # noqa: BLE001
             print(f"WARN learn: {e}", file=sys.stderr)
         try:
+            maker_sim.record_order_delay(ts, (datetime.now(timezone.utc) - now).total_seconds())  # when orders would go out
+        except Exception as e:  # noqa: BLE001
+            print(f"WARN order delay: {e}", file=sys.stderr)
+        try:
             import trader
             trader.cycle(opps, plans, ts)  # practice mode: applies config/trading_rules.json, builds orders, sends nothing
         except Exception as e:  # noqa: BLE001  (the trader must never break price collection)

@@ -41,11 +41,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from find_arbs import fee, kalshi_maker_fee  # noqa: E402
-from maker_sim import KALSHI, ORDER_LIFETIME_S, epoch, get, hedge_levels  # noqa: E402
+from maker_sim import DEFAULT_DELAY_S, KALSHI, ORDER_LIFETIME_S, epoch, get, hedge_levels  # noqa: E402
 from gap_scanner import GapScanner  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-SYNC_S, POLL_S, PUSH_S, UPDATE_S = 60, 5, 600, 1800
+SYNC_S, POLL_S, PUSH_S, UPDATE_S = 20, 5, 600, 1800  # sync: a new run's orders are known ~20 s sooner
 STOP_BEFORE_START_S = 10 * 60
 FIELDS = ["placed_ts", "chosen", "sport", "market_type", "player", "event_time", "rest_id", "rest_raw_side", "rest_px", "order_qty",
           "hedge_id", "hedge_norm_side", "hedge_plan_px", "hedge_limit_px", "trade_id", "fill_ts", "seen_ts", "hedged_ts",
@@ -119,19 +119,28 @@ class Hedger:
                 _, rid, side, hid = r["hedge_key"].split("|")
                 chosen[(rid, side, hid)] = float(json.loads(r["payload"])["count"])
         watch_from = epoch(now_iso())
-        for o in self.orders.values():  # the new run replaces the old orders
-            o["until"] = min(o["until"], watch_from)
+        delays = {r["ts_utc"]: float(r["seconds"]) for r in branch_csv("data/paper/order_delay.csv")}
+        med = sorted(delays.values())[len(delays) // 2] if delays else DEFAULT_DELAY_S
         slip, placed = slippage(), epoch(ts)
+        live = placed + delays.get(ts, med)  # when this run's orders would reach Kalshi (same as maker_sim)
+        for o in self.orders.values():  # the new run's orders replace the old ones once they go out
+            o["until"] = min(o["until"], live)
         for p in plans:
             k = (p["rest_id"], p["rest_norm_side"], p["hedge_id"])
             until = placed + ORDER_LIFETIME_S  # same window maker_sim counts fills in; the next run replaces them sooner
             if p.get("event_time"):
                 until = min(until, epoch(p["event_time"]) - STOP_BEFORE_START_S)
             self.orders[(ts, *k)] = dict(
-                p, placed_ts=ts, placed=placed, watch_from=watch_from, until=until, chosen=int(k in chosen),
+                p, placed_ts=ts, placed=placed, live_from=live, watch_from=watch_from, until=until, chosen=int(k in chosen),
                 order_qty=chosen.get(k) or float(p["contracts"]), filled=0.0, rest_px=float(p["rest_px"]),
                 hedge_limit=round(min(0.99, float(p["hedge_px_at_plan"]) + slip), 4))
         self.run_ts = ts
+        # catch up on fills between the orders going out and this server hearing of them (~1 min, waiting on the
+        # collector's commit). They are hedged at today's book and flagged late; the reconciliation ignores them.
+        open_ = [o for o in self.orders.values() if o["filled"] < o["order_qty"] - 1e-9]
+        back = self.tape_range(live - 5, watch_from)
+        if back:
+            self.match(back, open_)
         live = [o for o in self.orders.values() if o["until"] > watch_from]
         print(f"{now_iso()} watching {len(live)} planned orders ({sum(o['chosen'] for o in live)} picked by the trader) "
               f"from run {ts}")
@@ -139,7 +148,13 @@ class Hedger:
     # ------------------------------------------------------------------ fills
     def tape(self, t):
         """Kalshi's public trades across ALL markets since the last read (a few seconds of overlap; ids dedupe)."""
-        since, out, cursor = (self.tape_t or t - 30) - 5, [], None
+        out = self.tape_range((self.tape_t or t - 30) - 5, t)
+        if out is not None:
+            self.tape_t = t
+        return out
+
+    def tape_range(self, since, t):
+        out, cursor = [], None
         for _ in range(10):
             params = {"min_ts": since, "max_ts": t, "limit": 1000}
             if cursor:
@@ -151,7 +166,6 @@ class Hedger:
             cursor = d.get("cursor")
             if not cursor:
                 break
-        self.tape_t = t
         return out
 
     def poll(self):
@@ -164,25 +178,7 @@ class Hedger:
             return
         trades = self.tape(t)
         if trades:
-            by = {}
-            for o in open_:
-                by.setdefault(o["rest_id"], []).append(o)
-            for tr in sorted((x for x in trades if x["ticker"] in by), key=lambda x: x["created_time"]):
-                if tr["trade_id"] in self.seen:
-                    continue
-                tt = epoch(tr["created_time"][:19] + "Z")
-                for o in by[tr["ticker"]]:
-                    side = o["rest_raw_side"]
-                    price = float(tr["yes_price_dollars"] if side == "yes" else tr["no_price_dollars"])
-                    if not (o["placed"] <= tt <= o["until"]) or tr.get("taker_side") == side or price > o["rest_px"] + 1e-9:
-                        continue
-                    qty = min(float(tr.get("count_fp") or 0), o["order_qty"] - o["filled"])
-                    if qty <= 0:
-                        continue
-                    self.seen[tr["trade_id"]] = time.time()
-                    o["filled"] += qty
-                    self.record(o, tr, qty)
-                    break
+            self.match(trades, open_)
         cut = time.time() - 3600
         self.seen = {k: v for k, v in self.seen.items() if v > cut}
         # pull orders whose hedge moved: up to 30 per poll, round robin, books read in parallel
@@ -193,6 +189,28 @@ class Hedger:
                 self.rr = (self.rr + len(batch)) % max(1, len(live))
                 for o, lv in zip(batch, self.pool.map(hedge_levels, batch)):
                     self.check_hedge(o, t, lv)
+
+    def match(self, trades, open_):
+        """Kalshi trades that would have filled our resting orders -> record and hedge each one."""
+        by = {}
+        for o in open_:
+            by.setdefault(o["rest_id"], []).append(o)
+        for tr in sorted((x for x in trades if x["ticker"] in by), key=lambda x: x["created_time"]):
+            if tr["trade_id"] in self.seen:
+                continue
+            tt = epoch(tr["created_time"][:19] + "Z")
+            for o in by[tr["ticker"]]:
+                side = o["rest_raw_side"]
+                price = float(tr["yes_price_dollars"] if side == "yes" else tr["no_price_dollars"])
+                if not (o.get("live_from", o["placed"]) <= tt <= o["until"]) or tr.get("taker_side") == side or price > o["rest_px"] + 1e-9:
+                    continue
+                qty = min(float(tr.get("count_fp") or 0), o["order_qty"] - o["filled"])
+                if qty <= 0:
+                    continue
+                self.seen[tr["trade_id"]] = time.time()
+                o["filled"] += qty
+                self.record(o, tr, qty)
+                break
 
     def check_hedge(self, o, t, lv):
         """Pull the Kalshi order once the Polymarket US hedge price makes the trade lose money (same rule as maker_sim)."""

@@ -106,6 +106,8 @@ class Data:
                 _, rid, side, hid = r["hedge_key"].split("|")
                 self.chosen[(r["ts_utc"], rid, side, hid)] = f(json.loads(r["payload"]).get("count"))
         self.names = {r["event"]: r["full"] for r in read_csv(paper / "event_names.csv")}
+        self.fills = read_csv(paper / "maker_fills.csv")
+        self.reconciled = read_csv(paper / "hedge_reconciled.csv")
         self.fast = hedger_csv("fast_hedges.csv", hedger_dir)
         self.gaps = hedger_csv("gap_episodes.csv", hedger_dir)
 
@@ -253,9 +255,31 @@ def metrics(day, data):
     # Oracle hedger: seconds-fast hedges vs the 5-minute simulation, for the same fills
     fast = [h for h in data.fast if in_day(h.get("fill_ts"), b)]
     timed = sorted(f(h["seconds_fill_to_hedge"]) for h in fast if h.get("late") in ("0", 0))
-    sim = {(o["placed_ts"], o["rest_id"]): o for o in plans}
-    pairs = [(h, sim.get((h["placed_ts"], h["rest_id"]))) for h in fast]
-    pairs = [(h, o) for h, o in pairs if o is not None and f(o["filled"]) > 0]
+    # same fill = same Kalshi market, first fill within 5 s (the two often attribute it to consecutive runs' plans)
+    sim_fills = [r for r in data.fills if in_day(r.get("first_fill_ts"), b)]
+    def t(x):
+        return datetime.fromisoformat(x[:19]).timestamp()
+    by = {}
+    for h in fast:
+        by.setdefault(h["rest_id"], []).append(h)
+    pairs, sim_only = [], []
+    for r in sim_fills:
+        hs = [h for h in by.get(r["rest_id"], []) if abs(t(h["fill_ts"]) - t(r["first_fill_ts"])) <= 5]
+        if hs:
+            pairs.append((hs[0], r))
+        else:
+            sim_only.append(r)
+    paired = {(h["rest_id"], h["placed_ts"]) for h, _ in pairs}
+    hedger_only = {(h["rest_id"], h["placed_ts"]): h for h in fast if (h["rest_id"], h["placed_ts"]) not in paired}
+    rec = [x for x in data.reconciled if in_day(x.get("first_fill_ts"), b)]
+    reconcile = {"both_saw": len(pairs), "sim_only": len(sim_only),
+                 "sim_only_within_90s_of_plan": sum(t(r["first_fill_ts"]) - t(r["placed_ts"]) <= 90 for r in sim_only),
+                 "hedger_only": len(hedger_only), "hedger_only_late": sum(h.get("late") == "1" for h in hedger_only.values()),
+                 "status_changed_by_hedger": sum(x["old_status"] != x["new_status"] for x in rec),
+                 "reconciled_usd_change": round(sum(f(x["new_locked_pnl"]) - f(x["old_locked_pnl"]) for x in rec), 2),
+                 "examples": [{"player": x["player"] or x["rest_id"], "sim": x["old_status"], "hedger": x["new_status"],
+                               "usd": [f(x["old_locked_pnl"]), f(x["new_locked_pnl"])]} for x in rec
+                              if x["old_status"] != x["new_status"]][:5]}
     hedger = {"fills_seen": len(fast), "picked_by_trader": sum(h.get("chosen") == "1" for h in fast),
               "median_seconds_fill_to_hedge": timed[len(timed) // 2] if timed else None,
               "late_fills_excluded_from_speed": sum(h.get("late") == "1" for h in fast),
@@ -297,7 +321,7 @@ def metrics(day, data):
                 "sport": r["o"]["sport"], "taken": bool(r["chosen"]), "status": r["o"]["hedge_status"],
                 "contracts": round(r["size"], 2), "value_usd": round(r["v_size"], 2)} for r in fills[:3] + fills[-3:]]
     return {"day": day, "utc_window": [b[0] + "Z", b[1] + "Z"], "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "take_vs_skip": take_skip, "ranking": rank, "hedger": hedger, "gaps": gap, "learner": cal,
+            "take_vs_skip": take_skip, "ranking": rank, "hedger": hedger, "reconcile": reconcile, "gaps": gap, "learner": cal,
             "orders_pulled_hedge_moved": sum(in_day(c.get("resolved_ts"), b) for c in data.cancels),
             "notable_fills": notable,
             "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total "
@@ -328,6 +352,9 @@ def headline(m):
             "best_ranking": best[0], "best_ranking_usd": best[1],
             "hindsight_usd": m["ranking"]["perfect hindsight (ceiling)"]["value_usd"],
             "hedger_fills": m["hedger"]["fills_seen"], "hedger_median_s": m["hedger"]["median_seconds_fill_to_hedge"],
+            "both_saw": m.get("reconcile", {}).get("both_saw"), "sim_only": m.get("reconcile", {}).get("sim_only"),
+            "hedger_only": m.get("reconcile", {}).get("hedger_only"),
+            "reconcile_status_changes": m.get("reconcile", {}).get("status_changed_by_hedger"),
             "catchable_gaps": m["gaps"]["catchable"], "catchable_gaps_usd": m["gaps"]["catchable_value_usd"],
             "learner_predicted_c": m["learner"].get("predicted_c_per_contract"),
             "learner_actual_c": m["learner"].get("actual_c_per_contract"),

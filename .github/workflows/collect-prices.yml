@@ -3,7 +3,7 @@ name: collect-prices
 # logs any guaranteed-payout gaps with order-book depth, and grades past gaps once their games settle.
 on:
   schedule:
-    - cron: "*/15 * * * *"   # backup only; GitHub's scheduler is unreliable. cron-job.org triggers this every 3 min (since 2026-11-17)
+    - cron: "*/15 * * * *"   # backup only; GitHub's scheduler is unreliable. cron-job.org triggers this every 2 min (since 2026-11-17)
   workflow_dispatch:
 
 permissions:
@@ -30,12 +30,16 @@ jobs:
         run: |
           git sparse-checkout add "/data/prices/prices_us_$(date -u +%F)*"
           git fetch -q --depth 1 origin main && git archive FETCH_HEAD scripts config requirements.txt | tar -x
+          # the Oracle hedger's live log, so the simulation can use its seconds-fast hedge prices (maker_sim.reconcile)
+          (git fetch -q --depth 1 origin hedger-data && git show FETCH_HEAD:fast_hedges.csv > "$RUNNER_TEMP/fast_hedges.csv") \
+            || echo "hedger log unavailable; simulation keeps its own hedge prices"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Collect snapshot, detect gaps, practice trader (sends nothing)
         run: python scripts/collect_prices.py
         env:
+          HEDGER_LOG: ${{ runner.temp }}/fast_hedges.csv
           TRADING_ENABLED: ${{ vars.TRADING_ENABLED }}   # kill switch: set the repo variable to "false" to stop the trader
       - name: Grade settled paper hedges
         run: python scripts/grade.py

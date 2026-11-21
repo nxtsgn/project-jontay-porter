@@ -25,6 +25,7 @@ import glob
 import gzip
 import json
 import math
+import os
 import sys
 import time
 import urllib.parse
@@ -68,6 +69,15 @@ RUN_FIELDS = ["ts_utc", "plans_resolved", "plans_filled", "contracts_filled", "l
 UNHEDGED_FIX_TS = "2026-11-16T23:00:00Z"  # plans resolved from here on use both fixes (for before/after comparisons)
 CANCEL_DELAY_S = 60  # price history is per minute; the live bot reacts within seconds, so this is conservative
 CANCELS = PAPER / "maker_cancels.csv"
+# A real order reaches Kalshi only when the trader runs, ~a minute after the price snapshot. Fills before that can't
+# happen, so they are not counted (since 2026-11-21; before, fills were counted from the snapshot time).
+DELAYS = PAPER / "order_delay.csv"  # ts_utc, seconds from snapshot to the trader acting, one row per run
+DEFAULT_DELAY_S = 60
+RECONCILED = PAPER / "hedge_reconciled.csv"  # every simulated hedge replaced by what the Oracle hedger saw live
+RECONCILED_FIELDS = ["reconciled_ts", "placed_ts", "rest_id", "player", "first_fill_ts", "hedger_fill_ts",
+                     "seconds_fill_to_hedge", "old_status", "new_status", "old_hedge_px", "new_hedge_px",
+                     "old_locked_pnl", "new_locked_pnl", "old_unhedged_qty", "new_unhedged_qty"]
+RECONCILE_LOOKBACK_S = 48 * 3600
 CANCEL_FIELDS = ["resolved_ts", "placed_ts", "sport", "market_type", "player", "rest_id", "rest_raw_side", "rest_px",
                  "hedge_id", "hedge_px_at_plan", "hedge_px_at_cancel", "cancel_ts", "contracts", "filled_with_cancel",
                  "filled_without_cancel"]
@@ -196,14 +206,44 @@ def fills_since(ticker, raw_side, px, since_ts, until_ts):
     return qty, first
 
 
+def _rows(path):
+    if not path.exists():
+        return []
+    with path.open(newline="") as fh:
+        return list(csv.DictReader(fh))
+
+
+def record_order_delay(ts, seconds, keep=2000):
+    """Log how long after the snapshot this run's orders would have gone out (the trader runs right after)."""
+    old = _rows(DELAYS)
+    rows = (old + [dict(ts_utc=ts, seconds=round(seconds, 1))])[-keep:]
+    _write(DELAYS, ["ts_utc", "seconds"], rows, "w")
+
+
+def order_delays():
+    """{snapshot ts: seconds until the order was live}, plus the median for runs not logged (before 2026-11-21)."""
+    d = {r["ts_utc"]: float(r["seconds"]) for r in _rows(DELAYS)}
+    v = sorted(d.values())
+    return d, (v[len(v) // 2] if v else DEFAULT_DELAY_S)
+
+
+def live_from(o, delays=None):
+    d, med = delays or order_delays()
+    return epoch(o["placed_ts"]) + d.get(o["placed_ts"], med)
+
+
 def resolve(prev, rows, ts):
     out, unknown, cancels = [], 0, []
     cancel_on = bool(rule("cancel_if_hedge_moves", False))
+    delays = order_delays()
     for o in prev:
         until = min(epoch(ts), epoch(o["placed_ts"]) + ORDER_LIFETIME_S)
         if o.get("event_time"):
             until = min(until, epoch(o["event_time"]))
-        start = epoch(o["placed_ts"])
+        start = int(live_from(o, delays))
+        if start >= until:
+            unknown += 1  # never live before it was replaced (shouldn't happen at ~1 min vs a 2-min cycle)
+            continue
         qty, first = fills_since(o["rest_id"], o["rest_raw_side"], float(o["rest_px"]), start, until)
         if qty is None:
             unknown += 1
@@ -339,6 +379,88 @@ def settle_bags():
     return out
 
 
+def hedger_log():
+    """The Oracle hedger's log (fast_hedges.csv on the hedger-data branch), if this run fetched it."""
+    p = os.environ.get("HEDGER_LOG")
+    return _rows(Path(p)) if p and os.path.exists(p) and os.path.getsize(p) else []
+
+
+def reconcile(fast=None, now=None):
+    """Where the Oracle hedger saw a fill live (within seconds) the simulation's hedge is replaced by the hedger's.
+
+    The simulation only reads the Polymarket US book when its next run resolves the plan (~1-2 min after the fill) and
+    keeps the worse of that and the at-fill minute price; the hedger reads the book seconds after the fill. It is the
+    better measure of what a live bot gets, in both directions: a simulated hedge the hedger couldn't get becomes a
+    one-sided bag, and a simulated bag the hedger did hedge becomes a locked pair. Fills the hedger only caught late,
+    or didn't see, keep the simulation's conservative result. Every replacement is logged in hedge_reconciled.csv."""
+    fast = hedger_log() if fast is None else fast
+    if not fast or not FILLS.exists():
+        return []
+    now = now or time.time()
+    by = {}
+    for h in fast:
+        if h.get("fill_ts") and str(h.get("late")) == "0":
+            by.setdefault(h["rest_id"], []).append(h)
+    done = {(r["placed_ts"], r["rest_id"]) for r in _rows(RECONCILED)}
+    fills = _rows(FILLS)
+    changed, log = {}, []
+    for r in fills:
+        k = (r["placed_ts"], r["rest_id"])
+        if k in done or not r.get("first_fill_ts") or now - epoch(r["resolved_ts"]) > RECONCILE_LOOKBACK_S:
+            continue
+        t0 = epoch(r["first_fill_ts"][:19] + "Z")
+        hs = [h for h in by.get(r["rest_id"], []) if abs(epoch(h["fill_ts"][:19] + "Z") - t0) <= 5]
+        if not hs:
+            continue
+        # the hedger's first fill and everything it logged for that same order (one row per Kalshi trade)
+        h0 = min(hs, key=lambda h: h["fill_ts"])
+        same = [h for h in by[r["rest_id"]] if h["placed_ts"] == h0["placed_ts"]]
+        fq = sum(float(h["fill_qty"]) for h in same)
+        hq = sum(float(h["hedged_qty"]) for h in same)
+        if fq <= 0:
+            continue
+        filled, rest, coef = float(r["filled"]), float(r["rest_px"]), float(r["hedge_fee_coef"])
+        got = round(filled * min(1.0, hq / fq), 2)
+        avg = sum(float(h["hedged_qty"]) * float(h["hedge_avg_px"] or 0) for h in same) / hq if hq else None
+        mfee = kalshi_maker_fee(r["rest_id"], rest, max(1, math.ceil(filled)))
+        if got > 0:
+            hfee = fee("polymarket_us", coef, avg, max(1, math.ceil(got)))
+            pnl = (1 - rest - avg) * got - hfee - mfee
+            new = dict(hedge_px_at_fill=round(avg, 4), hedge_status="hedged" if filled - got <= 1e-9 else "PARTIAL",
+                       hedged_qty=got, unhedged_qty=round(filled - got, 2), cost=round(rest + avg, 4), hedge_fee=hfee,
+                       locked_pnl=round(pnl, 2), locked_per_contract=round(pnl / got, 4))
+        else:
+            new = dict(hedge_px_at_fill="", hedge_status="UNHEDGED", hedged_qty=0, unhedged_qty=round(filled, 2),
+                       cost=rest, hedge_fee=0, locked_pnl=round(-mfee, 2), locked_per_contract="")
+        if new["hedge_status"] == r["hedge_status"] and abs(float(new["locked_pnl"]) - float(r["locked_pnl"] or 0)) < 0.005:
+            continue
+        log.append(dict(reconciled_ts=datetime.fromtimestamp(now, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        placed_ts=r["placed_ts"], rest_id=r["rest_id"], player=r.get("player", ""),
+                        first_fill_ts=r["first_fill_ts"], hedger_fill_ts=h0["fill_ts"],
+                        seconds_fill_to_hedge=h0["seconds_fill_to_hedge"], old_status=r["hedge_status"],
+                        new_status=new["hedge_status"], old_hedge_px=r["hedge_px_at_fill"], new_hedge_px=new["hedge_px_at_fill"],
+                        old_locked_pnl=r["locked_pnl"], new_locked_pnl=new["locked_pnl"],
+                        old_unhedged_qty=r["unhedged_qty"], new_unhedged_qty=new["unhedged_qty"]))
+        r.update(new)
+        changed[k] = new
+    if not changed:
+        return []
+    _write(FILLS, FILL_FIELDS, fills, "w")
+    if OUTCOMES.exists():  # what the learner trains on
+        outs = _rows(OUTCOMES)
+        for o in outs:
+            c = changed.get((o["placed_ts"], o["rest_id"]))
+            if c and o.get("filled") not in ("", "0", "0.0"):
+                o.update(hedge_status=c["hedge_status"], hedged_qty=c["hedged_qty"], unhedged_qty=c["unhedged_qty"],
+                         locked_pnl=c["locked_pnl"])
+        _write(OUTCOMES, OUTCOME_FIELDS, outs, "w")
+    _write(RECONCILED, RECONCILED_FIELDS, log, "a")
+    for x in log:
+        print(f"hedger reconcile: {x['player'] or x['rest_id']} {x['old_status']} ${x['old_locked_pnl']} -> "
+              f"{x['new_status']} ${x['new_locked_pnl']} (hedger saw it in {x['seconds_fill_to_hedge']}s)")
+    return log
+
+
 def _write(path, fields, rows, mode):
     path.parent.mkdir(parents=True, exist_ok=True)
     new = mode == "w" or not path.exists()
@@ -358,6 +480,10 @@ def step(rows, ts):
         _write(FILLS, FILL_FIELDS, filled, "a")
     if res:
         _write(OUTCOMES, OUTCOME_FIELDS, res, "a")
+    try:
+        reconcile()
+    except Exception as e:  # noqa: BLE001  (never let the comparison break the simulation)
+        print(f"WARN hedger reconcile: {e}", file=sys.stderr)
     settle_bags()
     new = plan(rows, ts)
     _write(PLANS, PLAN_FIELDS, new, "w")

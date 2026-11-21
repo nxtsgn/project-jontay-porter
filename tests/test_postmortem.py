@@ -52,6 +52,14 @@ class PostMortemTest(unittest.TestCase):
         write(hd / "fast_hedges.csv", [dict(placed_ts=run, chosen=1, rest_id="K-A", fill_ts="2026-11-19T18:01:00Z",
                                             seconds_fill_to_hedge=4, late=0, fill_qty=10, hedged_qty=10, status="hedged",
                                             locked_pnl=0.31)])
+        fills = [dict(r, first_fill_ts=ts) for r, ts in ((self.rows[1], "2026-11-19T18:01:02.5Z"),  # hedger saw it too
+                                                         (self.rows[2], "2026-11-19T18:00:40Z"))]  # 40 s after the plan
+        write(paper / "maker_fills.csv", fills)
+        write(paper / "hedge_reconciled.csv", [dict(reconciled_ts=run, placed_ts=run, rest_id="K-A", player="",
+                                                    first_fill_ts="2026-11-19T18:01:02.5Z", hedger_fill_ts="2026-11-19T18:01:00Z",
+                                                    seconds_fill_to_hedge=4, old_status="UNHEDGED", new_status="hedged",
+                                                    old_hedge_px="", new_hedge_px=0.55, old_locked_pnl=0.0,
+                                                    new_locked_pnl=0.30, old_unhedged_qty=10, new_unhedged_qty=0)])
         write(hd / "gap_episodes.csv", [dict(open_ts="2026-11-19T19:00:00Z", seconds_open=40, cycles_open=8, contracts=5,
                                              profit_at_limit=0.25, plausible=1),
                                         dict(open_ts="2026-11-19T19:05:00Z", seconds_open=5, cycles_open=1, contracts=0,
@@ -92,6 +100,10 @@ class PostMortemTest(unittest.TestCase):
         self.assertEqual(m["hedger"]["fills_seen"], 1)
         self.assertEqual(m["hedger"]["median_seconds_fill_to_hedge"], 4)
         self.assertEqual(m["hedger"]["same_fill_vs_5min_sim"]["pairs"], 1)
+        r = m["reconcile"]
+        self.assertEqual((r["both_saw"], r["sim_only"], r["sim_only_within_90s_of_plan"], r["hedger_only"]), (1, 1, 1, 0))
+        self.assertEqual(r["status_changed_by_hedger"], 1)
+        self.assertAlmostEqual(r["reconciled_usd_change"], 0.30)
         self.assertEqual(m["gaps"]["catchable"], 1)
         self.assertAlmostEqual(m["gaps"]["catchable_value_usd"], 0.25)
 
