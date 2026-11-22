@@ -1,28 +1,28 @@
 {
- "day": "2026-11-20",
+ "day": "2026-11-21",
  "utc_window": [
-  "2026-11-20T07:00:00Z",
-  "2026-11-21T07:00:00Z"
+  "2026-11-21T07:00:00Z",
+  "2026-11-22T07:00:00Z"
  ],
- "as_of": "2026-11-21T16:42:51Z",
+ "as_of": "2026-11-22T16:43:23Z",
  "take_vs_skip": {
   "taken": {
-   "plans": 3470,
+   "plans": 4710,
    "fills": 1,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 0.22
+   "value_usd": 0.08
   },
   "skipped_at_trader_size": {
-   "plans": 6766,
-   "fills": 3,
+   "plans": 10548,
+   "fills": 1,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 0.06
+   "value_usd": 0.13
   },
   "skipped_too_small_to_size": 0,
-  "full_size_all_plans_usd": 0.82,
-  "skipping_saved_usd": -0.06,
+  "full_size_all_plans_usd": 0.51,
+  "skipping_saved_usd": -0.13,
   "by_kind": {
    "moneyline": {
     "taken_usd": 0.0,
@@ -30,166 +30,168 @@
     "fills": 0
    },
    "prop": {
-    "taken_usd": 0.0,
-    "skipped_usd": 0.0,
-    "fills": 1
+    "taken_usd": 0.08,
+    "skipped_usd": 0.13,
+    "fills": 2
    },
    "spread": {
     "taken_usd": 0.0,
-    "skipped_usd": 0.06,
-    "fills": 2
+    "skipped_usd": 0.0,
+    "fills": 0
    },
    "total": {
-    "taken_usd": 0.22,
+    "taken_usd": 0.0,
     "skipped_usd": 0.0,
-    "fills": 1
+    "fills": 0
    }
   }
  },
  "ranking": {
   "used (the trader's actual picks)": {
-   "value_usd": 0.22,
-   "picks": 3470,
+   "value_usd": 0.08,
+   "picks": 4710,
    "fills": 1
   },
   "biggest edge first": {
-   "value_usd": 0.22,
-   "picks": 3597,
+   "value_usd": 0.08,
+   "picks": 4682,
    "fills": 1
   },
   "edge per dollar tied up": {
-   "value_usd": 0.22,
-   "picks": 4305,
+   "value_usd": 0.08,
+   "picks": 5816,
    "fills": 1
   },
   "edge + learner score (the trader's formula)": {
-   "value_usd": 0.22,
-   "picks": 3594,
+   "value_usd": 0.08,
+   "picks": 4701,
    "fills": 1
   },
   "perfect hindsight (ceiling)": {
-   "value_usd": 0.22,
-   "picks": 3597,
+   "value_usd": 0.08,
+   "picks": 4682,
    "fills": 1
   }
  },
  "hedger": {
-  "fills_seen": 5,
-  "picked_by_trader": 1,
-  "median_seconds_fill_to_hedge": 3.0,
+  "fills_seen": 4,
+  "picked_by_trader": 2,
+  "median_seconds_fill_to_hedge": 4.0,
   "late_fills_excluded_from_speed": 0,
   "fully_hedged_share": 1.0,
-  "locked_usd": 0.83,
+  "locked_usd": 0.58,
   "same_fill_vs_5min_sim": {
-   "pairs": 0,
-   "fast_hedged_share": null,
-   "sim_hedged_share": null
+   "pairs": 2,
+   "fast_hedged_share": 1.0,
+   "sim_hedged_share": 1.0
   }
  },
+ "reconcile": {
+  "both_saw": 2,
+  "sim_only": 0,
+  "sim_only_within_90s_of_plan": 0,
+  "hedger_only": 1,
+  "hedger_only_late": 0,
+  "status_changed_by_hedger": 1,
+  "reconciled_usd_change": 0.37,
+  "examples": [
+   {
+    "player": "Carson Beck",
+    "sim": "UNHEDGED",
+    "hedger": "hedged",
+    "usd": [
+     -0.0,
+     0.4
+    ]
+   }
+  ]
+ },
  "gaps": {
-  "gaps": 328,
-  "too_good_to_be_real": 0,
-  "median_seconds": 197,
-  "lasted_30s_plus": 273,
+  "gaps": 387,
+  "too_good_to_be_real": 20,
+  "median_seconds": 279,
+  "lasted_30s_plus": 312,
   "catchable": 1,
   "catchable_value_usd": 0.07
  },
  "learner": {
-  "model_trained_on_outcomes_before": "2026-11-20T07:00:00Z",
-  "groups": 121,
+  "model_trained_on_outcomes_before": "2026-11-21T07:00:00Z",
+  "groups": 122,
   "predicted_c_per_contract": -0.013,
   "actual_c_per_contract": 0.0,
-  "rank_correlation": -0.012,
+  "rank_correlation": -0.018,
   "bins_low_to_high": [
    {
-    "predicted_c": -0.053,
+    "predicted_c": -0.051,
     "actual_c": 0.001,
-    "plans": 2047,
+    "plans": 3051,
     "fills": 2
    },
    {
-    "predicted_c": -0.012,
+    "predicted_c": -0.01,
     "actual_c": 0.0,
-    "plans": 2047,
+    "plans": 3052,
     "fills": 0
    },
    {
-    "predicted_c": -0.005,
+    "predicted_c": -0.004,
     "actual_c": 0.0,
-    "plans": 2047,
+    "plans": 3051,
     "fills": 0
    },
    {
-    "predicted_c": -0.003,
+    "predicted_c": -0.002,
     "actual_c": 0.0,
-    "plans": 2047,
+    "plans": 3052,
     "fills": 0
    },
    {
-    "predicted_c": 0.006,
+    "predicted_c": 0.002,
     "actual_c": 0.0,
-    "plans": 2048,
-    "fills": 2
+    "plans": 3052,
+    "fills": 0
    }
   ],
   "plans_in_skip_groups": 0,
   "skip_groups_actual_usd": 0
  },
- "orders_pulled_hedge_moved": 0,
+ "orders_pulled_hedge_moved": 1,
  "notable_fills": [
   {
-   "player_or_game": "Tyrese Proctor",
-   "market": "pra",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 6,
-   "value_usd": 0.0
-  },
-  {
-   "player_or_game": "Boston vs Sacramento",
-   "market": "margin",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 19,
-   "value_usd": 0.0
-  },
-  {
-   "player_or_game": "Boston vs Sacramento",
-   "market": "margin",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 12,
-   "value_usd": 0.05
-  },
-  {
-   "player_or_game": "Boston vs Sacramento",
-   "market": "margin",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 19,
-   "value_usd": 0.0
-  },
-  {
-   "player_or_game": "Boston vs Sacramento",
-   "market": "margin",
-   "sport": "nba",
-   "taken": false,
-   "status": "hedged",
-   "contracts": 12,
-   "value_usd": 0.05
-  },
-  {
-   "player_or_game": "Little Rock vs Oklahoma St.",
-   "market": "totals",
-   "sport": "wcbb",
+   "player_or_game": "Dalton Kincaid",
+   "market": "rec_yds",
+   "sport": "nfl",
    "taken": true,
    "status": "hedged",
-   "contracts": 20.0,
-   "value_usd": 0.22
+   "contracts": 9.0,
+   "value_usd": 0.08
+  },
+  {
+   "player_or_game": "Carson Beck",
+   "market": "pass_yds",
+   "sport": "nfl",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 7,
+   "value_usd": 0.13
+  },
+  {
+   "player_or_game": "Dalton Kincaid",
+   "market": "rec_yds",
+   "sport": "nfl",
+   "taken": true,
+   "status": "hedged",
+   "contracts": 9.0,
+   "value_usd": 0.08
+  },
+  {
+   "player_or_game": "Carson Beck",
+   "market": "pass_yds",
+   "sport": "nfl",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 7,
+   "value_usd": 0.13
   }
  ],
  "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total losses; skipped plans valued at the size the trader would have used"
