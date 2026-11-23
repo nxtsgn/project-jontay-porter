@@ -1,43 +1,43 @@
 {
- "day": "2026-11-21",
+ "day": "2026-11-22",
  "utc_window": [
-  "2026-11-21T07:00:00Z",
-  "2026-11-22T07:00:00Z"
+  "2026-11-22T07:00:00Z",
+  "2026-11-23T07:00:00Z"
  ],
- "as_of": "2026-11-22T16:43:23Z",
+ "as_of": "2026-11-23T16:42:36Z",
  "take_vs_skip": {
   "taken": {
-   "plans": 4710,
-   "fills": 1,
-   "unhedged_fills": 0,
+   "plans": 3386,
+   "fills": 4,
+   "unhedged_fills": 1,
    "open_leftovers": 0,
-   "value_usd": 0.08
+   "value_usd": 0.04
   },
   "skipped_at_trader_size": {
-   "plans": 10548,
-   "fills": 1,
-   "unhedged_fills": 0,
+   "plans": 6241,
+   "fills": 5,
+   "unhedged_fills": 1,
    "open_leftovers": 0,
-   "value_usd": 0.13
+   "value_usd": -0.04
   },
   "skipped_too_small_to_size": 0,
-  "full_size_all_plans_usd": 0.51,
-  "skipping_saved_usd": -0.13,
+  "full_size_all_plans_usd": -0.38,
+  "skipping_saved_usd": 0.04,
   "by_kind": {
    "moneyline": {
     "taken_usd": 0.0,
     "skipped_usd": 0.0,
-    "fills": 0
-   },
-   "prop": {
-    "taken_usd": 0.08,
-    "skipped_usd": 0.13,
     "fills": 2
    },
+   "prop": {
+    "taken_usd": 0.03,
+    "skipped_usd": -0.04,
+    "fills": 6
+   },
    "spread": {
-    "taken_usd": 0.0,
+    "taken_usd": 0.01,
     "skipped_usd": 0.0,
-    "fills": 0
+    "fills": 1
    },
    "total": {
     "taken_usd": 0.0,
@@ -48,150 +48,168 @@
  },
  "ranking": {
   "used (the trader's actual picks)": {
-   "value_usd": 0.08,
-   "picks": 4710,
-   "fills": 1
+   "value_usd": 0.04,
+   "picks": 3386,
+   "fills": 4
   },
   "biggest edge first": {
-   "value_usd": 0.08,
-   "picks": 4682,
-   "fills": 1
+   "value_usd": 0.04,
+   "picks": 3387,
+   "fills": 4
   },
   "edge per dollar tied up": {
-   "value_usd": 0.08,
-   "picks": 5816,
-   "fills": 1
+   "value_usd": 0.04,
+   "picks": 3646,
+   "fills": 4
   },
   "edge + learner score (the trader's formula)": {
-   "value_usd": 0.08,
-   "picks": 4701,
-   "fills": 1
+   "value_usd": 0.04,
+   "picks": 3392,
+   "fills": 4
   },
   "perfect hindsight (ceiling)": {
-   "value_usd": 0.08,
-   "picks": 4682,
-   "fills": 1
+   "value_usd": 0.04,
+   "picks": 3387,
+   "fills": 4
   }
  },
  "hedger": {
-  "fills_seen": 4,
-  "picked_by_trader": 2,
+  "fills_seen": 12,
+  "picked_by_trader": 5,
   "median_seconds_fill_to_hedge": 4.0,
-  "late_fills_excluded_from_speed": 0,
-  "fully_hedged_share": 1.0,
-  "locked_usd": 0.58,
+  "late_fills_excluded_from_speed": 4,
+  "fully_hedged_share": 0.75,
+  "locked_usd": 0.33,
   "same_fill_vs_5min_sim": {
-   "pairs": 2,
-   "fast_hedged_share": 1.0,
-   "sim_hedged_share": 1.0
+   "pairs": 9,
+   "fast_hedged_share": 0.79,
+   "sim_hedged_share": 0.99
   }
  },
  "reconcile": {
-  "both_saw": 2,
+  "both_saw": 9,
   "sim_only": 0,
   "sim_only_within_90s_of_plan": 0,
   "hedger_only": 1,
   "hedger_only_late": 0,
   "status_changed_by_hedger": 1,
-  "reconciled_usd_change": 0.37,
+  "reconciled_usd_change": 0.02,
   "examples": [
    {
-    "player": "Carson Beck",
-    "sim": "UNHEDGED",
-    "hedger": "hedged",
+    "player": "Bobby Portis",
+    "sim": "hedged",
+    "hedger": "PARTIAL",
     "usd": [
-     -0.0,
-     0.4
+     0.02,
+     -0.01
     ]
    }
   ]
  },
  "gaps": {
-  "gaps": 387,
-  "too_good_to_be_real": 20,
-  "median_seconds": 279,
-  "lasted_30s_plus": 312,
+  "gaps": 630,
+  "too_good_to_be_real": 4,
+  "median_seconds": 198,
+  "lasted_30s_plus": 520,
   "catchable": 1,
-  "catchable_value_usd": 0.07
+  "catchable_value_usd": 0.02
  },
  "learner": {
-  "model_trained_on_outcomes_before": "2026-11-21T07:00:00Z",
-  "groups": 122,
-  "predicted_c_per_contract": -0.013,
+  "model_trained_on_outcomes_before": "2026-11-22T07:00:00Z",
+  "groups": 126,
+  "predicted_c_per_contract": -0.012,
   "actual_c_per_contract": 0.0,
-  "rank_correlation": -0.018,
+  "rank_correlation": 0.003,
   "bins_low_to_high": [
    {
-    "predicted_c": -0.051,
-    "actual_c": 0.001,
-    "plans": 3051,
-    "fills": 2
+    "predicted_c": -0.045,
+    "actual_c": -0.001,
+    "plans": 1925,
+    "fills": 3
    },
    {
-    "predicted_c": -0.01,
-    "actual_c": 0.0,
-    "plans": 3052,
-    "fills": 0
+    "predicted_c": -0.008,
+    "actual_c": -0.0,
+    "plans": 1925,
+    "fills": 4
    },
    {
-    "predicted_c": -0.004,
-    "actual_c": 0.0,
-    "plans": 3051,
-    "fills": 0
+    "predicted_c": -0.005,
+    "actual_c": -0.0,
+    "plans": 1926,
+    "fills": 1
    },
    {
-    "predicted_c": -0.002,
+    "predicted_c": -0.003,
     "actual_c": 0.0,
-    "plans": 3052,
+    "plans": 1925,
     "fills": 0
    },
    {
     "predicted_c": 0.002,
-    "actual_c": 0.0,
-    "plans": 3052,
-    "fills": 0
+    "actual_c": 0.001,
+    "plans": 1926,
+    "fills": 1
    }
   ],
   "plans_in_skip_groups": 0,
   "skip_groups_actual_usd": 0
  },
- "orders_pulled_hedge_moved": 1,
+ "orders_pulled_hedge_moved": 3,
  "notable_fills": [
   {
-   "player_or_game": "Dalton Kincaid",
-   "market": "rec_yds",
-   "sport": "nfl",
+   "player_or_game": "Bam Adebayo",
+   "market": "rebounds",
+   "sport": "nba",
    "taken": true,
    "status": "hedged",
-   "contracts": 9.0,
-   "value_usd": 0.08
+   "contracts": 8.0,
+   "value_usd": -0.11
   },
   {
-   "player_or_game": "Carson Beck",
-   "market": "pass_yds",
-   "sport": "nfl",
+   "player_or_game": "Alperen Sengun",
+   "market": "rebounds",
+   "sport": "nba",
    "taken": false,
    "status": "hedged",
-   "contracts": 7,
-   "value_usd": 0.13
+   "contracts": 5,
+   "value_usd": -0.04
   },
   {
-   "player_or_game": "Dalton Kincaid",
-   "market": "rec_yds",
-   "sport": "nfl",
+   "player_or_game": "Bobby Portis",
+   "market": "points",
+   "sport": "nba",
+   "taken": false,
+   "status": "PARTIAL",
+   "contracts": 6,
+   "value_usd": -0.01
+  },
+  {
+   "player_or_game": "Cam Spencer",
+   "market": "pra",
+   "sport": "nba",
+   "taken": false,
+   "status": "hedged",
+   "contracts": 9,
+   "value_usd": 0.01
+  },
+  {
+   "player_or_game": "Utah St. vs TCU",
+   "market": "margin",
+   "sport": "wcbb",
    "taken": true,
    "status": "hedged",
-   "contracts": 9.0,
-   "value_usd": 0.08
+   "contracts": 18.0,
+   "value_usd": 0.01
   },
   {
-   "player_or_game": "Carson Beck",
-   "market": "pass_yds",
-   "sport": "nfl",
-   "taken": false,
+   "player_or_game": "Landry Shamet",
+   "market": "points",
+   "sport": "nba",
+   "taken": true,
    "status": "hedged",
-   "contracts": 7,
-   "value_usd": 0.13
+   "contracts": 5.0,
+   "value_usd": 0.14
   }
  ],
  "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total losses; skipped plans valued at the size the trader would have used"
