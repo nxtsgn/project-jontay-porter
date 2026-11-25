@@ -1,215 +1,251 @@
 {
- "day": "2026-11-23",
+ "day": "2026-11-24",
  "utc_window": [
-  "2026-11-23T07:00:00Z",
-  "2026-11-24T07:00:00Z"
+  "2026-11-24T07:00:00Z",
+  "2026-11-25T07:00:00Z"
  ],
- "as_of": "2026-11-24T16:45:22Z",
+ "as_of": "2026-11-25T16:37:11Z",
  "take_vs_skip": {
   "taken": {
-   "plans": 2919,
-   "fills": 7,
+   "plans": 2538,
+   "fills": 2,
    "unhedged_fills": 0,
    "open_leftovers": 0,
-   "value_usd": 1.54
+   "value_usd": 0.01
   },
   "skipped_at_trader_size": {
-   "plans": 6450,
-   "fills": 3,
-   "unhedged_fills": 1,
-   "open_leftovers": 0,
-   "value_usd": -4.89
+   "plans": 6500,
+   "fills": 15,
+   "unhedged_fills": 5,
+   "open_leftovers": 2,
+   "value_usd": -8.73
   },
   "skipped_too_small_to_size": 0,
-  "full_size_all_plans_usd": -2.03,
-  "skipping_saved_usd": 4.89,
+  "full_size_all_plans_usd": 33.29,
+  "skipping_saved_usd": 8.73,
   "by_kind": {
    "moneyline": {
     "taken_usd": 0.0,
-    "skipped_usd": 0.0,
-    "fills": 0
+    "skipped_usd": -8.97,
+    "fills": 4
    },
    "prop": {
     "taken_usd": 0.0,
-    "skipped_usd": -4.86,
-    "fills": 2
+    "skipped_usd": 0.04,
+    "fills": 10
    },
    "spread": {
+    "taken_usd": 0.01,
+    "skipped_usd": 0.21,
+    "fills": 3
+   },
+   "total": {
     "taken_usd": 0.0,
     "skipped_usd": 0.0,
     "fills": 0
-   },
-   "total": {
-    "taken_usd": 1.54,
-    "skipped_usd": -0.03,
-    "fills": 8
    }
   }
  },
  "ranking": {
   "used (the trader's actual picks)": {
-   "value_usd": 1.54,
-   "picks": 2919,
-   "fills": 7
+   "value_usd": 0.01,
+   "picks": 2538,
+   "fills": 2
   },
   "biggest edge first": {
-   "value_usd": 1.54,
-   "picks": 2948,
-   "fills": 7
+   "value_usd": 0.01,
+   "picks": 2559,
+   "fills": 2
   },
   "edge per dollar tied up": {
-   "value_usd": 1.54,
-   "picks": 3493,
-   "fills": 7
+   "value_usd": 0.01,
+   "picks": 3066,
+   "fills": 2
   },
   "edge + learner score (the trader's formula)": {
-   "value_usd": 1.54,
-   "picks": 2952,
-   "fills": 7
+   "value_usd": 0.01,
+   "picks": 2562,
+   "fills": 2
   },
   "perfect hindsight (ceiling)": {
-   "value_usd": 1.58,
-   "picks": 2948,
-   "fills": 8
+   "value_usd": 0.08,
+   "picks": 2560,
+   "fills": 3
   }
  },
  "hedger": {
-  "fills_seen": 20,
-  "picked_by_trader": 16,
-  "median_seconds_fill_to_hedge": 4.0,
-  "late_fills_excluded_from_speed": 3,
-  "fully_hedged_share": 0.95,
-  "locked_usd": 3.3,
+  "fills_seen": 38,
+  "picked_by_trader": 5,
+  "median_seconds_fill_to_hedge": 3.0,
+  "late_fills_excluded_from_speed": 5,
+  "fully_hedged_share": 0.97,
+  "locked_usd": 5.25,
   "same_fill_vs_5min_sim": {
-   "pairs": 10,
-   "fast_hedged_share": 0.82,
-   "sim_hedged_share": 0.94
+   "pairs": 12,
+   "fast_hedged_share": 0.95,
+   "sim_hedged_share": 0.74
   }
  },
  "reconcile": {
-  "both_saw": 10,
-  "sim_only": 0,
-  "sim_only_within_90s_of_plan": 0,
-  "hedger_only": 1,
-  "hedger_only_late": 1,
-  "status_changed_by_hedger": 1,
-  "reconciled_usd_change": 2.17,
+  "both_saw": 12,
+  "sim_only": 5,
+  "sim_only_within_90s_of_plan": 1,
+  "hedger_only": 0,
+  "hedger_only_late": 0,
+  "status_changed_by_hedger": 6,
+  "reconciled_usd_change": 0.65,
   "examples": [
    {
-    "player": "KXNCAAWBTOTAL-26NOV23BELLSU-149",
+    "player": "Daniss Jenkins",
+    "sim": "UNHEDGED",
+    "hedger": "hedged",
+    "usd": [
+     -0.0,
+     0.82
+    ]
+   },
+   {
+    "player": "KXNCAAWBGAME-26NOV26NDWVU-WVU",
     "sim": "PARTIAL",
     "hedger": "hedged",
     "usd": [
-     1.19,
-     3.35
+     -0.02,
+     0.33
+    ]
+   },
+   {
+    "player": "KXNCAAWBGAME-26NOV26NDWVU-ND",
+    "sim": "UNHEDGED",
+    "hedger": "hedged",
+    "usd": [
+     -0.0,
+     0.07
+    ]
+   },
+   {
+    "player": "Daniss Jenkins",
+    "sim": "hedged",
+    "hedger": "UNHEDGED",
+    "usd": [
+     0.82,
+     -0.0
+    ]
+   },
+   {
+    "player": "KXNCAAWBGAME-26NOV26NDWVU-WVU",
+    "sim": "hedged",
+    "hedger": "PARTIAL",
+    "usd": [
+     0.33,
+     -0.02
     ]
    }
   ]
  },
  "gaps": {
-  "gaps": 429,
-  "too_good_to_be_real": 2,
-  "median_seconds": 332,
-  "lasted_30s_plus": 364,
-  "catchable": 1,
-  "catchable_value_usd": 0.01
+  "gaps": 80,
+  "too_good_to_be_real": 0,
+  "median_seconds": 126,
+  "lasted_30s_plus": 57,
+  "catchable": 0,
+  "catchable_value_usd": 0
  },
  "learner": {
-  "model_trained_on_outcomes_before": "2026-11-23T07:00:00Z",
-  "groups": 128,
-  "predicted_c_per_contract": -0.008,
-  "actual_c_per_contract": -0.004,
-  "rank_correlation": -0.042,
+  "model_trained_on_outcomes_before": "2026-11-24T07:00:00Z",
+  "groups": 129,
+  "predicted_c_per_contract": 0.004,
+  "actual_c_per_contract": -0.015,
+  "rank_correlation": -0.02,
   "bins_low_to_high": [
    {
-    "predicted_c": -0.03,
-    "actual_c": -0.021,
-    "plans": 1873,
-    "fills": 9
+    "predicted_c": -0.029,
+    "actual_c": -0.074,
+    "plans": 1807,
+    "fills": 14
    },
    {
-    "predicted_c": -0.006,
+    "predicted_c": -0.005,
     "actual_c": 0.0,
-    "plans": 1874,
-    "fills": 0
-   },
-   {
-    "predicted_c": -0.003,
-    "actual_c": 0.0,
-    "plans": 1874,
+    "plans": 1808,
     "fills": 0
    },
    {
     "predicted_c": -0.002,
     "actual_c": 0.0,
-    "plans": 1874,
+    "plans": 1807,
     "fills": 0
    },
    {
-    "predicted_c": -0.0,
-    "actual_c": -0.0,
-    "plans": 1874,
-    "fills": 1
+    "predicted_c": -0.001,
+    "actual_c": 0.0,
+    "plans": 1808,
+    "fills": 0
+   },
+   {
+    "predicted_c": 0.056,
+    "actual_c": 0.001,
+    "plans": 1808,
+    "fills": 3
    }
   ],
   "plans_in_skip_groups": 0,
   "skip_groups_actual_usd": 0
  },
- "orders_pulled_hedge_moved": 1,
+ "orders_pulled_hedge_moved": 4,
  "notable_fills": [
   {
-   "player_or_game": "Stephon Castle",
-   "market": "assists",
+   "player_or_game": "Notre Dame vs West Virginia",
+   "market": "margin",
+   "sport": "wcbb",
+   "taken": false,
+   "status": "PARTIAL",
+   "contracts": 7,
+   "value_usd": -5.02
+  },
+  {
+   "player_or_game": "Daniss Jenkins",
+   "market": "pra",
    "sport": "nba",
    "taken": false,
    "status": "UNHEDGED",
-   "contracts": 10,
-   "value_usd": -4.9
+   "contracts": 6,
+   "value_usd": -4.38
   },
   {
-   "player_or_game": "Detroit vs Orlando",
-   "market": "totals",
+   "player_or_game": "Notre Dame vs West Virginia",
+   "market": "margin",
+   "sport": "wcbb",
+   "taken": false,
+   "status": "UNHEDGED",
+   "contracts": 7,
+   "value_usd": -3.97
+  },
+  {
+   "player_or_game": "Ausar Thompson",
+   "market": "pra",
    "sport": "nba",
    "taken": false,
    "status": "hedged",
-   "contracts": 5,
-   "value_usd": -0.03
+   "contracts": 10,
+   "value_usd": 0.16
   },
   {
-   "player_or_game": "Belmont vs LSU",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 18.0,
-   "value_usd": 0.03
+   "player_or_game": "John Collins",
+   "market": "points",
+   "sport": "nba",
+   "taken": false,
+   "status": "UNHEDGED",
+   "contracts": 6,
+   "value_usd": 1.62
   },
   {
-   "player_or_game": "Belmont vs LSU",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 18.0,
-   "value_usd": 0.21
-  },
-  {
-   "player_or_game": "Belmont vs LSU",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 18.0,
-   "value_usd": 0.37
-  },
-  {
-   "player_or_game": "Belmont vs LSU",
-   "market": "totals",
-   "sport": "wcbb",
-   "taken": true,
-   "status": "hedged",
-   "contracts": 18.0,
-   "value_usd": 0.66
+   "player_or_game": "Daniss Jenkins",
+   "market": "points",
+   "sport": "nba",
+   "taken": false,
+   "status": "UNHEDGED",
+   "contracts": 7,
+   "value_usd": 2.03
   }
  ],
  "accounting": "conservative: hedges at the worse of book/price at fill; leftovers still open count as total losses; skipped plans valued at the size the trader would have used"
