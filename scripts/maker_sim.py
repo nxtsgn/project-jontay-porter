@@ -82,6 +82,10 @@ RECONCILED_FIELDS = ["reconciled_ts", "placed_ts", "rest_id", "player", "first_f
                      "seconds_fill_to_hedge", "old_status", "new_status", "old_hedge_px", "new_hedge_px",
                      "old_locked_pnl", "new_locked_pnl", "old_unhedged_qty", "new_unhedged_qty"]
 RECONCILE_LOOKBACK_S = 48 * 3600
+# Until this time the hedger re-read the book for every trade without removing what it had just taken, so several trades
+# close together could all "hedge" against the same contracts. Such rows can't support a better result.
+DEPTH_FIX_TS = "2026-11-25T17:00:00Z"
+
 CANCEL_FIELDS = ["resolved_ts", "placed_ts", "sport", "market_type", "player", "rest_id", "rest_raw_side", "rest_px",
                  "hedge_id", "hedge_px_at_plan", "hedge_px_at_cancel", "cancel_ts", "contracts", "filled_with_cancel",
                  "filled_without_cancel"]
@@ -390,6 +394,78 @@ def hedger_log():
     return _rows(Path(p)) if p and os.path.exists(p) and os.path.getsize(p) else []
 
 
+def reused_depth(same, fast):
+    """True if any of these hedges may have shared depth with another hedge of the same market within a minute."""
+    for h in same:
+        if (h.get("hedged_ts") or h["fill_ts"]) >= DEPTH_FIX_TS:
+            continue
+        near = [g for g in fast if g.get("hedge_id") == h.get("hedge_id") and g.get("fill_ts")
+                and abs(epoch(g["fill_ts"][:19] + "Z") - epoch(h["fill_ts"][:19] + "Z")) <= 60]
+        if len(near) > 1:
+            return True
+    return False
+
+
+def undo_overstated(fast, now):
+    """Put back the simulation's result where a past replacement isn't supported: the hedger filled fewer contracts than
+    the simulation (its result was scaled up), or its hedges may have reused the same depth. Logged like any other change."""
+    rec = _rows(RECONCILED)
+    if not rec:
+        return []
+    last = {}
+    for x in rec:
+        last[(x["placed_ts"], x["rest_id"])] = x
+    fills, changed, log = _rows(FILLS), {}, []
+    for r in fills:
+        x = last.get((r["placed_ts"], r["rest_id"]))
+        if not x or x["reconciled_ts"] >= DEPTH_FIX_TS or float(x["new_locked_pnl"]) <= float(x["old_locked_pnl"] or 0):
+            continue
+        same, fq, _ = hedger_rows(r, x["hedger_fill_ts"], fast)
+        if not same or (fq >= float(r["filled"]) - 0.011 and not reused_depth(same, fast)):
+            continue
+        left, got = float(x["old_unhedged_qty"]), round(float(r["filled"]) - float(x["old_unhedged_qty"]), 2)
+        px = float(x["old_hedge_px"]) if x["old_hedge_px"] else None
+        pnl, rest = float(x["old_locked_pnl"] or 0), float(r["rest_px"])
+        new = dict(hedge_px_at_fill=px if px is not None else "", hedge_status=x["old_status"], hedged_qty=got if px else 0,
+                   unhedged_qty=left, cost=round(rest + (px or 0), 4), locked_pnl=pnl,
+                   hedge_fee=fee("polymarket_us", float(r["hedge_fee_coef"]), px, max(1, math.ceil(got))) if px else 0,
+                   locked_per_contract=round(pnl / got, 4) if px and got else "")
+        log.append(dict(x, reconciled_ts=datetime.fromtimestamp(now, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        old_status=x["new_status"], new_status=x["old_status"], old_hedge_px=x["new_hedge_px"],
+                        new_hedge_px=x["old_hedge_px"], old_locked_pnl=x["new_locked_pnl"], new_locked_pnl=x["old_locked_pnl"],
+                        old_unhedged_qty=x["new_unhedged_qty"], new_unhedged_qty=x["old_unhedged_qty"]))
+        r.update(new)
+        changed[(r["placed_ts"], r["rest_id"])] = new
+    _apply(fills, changed, log)
+    return log
+
+
+def hedger_rows(r, fill_ts, fast):
+    """The hedger's on-time rows for the order that got this fill: (rows, contracts filled, contracts hedged)."""
+    h0 = next((h for h in fast if h["rest_id"] == r["rest_id"] and h.get("fill_ts") == fill_ts and str(h.get("late")) == "0"), None)
+    same = [h for h in fast if h0 and h["rest_id"] == r["rest_id"] and h["placed_ts"] == h0["placed_ts"]
+            and str(h.get("late")) == "0"]
+    return same, sum(float(h["fill_qty"]) for h in same), sum(float(h["hedged_qty"]) for h in same)
+
+
+def _apply(fills, changed, log):
+    if not changed:
+        return
+    _write(FILLS, FILL_FIELDS, fills, "w")
+    if OUTCOMES.exists():  # what the learner trains on
+        outs = _rows(OUTCOMES)
+        for o in outs:
+            c = changed.get((o["placed_ts"], o["rest_id"]))
+            if c and o.get("filled") not in ("", "0", "0.0"):
+                o.update(hedge_status=c["hedge_status"], hedged_qty=c["hedged_qty"], unhedged_qty=c["unhedged_qty"],
+                         locked_pnl=c["locked_pnl"])
+        _write(OUTCOMES, OUTCOME_FIELDS, outs, "w")
+    _write(RECONCILED, RECONCILED_FIELDS, log, "a")
+    for x in log:
+        print(f"hedger reconcile: {x['player'] or x['rest_id']} {x['old_status']} ${x['old_locked_pnl']} -> "
+              f"{x['new_status']} ${x['new_locked_pnl']} (hedger saw it in {x['seconds_fill_to_hedge']}s)")
+
+
 def reconcile(fast=None, now=None):
     """Where the Oracle hedger saw a fill live (within seconds) the simulation's hedge is replaced by the hedger's.
 
@@ -402,6 +478,7 @@ def reconcile(fast=None, now=None):
     if not fast or not FILLS.exists():
         return []
     now = now or time.time()
+    undo_overstated(fast, now)
     by = {}
     for h in fast:
         if h.get("fill_ts") and str(h.get("late")) == "0":
@@ -437,6 +514,10 @@ def reconcile(fast=None, now=None):
         else:
             new = dict(hedge_px_at_fill="", hedge_status="UNHEDGED", hedged_qty=0, unhedged_qty=round(filled, 2),
                        cost=rest, hedge_fee=0, locked_pnl=round(-mfee, 2), locked_per_contract="")
+        # a better result must be fully backed: the hedger filled at least as much, on depth it hadn't already used
+        value = lambda d: float(d["locked_pnl"] or 0) - float(d["unhedged_qty"] or 0) * rest  # noqa: E731
+        if value(new) > value(r) and (fq < filled - 0.011 or reused_depth(same, fast)):
+            continue
         if new["hedge_status"] == r["hedge_status"] and abs(float(new["locked_pnl"]) - float(r["locked_pnl"] or 0)) < 0.005:
             continue
         log.append(dict(reconciled_ts=datetime.fromtimestamp(now, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -448,21 +529,7 @@ def reconcile(fast=None, now=None):
                         old_unhedged_qty=r["unhedged_qty"], new_unhedged_qty=new["unhedged_qty"]))
         r.update(new)
         changed[k] = new
-    if not changed:
-        return []
-    _write(FILLS, FILL_FIELDS, fills, "w")
-    if OUTCOMES.exists():  # what the learner trains on
-        outs = _rows(OUTCOMES)
-        for o in outs:
-            c = changed.get((o["placed_ts"], o["rest_id"]))
-            if c and o.get("filled") not in ("", "0", "0.0"):
-                o.update(hedge_status=c["hedge_status"], hedged_qty=c["hedged_qty"], unhedged_qty=c["unhedged_qty"],
-                         locked_pnl=c["locked_pnl"])
-        _write(OUTCOMES, OUTCOME_FIELDS, outs, "w")
-    _write(RECONCILED, RECONCILED_FIELDS, log, "a")
-    for x in log:
-        print(f"hedger reconcile: {x['player'] or x['rest_id']} {x['old_status']} ${x['old_locked_pnl']} -> "
-              f"{x['new_status']} ${x['new_locked_pnl']} (hedger saw it in {x['seconds_fill_to_hedge']}s)")
+    _apply(fills, changed, log)
     return log
 
 

@@ -89,6 +89,7 @@ class Hedger:
         self.orders = {}  # key -> order dict
         self.seen = {}  # trade id -> epoch seen (pruned after an hour)
         self.tape_t = None  # tape read up to here
+        self.used = {}  # (hedge market, side, price) -> (time, contracts already taken at that level)
         self.rr = 0  # round-robin position for hedge-price checks
         self.pool = ThreadPoolExecutor(max_workers=4)
         if self.log.exists():
@@ -229,10 +230,16 @@ class Hedger:
     def record(self, o, tr, qty):
         seen = now_iso()
         left, got, spend = qty, 0.0, 0.0
+        # practice hedges don't remove real depth, so remember what we "took" for a minute and don't take it twice
+        t, self.used = time.time(), {k: v for k, v in self.used.items() if time.time() - v[0] < 60}
+        side = (o["hedge_id"], (o["hedge_norm_side"] == "yes") != bool(int(o.get("hedge_flipped") or 0)))
         for px, avail in hedge_levels(o):  # the live Polymarket US book, right now
             if left <= 1e-9 or px > o["hedge_limit"] + 1e-9:
                 break
-            take = min(left, avail)
+            key = (*side, px)
+            take = min(left, max(0.0, avail - self.used.get(key, (t, 0.0))[1]))
+            if take > 0:
+                self.used[key] = (t, self.used.get(key, (t, 0.0))[1] + take)
             got, spend, left = got + take, spend + take * px, left - take
         hedged = now_iso()
         n = max(1, math.ceil(qty))

@@ -58,6 +58,37 @@ class ReconcileTest(unittest.TestCase):
         self.assertAlmostEqual(ms.live_from(o) - ms.epoch(o["placed_ts"]), 71.2)
         self.assertAlmostEqual(ms.live_from({"placed_ts": "2026-11-21T08:00:00Z"}) - ms.epoch("2026-11-21T08:00:00Z"), 71.2)
 
+    def test_better_results_need_full_backing(self):
+        big = [hedger("2026-11-21T09:05:06Z", "K-BECK", "2026-11-21T09:09:37.1Z", 4, 4, 0.65)]      # 4 of 10 filled
+        self.assertEqual(ms.reconcile(big, now=self.now), [])
+        burst = [dict(hedger("2026-11-21T09:05:06Z", "K-BECK", "2026-11-21T09:09:37.1Z", 5, 5, 0.65), hedge_id="h") for _ in range(2)]
+        self.assertEqual(ms.reconcile(burst, now=self.now), [])  # same depth may have been used twice
+
+    def test_overstated_replacement_is_undone_once(self):
+        ms.reconcile(self.fast, now=self.now)
+        small = [dict(self.fast[0], fill_qty=4, hedged_qty=4)]
+        log = ms.undo_overstated(small, self.now)
+        self.assertEqual([(x["rest_id"], x["new_status"]) for x in log], [("K-BECK", "UNHEDGED")])
+        r = {r["rest_id"]: r for r in csv.DictReader(ms.FILLS.open())}["K-BECK"]
+        self.assertEqual((float(r["unhedged_qty"]), float(r["hedged_qty"])), (10, 0))
+        self.assertEqual(ms.undo_overstated(small, self.now), [])
+
+
+class DepthTest(unittest.TestCase):
+    def test_hedger_does_not_take_the_same_depth_twice(self):
+        import hedger as hg
+        h = hg.Hedger(tempfile.mkdtemp())
+        o = dict(fill("2026-11-25T18:00:00Z", "K", "", "", 0, 0, 0), placed_ts="2026-11-25T18:00:00Z", order_qty=20,
+                 rest_px=0.31, hedge_limit=0.68, watch_from=0, chosen=1)
+        saved, hg.hedge_levels = hg.hedge_levels, (lambda _: [(0.65, 10.0)])
+        try:
+            for i in range(2):
+                h.record(o, dict(trade_id=str(i), created_time="2026-11-25T18:01:00Z"), 8)
+        finally:
+            hg.hedge_levels = saved
+        rows = list(csv.DictReader(h.log.open()))
+        self.assertEqual([float(r["hedged_qty"]) for r in rows], [8, 2])
+
 
 class WindowTest(unittest.TestCase):
     def test_plan_counts_fills_while_its_orders_were_really_up(self):

@@ -2,13 +2,11 @@
 Conservative, same rules as progress_report.py: open unhedged contracts are a total loss until they settle, locked profit
 on hedged-but-unsettled contracts is "unrealized" until both markets settle.
 
-    git fetch origin price-data && mkdir -p /tmp/pd && git archive origin/price-data data | tar -x -C /tmp/pd
+    git fetch --depth 1 --filter=blob:none origin +price-data:refs/remotes/origin/price-data && mkdir -p /tmp/pd && git archive origin/price-data data/paper | tar -x -C /tmp/pd
     python scripts/dashboard_export.py --data /tmp/pd/data --out /tmp/dash
 """
 import argparse
 import csv
-import glob
-import gzip
 import json
 import re
 import sys
@@ -120,10 +118,9 @@ def main():
     load_names(d / "paper")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    stamps = set()
-    for p in glob.glob(str(d / "prices" / "prices_us_*.csv.gz")):
-        with gzip.open(p, "rt") as fh:
-            stamps |= {r["ts_utc"] for r in csv.DictReader(fh) if r.get("sport")}
+    # every collector run, from the paper log. (This used to unzip every saved price file, ~720 MB, only for their times,
+    # which is why each refresh had to download the whole price-data branch.)
+    stamps = {r["ts_utc"] for r in _read(d, "maker_runs.csv") if r.get("ts_utc")}
 
     outcomes, fills = _read(d, "maker_outcomes.csv"), _read(d, "maker_fills.csv")
     bags = {(b["placed_ts"], b["rest_id"]): _f(b["bag_pnl"]) for b in _read(d, "maker_bags.csv")}
